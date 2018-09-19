@@ -1,0 +1,15 @@
+{
+    "name": "appframe-cli",
+    "description": "Utility functions for Appframe",
+    "bin": {
+        "appframe": "./bin/appframe.js"
+    },
+    "version": "0.1.0-alpha",
+    "license": "MIT",
+    "scripts": {},
+    "devDependencies": {},
+    "dependencies": {
+        "minimist": "^1.2.0"
+    },
+    "repository": "https://bvhansen.visualstudio.com/_git/appframe-cli"
+}
