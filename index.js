@@ -22,6 +22,9 @@ function cli() {
         case 'version':
             require('./cmds/version')(args);
             break;
+        case 'publish':
+            require('./cmds/publish')(args);
+            break;
         default:
             console.error(`"${cmd}" is not a valid command!`);
             break;

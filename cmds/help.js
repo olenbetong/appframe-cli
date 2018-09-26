@@ -5,17 +5,21 @@ const menus = {
         publish ................ publish module according to configuration
         version ................ show package version
         help ................... show help menu for a command
-    `,
-    publish: `
+        `,
+        publish: `
         appframe publish <options>
-
-        --production, --prod ...... publish to production
-        --server, -s .............. SQL server Appframe is running on
-        --database, -d ............ database to publish to
-        --user, -u ................ username for the SQL server
-        --password, -p ............ password for the SQL server
+        
+        --article ................. article to publish to (if type is script)
+        --config .................. config file to use
+        --database ................ database to publish to
+        --hostname ................ website hostname(s) to publish to
+        --password ................ password for the SQL server
+        --production, -p .......... publish to production
+        --server .................. SQL server Appframe is running on
         --source .................. the file that should be published
-        --target .................. name of the component to publish to
+        --target .................. name of the target component/script to publish to
+        --type .................... type of the publish target (default component)
+        --user .................... username for the SQL server
     `
 }
 
