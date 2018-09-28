@@ -1,6 +1,7 @@
 const { resolve } = require('path');
 
-const types = ['article', 'component', 'script']
+const types = ['article', 'component', 'site'];
+
 
 function getConfigFromArgs(args) {
     const config = {};
@@ -51,7 +52,7 @@ function publish(args) {
         publishToArticle(config);
     } else if (config.type === 'component') {
         publishToComponent(config);
-    } else if (config.type === 'script') {
+    } else if (config.type === 'site') {
         publishToSiteScript(config);
     }
 

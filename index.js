@@ -14,16 +14,16 @@ function cli() {
 
     switch (cmd) {
         case 'help':
-            require('./cmds/help')(args);
+            require('./src/cmds/help')(args);
             break;
         case 'today':
-            require('./cmds/today')(args);
+            require('./src/cmds/today')(args);
             break;
         case 'version':
-            require('./cmds/version')(args);
+            require('./src/cmds/version')(args);
             break;
         case 'publish':
-            require('./cmds/publish')(args);
+            require('./src/cmds/publish')(args);
             break;
         default:
             console.error(`"${cmd}" is not a valid command!`);
