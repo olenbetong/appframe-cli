@@ -1,6 +1,6 @@
 const minimist = require('minimist');
 
-function cli() {
+async function cli() {
     const args = minimist(process.argv.slice(2));
     let cmd = (args._[0] || 'help').toLowerCase();
 
@@ -23,7 +23,7 @@ function cli() {
             require('./src/cmds/version')(args);
             break;
         case 'publish':
-            require('./src/cmds/publish')(args);
+            await require('./src/cmds/publish')(args);
             break;
         default:
             console.error(`"${cmd}" is not a valid command!`);

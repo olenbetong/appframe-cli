@@ -1,23 +1,39 @@
 const { resolve } = require('path');
+const { login } = require('../../appframe');
 
 const types = ['article', 'component', 'site'];
 
-
 function getConfigFromArgs(args) {
     const config = {};
+    const potentialArgs = [
+        'article',
+        'database',
+        'hostname',
+        'password',
+        'production',
+        'server',
+        'source',
+        'target',
+        'user',
+    ];
 
-    config.article = args.article || null;
-    config.database = args.database || null;
-    config.hostname = args.hostname || null;
-    config.password = args.password || null;
-    config.production = args.production === true || args.p === true || false;
-    config.server = args.server || null;
-    config.source = args.source || null;
-    config.target = args.target || null;
-    config.type = typeof args.type === 'string' && types.includes(args.type.toLowerCase())
-        ? args.type.toLowerCase()
-        : 'component';
-    config.user = args.user || null;
+    for (let arg of potentialArgs) {
+        if (args[arg]) {
+            config[arg] = args[arg];
+        }
+    }
+
+    if (args.production === true || args.p === true) {
+        config.production = true;
+    }
+
+    if (typeof args.type === 'string') {
+        if (!types.includes(args.type.toLowerCase())) {
+            throw new Error(`'${args.type}' is not a valid type.`);
+        } else {
+            config.type = args.type.toLowerCase();
+        }
+    }
 
     return config;
 }
@@ -26,37 +42,43 @@ function publishToArticle(config) {
 
 }
 
-function publishToComponent(connection, config) {
+function publishToComponent(config) {
 
 }
 
-function publishToSiteScript(connection, config) {
+function publishToSiteScript(config) {
 
 }
 
-function validateConfiguration(connection, config) {
+function validateConfiguration(config) {
 
 }
 
-function publish(args) {
+async function publish(args) {
     const configFromFile = args.config ? require(resolve(args.config)) : {};
     const config = Object.assign(
-        {},
+        {
+            production: false,
+            type: 'component'
+        },
         configFromFile,
         getConfigFromArgs(args)
     );
 
-    validateConfiguration(config);
+    if (await login(config.hostname, config.user, config.password)) {
+        validateConfiguration(config);
+        
+        console.log('publishing', config);
 
-    if (config.type === 'article') {
-        publishToArticle(config);
-    } else if (config.type === 'component') {
-        publishToComponent(config);
-    } else if (config.type === 'site') {
-        publishToSiteScript(config);
+        if (config.type === 'article') {
+            publishToArticle(config);
+        } else if (config.type === 'component') {
+            publishToComponent(config);
+        } else if (config.type === 'site') {
+            publishToSiteScript(config);
+        }
+        
     }
-
-    console.log('publishing', config);
 }
 
 module.exports = publish;
