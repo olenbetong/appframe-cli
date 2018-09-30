@@ -1,7 +1,14 @@
 const { resolve } = require('path');
 const { login } = require('../../appframe');
 
-const types = ['article', 'component', 'site'];
+const types = [
+    'article-script',
+    'article-style',
+    'component-global',
+    'component-site',
+    'site-script',
+    'site-style'
+];
 
 function getConfigFromArgs(args) {
     const config = {};
@@ -42,8 +49,12 @@ function publishToArticle(config) {
 
 }
 
-function publishToComponent(config) {
+function publishToGlobalComponent(config) {
 
+}
+
+function publishToSiteComponent(config) {
+    
 }
 
 function publishToSiteScript(config) {
@@ -52,6 +63,27 @@ function publishToSiteScript(config) {
 
 function validateConfiguration(config) {
 
+}
+
+function publishItem(item) {
+    if (typeof item === 'array') {
+        const [source, type, target] = item;
+        publishItem({ source, type, target });
+    } else {
+        if (item.type === 'article-script') {
+            publishToArticle(config);
+        } else if (item.type === 'article-style') {
+
+        } else if (item.type === 'component-global') {
+            publishToGlobalComponent(config);
+        } else if (item.type === 'component-site') {
+
+        } else if (item.type === 'site-script') {
+            publishToSiteScript(config);
+        } else if (item.type === 'site-style') {
+
+        }
+    }
 }
 
 async function publish(args) {
@@ -68,16 +100,15 @@ async function publish(args) {
     if (await login(config.hostname, config.user, config.password)) {
         validateConfiguration(config);
         
-        console.log('publishing', config);
-
-        if (config.type === 'article') {
-            publishToArticle(config);
-        } else if (config.type === 'component') {
-            publishToComponent(config);
-        } else if (config.type === 'site') {
-            publishToSiteScript(config);
+        if (config.target instanceof Array && config.target[0] instanceof Array) {
+            for (let item of config.target) {
+                publishItem(item);
+            }
+        } else {
+            publishItem(config.target);
         }
-        
+
+        console.log('publishing', config);
     }
 }
 

@@ -10,7 +10,9 @@
             "name": "Launch Program",
             "program": "${workspaceFolder}/bin/appframe.js",
             "args": [
-                "publish"
+                "publish",
+                "--config",
+                "appframe.config.js"
             ]
         }
     ]

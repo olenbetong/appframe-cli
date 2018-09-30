@@ -16,10 +16,14 @@ const menus = {
         --password ................ password for the SQL server
         --production, -p .......... publish to production
         --server .................. SQL server Appframe is running on
-        --source .................. the file that should be published
-        --target .................. name of the target component/script to publish to
-        --type .................... type of the publish target (default component)
+        --target .................. script and target to publish (can be array of targets)
         --user .................... username for the SQL server
+
+        Target options:
+        hostname (optional) ....... hostname to publish to (if different from hostname option)
+        source .................... the file whose contents will be published
+        target .................... name of the publish target
+        type ...................... type of the publish target (default: component-global)
     `
 }
 
