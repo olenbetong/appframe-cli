@@ -1,5 +1,6 @@
 const { resolve } = require('path');
 const { login } = require('../../appframe');
+const { publishToGlobalComponent, publishToSiteComponent } = require('./component');
 
 const types = [
     'article-script',
@@ -45,19 +46,19 @@ function getConfigFromArgs(args) {
     return config;
 }
 
-function publishToArticle(config) {
+async function publishToArticleScript(config) {
 
 }
 
-function publishToGlobalComponent(config) {
+async function publishToArticleStyle(config) {
 
 }
 
-function publishToSiteComponent(config) {
-    
+async function publishToSiteScript(config) {
+
 }
 
-function publishToSiteScript(config) {
+async function publishToSiteStyle(config) {
 
 }
 
@@ -65,25 +66,44 @@ function validateConfiguration(config) {
 
 }
 
-function publishItem(item) {
-    if (typeof item === 'array') {
-        const [source, type, target] = item;
-        publishItem({ source, type, target });
+async function publishItem(item) {
+    const { hostname, source, type, target } = item;
+
+    console.log(`Publishing file '${item.source}' to ${type} '${target}' in ${item.hostname}...`);
+
+    if (item.type === 'article-script') {
+        return await publishToArticleScript(item);
+    } else if (item.type === 'article-style') {
+        return await publishToArticleStyle(item);
+    } else if (item.type === 'component-global') {
+        return await publishToGlobalComponent(item);
+    } else if (item.type === 'component-site') {
+        return await publishToSiteComponent(item);
+    } else if (item.type === 'site-script') {
+        return await publishToSiteScript(item);
+    } else if (item.type === 'site-style') {
+        return await publishToSiteStylke(item);
     } else {
-        if (item.type === 'article-script') {
-            publishToArticle(config);
-        } else if (item.type === 'article-style') {
+        console.error(`Type '${type}' is not supported.`);
 
-        } else if (item.type === 'component-global') {
-            publishToGlobalComponent(config);
-        } else if (item.type === 'component-site') {
-
-        } else if (item.type === 'site-script') {
-            publishToSiteScript(config);
-        } else if (item.type === 'site-style') {
-
-        }
+        return false;
     }
+}
+
+async function publishItemFromArray(array, fallbackHostname) {
+    const [source, target, type, hostname] = array;
+    const item = {
+        hostname,
+        source,
+        target,
+        type
+    };
+
+    if (!item.hostname) {
+        item.hostname = fallbackHostname;
+    }
+
+    return await publishItem(item);
 }
 
 async function publish(args) {
@@ -100,15 +120,32 @@ async function publish(args) {
     if (await login(config.hostname, config.user, config.password)) {
         validateConfiguration(config);
         
-        if (config.target instanceof Array && config.target[0] instanceof Array) {
-            for (let item of config.target) {
-                publishItem(item);
-            }
-        } else {
-            publishItem(config.target);
+        const { target, source, type } = config;
+        if (target && source && type) {
+            publishItem({ source, target, type })
         }
 
-        console.log('publishing', config);
+        if (config.files instanceof Array && config.files.length > 0) {
+
+            if (config.files[0] instanceof Array || typeof config.files[0] === 'object') {
+                // config is array of publish items
+                const { hostname } = config;
+
+                for (let item of config.files) {
+                    if (item instanceof Array) {
+                        await publishItemFromArray(item, hostname);
+                    } else {
+                        await publishItem({ hostname, ...item });
+                    }
+                }
+            } else {
+                // config is a single publish item
+                publishItem(item);
+            }
+
+        } else if (typeof config.files === 'object') {
+            publishItem(config.files);
+        }
     }
 }
 

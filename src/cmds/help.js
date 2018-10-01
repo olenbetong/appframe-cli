@@ -16,14 +16,28 @@ const menus = {
         --password ................ password for the SQL server
         --production, -p .......... publish to production
         --server .................. SQL server Appframe is running on
+        --source .................. script/style file to publish
         --target .................. script and target to publish (can be array of targets)
+        --type ....................
         --user .................... username for the SQL server
 
-        Target options:
-        hostname (optional) ....... hostname to publish to (if different from hostname option)
-        source .................... the file whose contents will be published
-        target .................... name of the publish target
-        type ...................... type of the publish target (default: component-global)
+        If a config file is used, a 'files' option may be used to publish
+        multiple files at a time. It can be either an object with source, target,
+        type and (optional) hostname keys, or an array with this shape:
+        [source, target, type, (optional) hostname]. It may also be an array of
+        these items.
+
+            Example 1:
+            { source: './demo.js', target: '/module/demo.js', type: 'component-global' }
+
+            Example 2:
+            ['./demo.js', 'demo.js', 'site-script']
+
+            Example 3:
+            [
+                { source: './demo.js', target: '/path/to/module/demo.js', type: 'component-global' },
+                ['./dist/bundle.min.js', '[article-name]/bundle.min.js', 'article-script', 'another-hostname.com']
+            ]
     `
 }
 
