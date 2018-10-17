@@ -13,7 +13,10 @@
                 "publish",
                 "--config",
                 "appframe.config.js"
-            ]
+            ],
+            "skipFiles": [
+                "<node_internals>/**/*.js"
+              ]
         }
     ]
 }
