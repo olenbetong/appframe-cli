@@ -1,4 +1,5 @@
 const { getItem } = require('../../appframe');
+const fs = require('fs');
 
 async function getItemIfExists(options) {
     const {
@@ -20,13 +21,39 @@ async function getItemIfExists(options) {
             return false;
         }
 
-        return record;
+        return record[0];
     } catch (ex) {
         console.error(ex);
         return false;
     }
 }
 
+function getSourceData(file) {
+    return new Promise((res, reject) => {
+        try {
+            const cwd = process.cwd();
+            const path = require.resolve(file, { paths: [cwd] });
+    
+            if (!path) {
+                reject(new Error(`Failed to resolve source file '${file}'.`));
+    
+                return;
+            }
+    
+            fs.readFile(path, 'utf8', (err, data) => {
+                if (err) {
+                    reject(new Error(err));
+                } else {
+                    res(data);
+                }
+            })
+        } catch (error) {
+            reject(error);
+        }
+    });
+}
+
 module.exports = {
-    getItemIfExists
+    getItemIfExists,
+    getSourceData
 }

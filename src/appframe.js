@@ -66,6 +66,44 @@ async function putData(options) {
         fieldName,
         primKey
     } = options;
+
+    const url = `https://${hostname}/update/${articleId}/${dataObjectId}`;
+    const body = JSON.stringify({
+        [fieldName]: data,
+        PrimKey: primKey
+    });
+
+    const reqOptions = {
+        body,
+        headers: {
+            'Content-Length': body.length,
+            'Content-Type': 'application/json; charset=utf-8',
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        jar,
+        method: 'POST',
+        resolveWithFullResponse: true,
+        url
+    };
+
+    try {
+        console.log(`Updating record '${primKey}' in '${articleId}/${dataObjectId}...`);
+        const res = await rp(reqOptions);
+        const resultData = JSON.parse(res.body);
+
+        if (resultData.success) {
+            console.log('Record updated successfully.');
+            return resultData.success;
+        }
+
+        console.error(`Failed to update record: ${resultData.error}`);
+
+        return false;
+    } catch (ex) {
+        console.error(ex);
+
+        return false;
+    }
 }
 
 async function login(hostname, username, password) {
@@ -113,5 +151,6 @@ async function login(hostname, username, password) {
 
 module.exports = {
     getItem,
-    login
+    login,
+    putData
 }
