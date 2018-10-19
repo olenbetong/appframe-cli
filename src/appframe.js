@@ -99,8 +99,6 @@ async function putData(options) {
 		url
 	};
 
-	console.log(`Updating record '${primKey}' in '${articleId}/${dataObjectId}...`);
-
 	return await request(reqOptions);
 }
 

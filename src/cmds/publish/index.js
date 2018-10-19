@@ -1,6 +1,7 @@
 const { resolve } = require('path');
 const { login } = require('../../appframe');
 const { publishToGlobalComponent, publishToSiteComponent } = require('./component');
+const { publishToSiteScript, publishToSiteStyle } = require('./site');
 
 const types = [
 	'article-script',
@@ -54,14 +55,6 @@ async function publishToArticleStyle(config) {
 
 }
 
-async function publishToSiteScript(config) {
-
-}
-
-async function publishToSiteStyle(config) {
-
-}
-
 function validateConfiguration(config) {
 
 }
@@ -82,11 +75,11 @@ async function publishItem(item) {
 	} else if (item.type === 'site-script') {
 		return await publishToSiteScript(item);
 	} else if (item.type === 'site-style') {
-		return await publishToSiteStylke(item);
+		return await publishToSiteStyle(item);
 	} else {
 		console.error(`Type '${type}' is not supported.`);
 
-		return false;
+		return Promise.resolve(false);
 	}
 }
 
@@ -120,9 +113,18 @@ async function publish(args) {
 	if (await login(config.hostname, config.user, config.password)) {
 		validateConfiguration(config);
 		
-		const { target, source, type } = config;
+		const { hostname, target, source, type } = config;
+		
+		let successCount = 0;
+		let count = 0;
+	
 		if (target && source && type) {
-			publishItem({ source, target, type })
+			count++;
+			let success = await publishItem({ hostname, source, target, type });
+
+			if (success) {
+				successCount++;
+			}
 		}
 
 		if (config.files instanceof Array && config.files.length > 0) {
@@ -130,21 +132,34 @@ async function publish(args) {
 			if (config.files[0] instanceof Array || typeof config.files[0] === 'object') {
 				// config is array of publish items
 				const { hostname } = config;
+				count += config.files.length;
 
 				for (let item of config.files) {
+					let success = false;
 					if (item instanceof Array) {
-						await publishItemFromArray(item, hostname);
+						success = await publishItemFromArray(item, hostname);
 					} else {
-						await publishItem({ hostname, ...item });
+						success = await publishItem({ hostname, ...item });
+					}
+
+					if (success) {
+						successCount++;
 					}
 				}
 			} else {
 				// config is a single publish item
-				publishItem(item);
+				count++;
+				let success = await publishItem(item);
 			}
 
 		} else if (typeof config.files === 'object') {
 			publishItem(config.files);
+		}
+
+		if (successCount === 0) {
+			console.log('Nothing published successfully. Epic fail :(');
+		} else {
+			console.log(`Publish completed. ${successCount} of ${count} items published successfully.`);
 		}
 	}
 }

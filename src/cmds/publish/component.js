@@ -18,7 +18,7 @@ async function publishToGlobalComponent(config) {
 
 	try {
 		if (!record) {
-			console.log(`Target '${target}' doesn't exist. Creating...`);
+			console.log(`Creating '${target}'...`);
 			const createOptions = {
 				...commonOptions,
 				item: {
@@ -30,11 +30,11 @@ async function publishToGlobalComponent(config) {
 			if (!record) {
 				throw new Error('Failed to create new record.');
 			}
+		} else {
+			console.log(`Updating '${target}...`);
 		}
 
 		const [,,,primKey] = record;
-		console.log(`Target '${target}' found with primkey '${primKey}'`);
-
 		const sourceData = await getSourceData(source);
 		const putDataOptions = {
 			...commonOptions,
@@ -50,6 +50,8 @@ async function publishToGlobalComponent(config) {
 		return status ? true : false;
 	} catch (err) {
 		console.error(`Failed to publish to global component: ${err.message}`);
+
+		return false;
 	}
 }
 
