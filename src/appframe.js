@@ -3,6 +3,7 @@ const querystring = require('querystring');
 const jar = rp.jar();
 
 const loginFailedStr = 'Login failed. Please check your credentials.';
+
 const commonOptions = {
 	jar,
 	method: 'POST',
@@ -26,17 +27,16 @@ async function createItem(options) {
 	const body = JSON.stringify(item);
 
 	const reqOptions = {
+		...commonOptions,
 		body,
 		headers: {
-			'Content-Length': body.length,
-			'Content-Type': 'application/json; charset=utf-8',
-			'X-Requested-With': 'XMLHttpRequest'
+			...commonHeaders,
+			'Content-Length': body.length
 		},
-		jar,
-		method: 'POST',
-		resolveWithFullResponse: true,
 		url
 	};
+
+	return await request(reqOptions);
 }
 
 async function getItem(options) {
@@ -61,35 +61,16 @@ async function getItem(options) {
 	});
 
 	const reqOptions = {
+		...commonOptions,
 		body,
 		headers: {
-			'Content-Length': body.length,
-			'Content-Type': 'application/json; charset=utf-8',
-			'X-Requested-With': 'XMLHttpRequest'
+			...commonHeaders,
+			'Content-Length': body.length
 		},
-		jar,
-		method: 'POST',
-		resolveWithFullResponse: true,
 		url
 	};
 
-	try {
-		console.log('Checking if item exists in database...');
-
-		const res = await rp(reqOptions);
-		const data = JSON.parse(res.body);
-
-		if (data.success) {
-			return data.success;
-		} else {
-			console.error(`Failed to retrieve item ${data.error}`);
-			return false;
-		}
-	} catch (ex) {
-		console.error(ex);
-
-		return false;
-	}
+	return await request(reqOptions);
 }
 
 async function putData(options) {
@@ -109,33 +90,34 @@ async function putData(options) {
 	});
 
 	const reqOptions = {
+		...commonOptions,
 		body,
 		headers: {
-			'Content-Length': body.length,
-			'Content-Type': 'application/json; charset=utf-8',
-			'X-Requested-With': 'XMLHttpRequest'
+			...commonHeaders,
+			'Content-Length': body.length
 		},
-		jar,
-		method: 'POST',
-		resolveWithFullResponse: true,
 		url
 	};
 
+	console.log(`Updating record '${primKey}' in '${articleId}/${dataObjectId}...`);
+
+	return await request(reqOptions);
+}
+
+async function request(options) {
 	try {
-		console.log(`Updating record '${primKey}' in '${articleId}/${dataObjectId}...`);
-		const res = await rp(reqOptions);
-		const resultData = JSON.parse(res.body);
+		const res = await rp(options);
+		const data = JSON.parse(res.body);
 
-		if (resultData.success) {
-			console.log('Record updated successfully.');
-			return resultData.success;
+		if (data.success) {
+			return data.success;
+		} else if (data.error) {
+			console.error(`Request failed: ${data.error}`);
 		}
-
-		console.error(`Failed to update record: ${resultData.error}`);
 
 		return false;
 	} catch (ex) {
-		console.error(ex);
+		console.error(ex.message);
 
 		return false;
 	}
@@ -185,6 +167,7 @@ async function login(hostname, username, password) {
 }
 
 module.exports = {
+	createItem,
 	getItem,
 	login,
 	putData
