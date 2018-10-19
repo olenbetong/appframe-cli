@@ -1,4 +1,4 @@
-const { getItem } = require('../../appframe');
+const { createItem, getItem, putData } = require('../../appframe');
 const fs = require('fs');
 
 async function getItemIfExists(options) {
@@ -53,7 +53,75 @@ function getSourceData(file) {
 	});
 }
 
+async function publishItemToDataObject(config) {
+	const {
+		createArticleId,
+		createDataObjectId,
+		fieldName,
+		filter,
+		hostname,
+		item,
+		primKeyIndex,
+		source,
+		target,
+		type,
+		updateArticleId,
+		updateDataObjectId,
+	} = config;
+
+	const commonOptions = {
+		articleId: createArticleId,
+		dataObjectId: createDataObjectId,
+		hostname
+	};
+
+	const getItemOptions = {
+		...commonOptions,
+		filter
+	};
+
+	try {
+		let record = await getItemIfExists(getItemOptions);
+
+		if (!record) {
+			console.log(`Creating '${target}'...`);
+			const createOptions = {
+				...commonOptions,
+				item
+			};
+
+			record = await createItem(createOptions);
+
+			if (!record) {
+				throw new Error('Failed to create new record.');
+			}
+		} else {
+			console.log(`Updating '${target}'...`);
+		}
+
+		const primKey = record[primKeyIndex];
+		const sourceData = await getSourceData(source);
+		const putDataOptions = {
+			...commonOptions,
+			articleId: updateArticleId,
+			dataObjectId: updateDataObjectId,
+			data: sourceData,
+			fieldName,
+			primKey
+		};
+
+		const status = await putData(putDataOptions);
+
+		return status ? true : false;
+	} catch (ex) {
+		console.error(`Failed to publish to ${type}: ${ex.message}`);
+
+		return false;
+	}
+}
+
 module.exports = {
 	getItemIfExists,
-	getSourceData
+	getSourceData,
+	publishItemToDataObject
 }

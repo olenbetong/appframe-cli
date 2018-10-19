@@ -1,58 +1,21 @@
-const { getItemIfExists, getSourceData } = require('./common.js');
-const { createItem, putData } = require('../../appframe');
+const { publishItemToDataObject } = require('./common.js');
 
 async function publishToGlobalComponent(config) {
-	const { hostname, source, target } = config;
-	const commonOptions = {
-		articleId: 'components',
-		dataObjectId: 'dsComponents',
-		hostname
-	};
-	
-	const getItemOptions = {
-		...commonOptions,
-		filter: `[Path] = '${target}'`
-	};
+	const { target } = config;
 
-	let record = await getItemIfExists(getItemOptions);
-
-	try {
-		if (!record) {
-			console.log(`Creating '${target}'...`);
-			const createOptions = {
-				...commonOptions,
-				item: {
-					Path: target
-				}
-			}
-			record = await createItem(createOptions);
-
-			if (!record) {
-				throw new Error('Failed to create new record.');
-			}
-		} else {
-			console.log(`Updating '${target}...`);
-		}
-
-		const [,,,primKey] = record;
-		const sourceData = await getSourceData(source);
-		const putDataOptions = {
-			...commonOptions,
-			articleId: 'components-editor',
-			data: sourceData,
-			dataObjectId: 'dsComponent',
-			fieldName: 'ContentTest',
-			primKey
-		};
-
-		const status = await putData(putDataOptions);
-
-		return status ? true : false;
-	} catch (err) {
-		console.error(`Failed to publish to global component: ${err.message}`);
-
-		return false;
-	}
+	return await publishItemToDataObject({
+		...config,
+		createArticleId: 'components',
+		createDataObjectId: 'dsComponents',
+		fieldName: 'ContentTest',
+		filter: `[Path] = '${target}'`,
+		item: {
+			Path: target
+		},
+		primKeyIndex: 3,
+		updateArticleId: 'components-editor',
+		updateDataObjectId: 'dsComponent'
+	});
 }
 
 async function publishToSiteComponent(config) {
