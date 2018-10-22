@@ -1,5 +1,6 @@
 const rp = require('request-promise-native');
 const querystring = require('querystring');
+const cheerio = require('cheerio');
 const jar = rp.jar();
 
 const loginFailedStr = 'Login failed. Please check your credentials.';
@@ -115,8 +116,8 @@ async function request(options) {
 
 		return false;
 	} catch (ex) {
-		console.error(ex.message);
-
+		const errorMessage = getErrorFromBody(ex.error);
+		console.error(errorMessage);
 		return false;
 	}
 }
@@ -162,6 +163,12 @@ async function login(hostname, username, password) {
 		console.error(err);
 		return false;
 	}
+}
+
+function getErrorFromBody(body) {
+	const $ = cheerio.load(body);
+
+	return $('#details pre').text();
 }
 
 module.exports = {
