@@ -2,6 +2,7 @@ const { resolve } = require('path');
 const { login } = require('../../appframe');
 const { publishToGlobalComponent, publishToSiteComponent } = require('./component');
 const { publishToSiteScript, publishToSiteStyle } = require('./site');
+const { publishToArticleScript } = require('./article');
 
 const types = [
 	'article-script',
@@ -47,10 +48,6 @@ function getConfigFromArgs(args) {
 	return config;
 }
 
-async function publishToArticleScript(config) {
-
-}
-
 async function publishToArticleStyle(config) {
 
 }
@@ -62,7 +59,7 @@ function validateConfiguration(config) {
 async function publishItem(item) {
 	const { hostname, source, type, target } = item;
 
-	console.log(`Publishing file '${item.source}' to ${type} '${target}' in ${item.hostname}...`);
+	console.log(`Publishing '${source}' to ${type} '${target}' in ${hostname}...`);
 
 	if (item.type === 'article-script') {
 		return await publishToArticleScript(item);
@@ -91,6 +88,17 @@ async function publishItemFromArray(array, fallbackHostname) {
 		target,
 		type
 	};
+
+	if (type.substring(0, 'article'.length) === 'article') {
+		const idx = target.indexOf('/');
+
+		if (idx > 0) {
+			item.target = target.substring(idx + 1);
+			item.targetArticleId = target.substring(0, idx);
+		} else {
+			throw new Error('To publish article scripts or styles with array shorthand, use "articleName/target" as the target.');
+		}
+	}
 
 	if (!item.hostname) {
 		item.hostname = fallbackHostname;
@@ -127,14 +135,14 @@ async function publish(args) {
 			}
 		}
 
-		if (config.files instanceof Array && config.files.length > 0) {
+		if (config.targets instanceof Array && config.targets.length > 0) {
 
-			if (config.files[0] instanceof Array || typeof config.files[0] === 'object') {
+			if (config.targets[0] instanceof Array || typeof config.targets[0] === 'object') {
 				// config is array of publish items
 				const { hostname } = config;
-				count += config.files.length;
+				count += config.targets.length;
 
-				for (let item of config.files) {
+				for (let item of config.targets) {
 					let success = false;
 					if (item instanceof Array) {
 						success = await publishItemFromArray(item, hostname);
@@ -152,8 +160,8 @@ async function publish(args) {
 				let success = await publishItem(item);
 			}
 
-		} else if (typeof config.files === 'object') {
-			publishItem(config.files);
+		} else if (typeof config.targets === 'object') {
+			publishItem(config.targets);
 		}
 
 		if (successCount === 0) {

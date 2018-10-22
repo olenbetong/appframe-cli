@@ -21,7 +21,7 @@ const menus = {
 		--type ....................
 		--user .................... username for the SQL server
 
-		If a config file is used, a 'files' option may be used to publish
+		If a config file is used, a 'targets' option may be used to publish
 		multiple files at a time. It can be either an object with source, target,
 		type and (optional) hostname keys, or an array with this shape:
 		[source, target, type, (optional) hostname]. It may also be an array of
