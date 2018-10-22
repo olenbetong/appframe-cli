@@ -1,4 +1,5 @@
-const { publishItemToDataObject } = require('./common.js');
+const { getItemIfExists, getSourceData, publishItemToDataObject } = require('./common.js');
+const { putData } = require('../../appframe');
 
 async function publishToArticleScript(config) {
 	const { hostname, target, targetArticleId } = config;
@@ -21,9 +22,57 @@ async function publishToArticleScript(config) {
 }
 
 async function publishToArticleStyle(config) {
-	const { hostname, targetArticleId } = config;
+	const { hostname, source, target } = config;
+
+	try {
+		const record = await getItemIfExists({
+			articleId: 'appdesigner-css',
+			dataObjectId: 'dsArticle',
+			filter: `[HostName] = '${hostname}' AND [ArticleID] = '${target}'`,
+			hostname
+		});
+
+		if (record) {
+			const sourceData = await getSourceData(source);
+			const startString = `/***** ---- START EXTERNAL STYLESHEET '${source}' ---- ****/`;
+			const endString = `/***** ---- END EXTERNAL STYLESHEET '${source}' ---- ****/`;
+			let [,,, css, primKey] = record;
+
+			const startIdx = css.indexOf(startString);
+			const endIdx = css.indexOf(endString) + endString.length;
+
+			if (css.indexOf(startString) < 0) {
+				css += `\n\n${startString}\n${sourceData}\n${endString}\n\n`;
+			} else {
+				const before = css.substring(0, startIdx);
+				const after = css.substring(endIdx);
+
+				css = `${before}${startString}\n${sourceData}\n${endString}${after}`;
+			}
+
+			const status = await putData({
+				articleId: 'appdesigner-css',
+				dataObjectId: 'dsArticle',
+				data: css,
+				fieldName: 'CSS',
+				hostname,
+				primKey,
+			});
+
+			return status ? true : false;
+		} else {
+			console.error(`Article '${target}' not found. Can't publish style.`);
+
+			return false;
+		}
+	} catch (ex) {
+		console.error(ex.message);
+
+		return false;
+	}
 }
 
 module.exports = {
-	publishToArticleScript
+	publishToArticleScript,
+	publishToArticleStyle
 }

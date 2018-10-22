@@ -2,7 +2,7 @@ const { resolve } = require('path');
 const { login } = require('../../appframe');
 const { publishToGlobalComponent, publishToSiteComponent } = require('./component');
 const { publishToSiteScript, publishToSiteStyle } = require('./site');
-const { publishToArticleScript } = require('./article');
+const { publishToArticleScript, publishToArticleStyle } = require('./article');
 
 const types = [
 	'article-script',
@@ -48,10 +48,6 @@ function getConfigFromArgs(args) {
 	return config;
 }
 
-async function publishToArticleStyle(config) {
-
-}
-
 function validateConfiguration(config) {
 
 }
@@ -89,14 +85,14 @@ async function publishItemFromArray(array, fallbackHostname) {
 		type
 	};
 
-	if (type.substring(0, 'article'.length) === 'article') {
+	if (type === 'article-script') {
 		const idx = target.indexOf('/');
 
 		if (idx > 0) {
 			item.target = target.substring(idx + 1);
 			item.targetArticleId = target.substring(0, idx);
 		} else {
-			throw new Error('To publish article scripts or styles with array shorthand, use "articleName/target" as the target.');
+			throw new Error('To publish article scripts with array shorthand, use "articleName/target" as the target.');
 		}
 	}
 
