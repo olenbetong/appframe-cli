@@ -42,8 +42,10 @@ async function publishToArticleStyle(config) {
 			const endIdx = css.indexOf(endString) + endString.length;
 
 			if (css.indexOf(startString) < 0) {
+				console.log(`Inserting styles from '${source}' in article '${target}'...`);
 				css += `\n\n${startString}\n${sourceData}\n${endString}\n\n`;
 			} else {
+				console.log(`Updating styles from '${source}' in article '${target}'...`);
 				const before = css.substring(0, startIdx);
 				const after = css.substring(endIdx);
 
