@@ -3,8 +3,18 @@
 
 ## Installation
 
+Install globally:
+
 ```
-npm install @bjornarvh/appframe-cli
+npm install -g @bjornarvh/appframe-cli
+appframe help
+```
+
+or install as a development dependancy, and use npx:
+
+```
+npm install --save-dev @bjornarvh/appframe-cli
+npx appframe help
 ```
 
 Appframe CLI also requires the following development applications to be installed on the domain you are publishing to:
