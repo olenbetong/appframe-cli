@@ -4,11 +4,13 @@
 	"bin": {
 		"appframe": "./bin/appframe"
 	},
-	"version": "0.9.2",
+	"version": "1.0.0",
 	"license": "MIT",
 	"scripts": {},
 	"keywords": [
-		"appframe", "cli", "appframe web"
+		"appframe",
+		"cli",
+		"appframe web"
 	],
 	"devDependencies": {
 		"dotenv": "^6.1.0",
