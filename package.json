@@ -2,7 +2,7 @@
 	"name": "@bjornarvh/appframe-cli",
 	"description": "Utility functions for Appframe",
 	"bin": {
-		"appframe": "./bin/appframe.js"
+		"appframe": "./bin/appframe"
 	},
 	"version": "0.9.0",
 	"license": "MIT",
