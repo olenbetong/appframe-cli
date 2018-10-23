@@ -7,7 +7,7 @@
 npm install @bjornarvh/appframe-cli
 ```
 
-Appframe CLI also requires the following development applications to be installed on the website you are publishing to:
+Appframe CLI also requires the following development applications to be installed on the domain you are publishing to:
 
 * appdesigner
 * appdesigner-script
@@ -37,9 +37,9 @@ Most parameters can be passed either as a command line parameter, or in a config
 * **article** (optional)
   Article to publish to for types article-script and article-style
 * **hostname**
-  Hostname for the website. If publishing a site or article item, this must match the website name.
+  Hostname for the website.
 * **domain** (optional)
-  Domain used to publish the scripts/styles. If left blank, the `hostname` parameter will be used
+  Domain used for authentication, and to publish the scripts/styles. Must have the articles specified in the "Installation" section. If left blank, the `hostname` parameter will be used
 * **user**
   Appframe username used to publish the script/style.
 * **password**

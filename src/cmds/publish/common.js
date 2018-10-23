@@ -5,6 +5,7 @@ async function getItemIfExists(options) {
 	const {
 		articleId,
 		dataObjectId,
+		domain,
 		filter,
 		hostname,
 	} = options;
@@ -13,8 +14,8 @@ async function getItemIfExists(options) {
 		const record = await getItem({
 			articleId,
 			dataObjectId,
-			filter,
-			hostname,
+			domain,
+			filter
 		});
 
 		if (record.length === 0) {
@@ -57,9 +58,9 @@ async function publishItemToDataObject(config) {
 	const {
 		createArticleId,
 		createDataObjectId,
+		domain,
 		fieldName,
 		filter,
-		hostname,
 		item,
 		primKeyIndex,
 		source,
@@ -72,7 +73,7 @@ async function publishItemToDataObject(config) {
 	const commonOptions = {
 		articleId: createArticleId,
 		dataObjectId: createDataObjectId,
-		hostname
+		domain
 	};
 
 	const getItemOptions = {

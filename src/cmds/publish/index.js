@@ -18,6 +18,7 @@ function getConfigFromArgs(args) {
 	const potentialArgs = [
 		'article',
 		'database',
+		'domain',
 		'hostname',
 		'password',
 		'production',
@@ -107,24 +108,28 @@ async function publish(args) {
 	const configFromFile = args.config ? require(resolve(args.config)) : {};
 	const config = Object.assign(
 		{
-			production: false,
+			mode: 'test',
 			type: 'component'
 		},
 		configFromFile,
 		getConfigFromArgs(args)
 	);
 
-	if (await login(config.hostname, config.user, config.password)) {
+	if (!config.domain) {
+		config.domain = config.hostname;
+	}
+
+	if (await login(config.domain, config.user, config.password)) {
 		validateConfiguration(config);
 		
-		const { hostname, target, source, type } = config;
+		const { domain, hostname, target, source, type } = config;
 		
 		let successCount = 0;
 		let count = 0;
 	
 		if (target && source && type) {
 			count++;
-			let success = await publishItem({ hostname, source, target, type });
+			let success = await publishItem({ domain, hostname, source, target, type });
 
 			if (success) {
 				successCount++;
@@ -143,7 +148,7 @@ async function publish(args) {
 					if (item instanceof Array) {
 						success = await publishItemFromArray(item, hostname);
 					} else {
-						success = await publishItem({ hostname, ...item });
+						success = await publishItem({ domain, hostname, ...item });
 					}
 
 					if (success) {
@@ -154,6 +159,10 @@ async function publish(args) {
 				// config is a single publish item
 				count++;
 				let success = await publishItem(item);
+
+				if (success) {
+					successCount++;
+				}
 			}
 
 		} else if (typeof config.targets === 'object') {

@@ -27,6 +27,7 @@ async function publishToArticleStyle(config) {
 	try {
 		const record = await getItemIfExists({
 			articleId: 'appdesigner-css',
+			domain,
 			dataObjectId: 'dsArticle',
 			filter: `[HostName] = '${hostname}' AND [ArticleID] = '${target}'`,
 			hostname
