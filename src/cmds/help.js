@@ -11,11 +11,9 @@ const menus = {
 	
 	--article ................. article to publish to (if type is script)
 	--config .................. config file to use
-	--database ................ database to publish to
 	--hostname ................ website hostname(s) to publish to
 	--password ................ password for the SQL server
-	--production, -p .......... publish to production
-	--server .................. SQL server Appframe is running on
+	--mode, -m ................ publish to production or test mode
 	--source .................. script/style file to publish
 	--target .................. name of the item we should publish to
 	--type .................... type of the item we should publish to
