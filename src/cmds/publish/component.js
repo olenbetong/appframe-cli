@@ -1,13 +1,13 @@
 const { publishItemToDataObject } = require('./common.js');
 
 async function publishToGlobalComponent(config) {
-	const { target } = config;
+	const { mode, target } = config;
 
 	return await publishItemToDataObject({
 		...config,
 		createArticleId: 'components',
 		createDataObjectId: 'dsComponents',
-		fieldName: 'ContentTest',
+		fieldName: mode.toLowerCase() === 'production' ? 'Content' : 'ContentTest',
 		filter: `[Path] = '${target}'`,
 		item: {
 			Path: target

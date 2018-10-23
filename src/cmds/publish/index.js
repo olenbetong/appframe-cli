@@ -77,10 +77,11 @@ async function publishItem(item) {
 	}
 }
 
-async function publishItemFromArray(array, fallbackHostname) {
+async function publishItemFromArray(array, fallbackHostname, mode) {
 	const [source, target, type, hostname] = array;
 	const item = {
 		hostname,
+		mode,
 		source,
 		target,
 		type
@@ -109,7 +110,7 @@ async function publish(args) {
 	const config = Object.assign(
 		{
 			mode: 'test',
-			type: 'component'
+			type: 'component-global'
 		},
 		configFromFile,
 		getConfigFromArgs(args)
@@ -122,14 +123,14 @@ async function publish(args) {
 	if (await login(config.domain, config.user, config.password)) {
 		validateConfiguration(config);
 		
-		const { domain, hostname, target, source, type } = config;
+		const { domain, hostname, mode, target, source, type } = config;
 		
 		let successCount = 0;
 		let count = 0;
 	
 		if (target && source && type) {
 			count++;
-			let success = await publishItem({ domain, hostname, source, target, type });
+			let success = await publishItem({ domain, hostname, mode, source, target, type });
 
 			if (success) {
 				successCount++;
@@ -146,9 +147,9 @@ async function publish(args) {
 				for (let item of config.targets) {
 					let success = false;
 					if (item instanceof Array) {
-						success = await publishItemFromArray(item, hostname);
+						success = await publishItemFromArray(item, hostname, mode);
 					} else {
-						success = await publishItem({ domain, hostname, ...item });
+						success = await publishItem({ domain, hostname, mode, ...item });
 					}
 
 					if (success) {

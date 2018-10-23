@@ -43,31 +43,32 @@ Use `appframe publish` to publish one or more scripts to an Appframe website.
 Most parameters can be passed either as a command line parameter, or in a configuration file. The exceptions are `config`, which can only be used as a command line parameter, and `targets`, which can only be used in a config file.
 
 * **config**
-  Path for the configuration file. Should export an object with parameters
+Path for the configuration file. Should export an object with parameters
 * **article** (optional)
-  Article to publish to for types article-script and article-style
+Article to publish to for types article-script and article-style
 * **hostname**
-  Hostname for the website.
+Hostname for the website.
 * **domain** (optional)
-  Domain used for authentication, and to publish the scripts/styles. Must have the articles specified in the "Installation" section. If left blank, the `hostname` parameter will be used
+Domain used for authentication, and to publish the scripts/styles. Must have the articles specified in the "Installation" section. If left blank, the `hostname` parameter will be used
 * **user**
-  Appframe username used to publish the script/style.
+Appframe username used to publish the script/style.
 * **password**
-  Password for the Appframe-user
+Password for the Appframe-user
 * **mode**
-  'test', 'production' or both. This parameter is not used for article-script and article-style
+'test', 'production' or both. This parameter is not used for article-script and article-style
 * **source**
-  File containing the source code to publish
+File containing the source code to publish
 * **target**
-  Name of the target we're publishing to.
+Name of the target we're publishing to.
 * **type**
-  What kind of target we're publishing to. Available types are:
-	* article-script
-	* article-style
-	* component-global
-	* site-script
-	* site-style
-* **targets** If you're using a configuration file, the `targets` parameter can be used to publish multiple sources. See the Targets section below for usage description
+What kind of target we're publishing to. Available types are:
+  * article-script
+  * article-style
+  * component-global
+  * site-script
+  * site-style
+* **targets**
+If you're using a configuration file, the `targets` parameter can be used to publish multiple sources. See the Targets section below for usage description
 
 Example command to publish a site script using command line parameters:
 

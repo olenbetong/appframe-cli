@@ -1,13 +1,13 @@
 const { publishItemToDataObject } = require('./common.js');
 
 async function publishToSiteStyle(config) {
-	const { hostname, target } = config;
+	const { hostname, mode, target } = config;
 
 	return await publishItemToDataObject({
 		...config,
 		createArticleId: 'sitesetup',
 		createDataObjectId: 'dsStyles',
-		fieldName: 'StyleContentTest',
+		fieldName: mode.toLowerCase() === 'production' ? 'StyleContent' : 'StyleContentTest',
 		filter: `[HostName] = '${hostname}' AND [Name] = '${target}'`,
 		item: {
 			Name: target,
@@ -26,7 +26,7 @@ async function publishToSiteScript(config) {
 		...config,
 		createArticleId: 'sitesetup',
 		createDataObjectId: 'dsScripts',
-		fieldName: 'ScriptContentTest',
+		fieldName: mode.toLowerCase() === 'production' ? 'ScriptContent' : 'ScriptContentTest',
 		filter: `[HostName] = '${hostname}' AND [Name] = '${target}'`,
 		item: {
 			Name: target,
