@@ -29,8 +29,6 @@ async function cli() {
 			console.error(`"${cmd}" is not a valid command!`);
 			break;
 	}
-
-	console.log(args);
 }
 
 module.exports = cli;

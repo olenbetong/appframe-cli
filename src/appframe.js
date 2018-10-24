@@ -18,13 +18,13 @@ const commonHeaders = {
 
 async function createItem(options) {
 	const {
-		hostname,
 		articleId,
 		dataObjectId,
+		domain,
 		item
 	} = options;
 
-	const url = `https://${hostname}/create/${articleId}/${dataObjectId}`;
+	const url = `https://${domain}/create/${articleId}/${dataObjectId}`;
 	const body = JSON.stringify(item);
 
 	const reqOptions = {
@@ -42,13 +42,13 @@ async function createItem(options) {
 
 async function getItem(options) {
 	const {
-		hostname,
+		domain,
 		articleId,
 		dataObjectId,
 		filter
 	} = options;
 
-	const url = `https://${hostname}/retrieve/${articleId}/${dataObjectId}`;
+	const url = `https://${domain}/retrieve/${articleId}/${dataObjectId}`;
 
 	const body = JSON.stringify({
 		distinctRows: false,
@@ -76,7 +76,7 @@ async function getItem(options) {
 
 async function putData(options) {
 	const {
-		hostname,
+		domain,
 		articleId,
 		data,
 		dataObjectId,
@@ -84,7 +84,7 @@ async function putData(options) {
 		primKey
 	} = options;
 
-	const url = `https://${hostname}/update/${articleId}/${dataObjectId}`;
+	const url = `https://${domain}/update/${articleId}/${dataObjectId}`;
 	const body = JSON.stringify({
 		[fieldName]: data,
 		PrimKey: primKey
@@ -122,7 +122,7 @@ async function request(options) {
 	}
 }
 
-async function login(hostname, username, password) {
+async function login(domain, username, password) {
 	const data = {
 		password,
 		remember: false,
@@ -140,7 +140,7 @@ async function login(hostname, username, password) {
 		jar,
 		method: 'POST',
 		resolveWithFullResponse: true,
-		url: `https://${hostname}/login`,
+		url: `https://${domain}/login`,
 	};
 
 	try {
