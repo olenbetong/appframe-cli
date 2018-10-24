@@ -64,6 +64,7 @@ async function publishItemToDataObject(config) {
 		item,
 		primKeyIndex,
 		source,
+		sourceData,
 		target,
 		type,
 		updateArticleId,
@@ -101,7 +102,6 @@ async function publishItemToDataObject(config) {
 		}
 
 		const primKey = record[primKeyIndex];
-		const sourceData = await getSourceData(source);
 		const putDataOptions = {
 			...commonOptions,
 			articleId: updateArticleId,

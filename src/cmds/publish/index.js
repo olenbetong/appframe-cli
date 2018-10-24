@@ -1,5 +1,6 @@
 const { resolve } = require('path');
 const { login } = require('../../appframe');
+const { getSourceData } = require('./common');
 const { publishToGlobalComponent, publishToSiteComponent } = require('./component');
 const { publishToSiteScript, publishToSiteStyle } = require('./site');
 const { publishToArticleScript, publishToArticleStyle } = require('./article');
@@ -55,21 +56,26 @@ function validateConfiguration(config) {
 
 async function publishItem(item) {
 	const { hostname, source, type, target } = item;
+	const sourceData = getSourceData(source);
+	const newItem = {
+		...item,
+		sourceData
+	};
 
 	console.log(`Publishing '${source}' to ${type} '${target}' in ${hostname}...`);
 
-	if (item.type === 'article-script') {
-		return await publishToArticleScript(item);
-	} else if (item.type === 'article-style') {
-		return await publishToArticleStyle(item);
-	} else if (item.type === 'component-global') {
-		return await publishToGlobalComponent(item);
-	} else if (item.type === 'component-site') {
-		return await publishToSiteComponent(item);
-	} else if (item.type === 'site-script') {
-		return await publishToSiteScript(item);
-	} else if (item.type === 'site-style') {
-		return await publishToSiteStyle(item);
+	if (type === 'article-script') {
+		return await publishToArticleScript(newItem);
+	} else if (type === 'article-style') {
+		return await publishToArticleStyle(newItem);
+	} else if (type === 'component-global') {
+		return await publishToGlobalComponent(newItem);
+	} else if (type === 'component-site') {
+		return await publishToSiteComponent(newItem);
+	} else if (type === 'site-script') {
+		return await publishToSiteScript(newItem);
+	} else if (type === 'site-style') {
+		return await publishToSiteStyle(newItem);
 	} else {
 		console.error(`Type '${type}' is not supported.`);
 
@@ -78,7 +84,8 @@ async function publishItem(item) {
 }
 
 async function publishItemFromArray(array, fallbackHostname) {
-	const [source, target, type, hostname] = array;
+	const [sourceFile, target, type, hostname] = array;
+	const source = getSourceData(sourceFile);
 	const item = {
 		hostname,
 		source,
@@ -100,6 +107,8 @@ async function publishItemFromArray(array, fallbackHostname) {
 	if (!item.hostname) {
 		item.hostname = fallbackHostname;
 	}
+
+	item.domain = item.hostname;
 
 	return await publishItem(item);
 }
