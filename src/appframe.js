@@ -116,7 +116,7 @@ async function request(options) {
 
 		return false;
 	} catch (ex) {
-		const errorMessage = getErrorFromBody(ex.error);
+		const errorMessage = ex.message.indexOf('DOCTYPE') >= 0 ? getErrorFromBody(ex.error) : ex.error;
 		console.error(errorMessage);
 		return false;
 	}
