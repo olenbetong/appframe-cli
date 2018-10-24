@@ -63,7 +63,7 @@ async function publishToArticleStyle(config) {
 
 			return status ? true : false;
 		} else {
-			console.error(`Article '${target}' not found. Can't publish style.`);
+			console.error(`Article '${target}' not found in host '${hostname}'. Can't publish style.`);
 
 			return false;
 		}
