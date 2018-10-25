@@ -1,3 +1,4 @@
+
 const { getItemIfExists, getSourceData, publishItemToDataObject } = require('./common.js');
 const { putData } = require('../../appframe');
 
@@ -22,7 +23,7 @@ async function publishToArticleScript(config) {
 }
 
 async function publishToArticleStyle(config) {
-	const { hostname, source, target } = config;
+	const { domain, hostname, source, sourceData, target } = config;
 
 	try {
 		const record = await getItemIfExists({
@@ -34,7 +35,6 @@ async function publishToArticleStyle(config) {
 		});
 
 		if (record) {
-			const sourceData = await getSourceData(source);
 			const startString = `/***** ---- START EXTERNAL STYLESHEET '${source}' ---- ****/`;
 			const endString = `/***** ---- END EXTERNAL STYLESHEET '${source}' ---- ****/`;
 			let [,,, css, primKey] = record;
@@ -57,6 +57,7 @@ async function publishToArticleStyle(config) {
 				articleId: 'appdesigner-css',
 				dataObjectId: 'dsArticle',
 				data: css,
+				domain,
 				fieldName: 'CSS',
 				hostname,
 				primKey,
@@ -64,7 +65,7 @@ async function publishToArticleStyle(config) {
 
 			return status ? true : false;
 		} else {
-			console.error(`Article '${target}' not found. Can't publish style.`);
+			console.error(`Article '${target}' not found in host '${hostname}'. Can't publish style.`);
 
 			return false;
 		}

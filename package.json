@@ -1,27 +1,30 @@
 {
-	"name": "@bjornarvh/appframe-cli",
-	"description": "Utility functions for Appframe",
-	"bin": {
-		"appframe": "./bin/appframe"
-	},
-	"version": "1.0.1",
-	"license": "MIT",
-	"scripts": {},
-	"keywords": [
-		"appframe",
-		"cli",
-		"appframe web"
-	],
-	"devDependencies": {
-		"dotenv": "^6.1.0",
-		"eslint": "^5.6.1"
-	},
-	"dependencies": {
-		"cheerio": "^1.0.0-rc.2",
-		"minimist": "^1.2.0",
-		"querystring": "^0.2.0",
-		"request": "^2.88.0",
-		"request-promise-native": "^1.0.5"
-	},
-	"repository": "https://bvhansen.visualstudio.com/_git/appframe-cli"
+  "name": "@bjornarvh/appframe-cli",
+  "description": "Utility functions for Appframe",
+  "bin": {
+    "appframe": "./bin/appframe"
+  },
+  "version": "1.0.2",
+  "license": "MIT",
+  "scripts": {
+    "test": "jest"
+  },
+  "keywords": [
+    "appframe",
+    "cli",
+    "appframe web"
+  ],
+  "devDependencies": {
+    "dotenv": "^6.1.0",
+    "eslint": "^5.6.1",
+    "jest": "^23.6.0"
+  },
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.2",
+    "minimist": "^1.2.0",
+    "querystring": "^0.2.0",
+    "request": "^2.88.0",
+    "request-promise-native": "^1.0.5"
+  },
+  "repository": "https://bvhansen.visualstudio.com/_git/appframe-cli"
 }
