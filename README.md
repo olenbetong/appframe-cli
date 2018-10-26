@@ -117,7 +117,7 @@ Example to publish a source file named `./dist/bundle.min.js` to a global compon
 
 Since articles only contain a single stylesheet, the CLI will wrap the source in a comment containing the source file name. When publishing, we look for the wrapping comment and replace the block. If the comment is not found, it is appended to the existing stylesheet.
 
-This that if you rename the source file, the styles will be appended another time instead of replacing the old styles.
+This means that if you rename the source file, the styles will be appended another time instead of replacing the old styles.
 
 The target for an `article-style` should always be the article ID.
 
