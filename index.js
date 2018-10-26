@@ -16,9 +16,6 @@ async function cli() {
 		case 'help':
 			require('./src/cmds/help')(args);
 			break;
-		case 'today':
-			require('./src/cmds/today')(args);
-			break;
 		case 'version':
 			require('./src/cmds/version')(args);
 			break;
