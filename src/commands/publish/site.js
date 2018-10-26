@@ -20,7 +20,7 @@ async function publishToSiteStyle(config) {
 }
 
 async function publishToSiteScript(config) {
-	const { hostname, target } = config;
+	const { hostname, mode, target } = config;
 
 	return await publishItemToDataObject({
 		...config,

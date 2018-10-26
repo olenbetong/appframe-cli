@@ -14,16 +14,19 @@ const types = [
 	'site-style'
 ];
 
+const defaultTargetProperties = {
+	mode: 'test',
+	type: 'component-global'
+};
+
 function getConfigFromArgs(args) {
 	const config = {};
 	const potentialArgs = [
 		'article',
-		'database',
 		'domain',
 		'hostname',
+		'mode',
 		'password',
-		'production',
-		'server',
 		'source',
 		'target',
 		'user',
@@ -35,10 +38,6 @@ function getConfigFromArgs(args) {
 		}
 	}
 
-	if (args.production === true || args.p === true) {
-		config.production = true;
-	}
-
 	if (typeof args.type === 'string') {
 		if (!types.includes(args.type.toLowerCase())) {
 			throw new Error(`'${args.type}' is not a valid type.`);
@@ -48,6 +47,82 @@ function getConfigFromArgs(args) {
 	}
 
 	return config;
+}
+
+function mergeTargetWithDefaults(target, defaults) {
+	const merged = { ...defaults };
+
+	for (let key of Object.keys(target)) {
+		if (typeof target[key] !== 'undefined') {
+			merged[key] = target[key];
+		}
+	}
+
+	return merged;
+};
+
+function getTargetFromConfig(config) {
+	const { domain, hostname, mode, target, source, type } = config;
+
+	if (!hostname || !target || !source || !type) {
+		return false;
+	}
+
+	const rv = {
+		domain,
+		hostname,
+		mode,
+		target,
+		source,
+		sourceData: getSourceData(source),
+		type
+	};
+
+	if (!rv.domain && rv.hostname) {
+		rv.domain = rv.hostname;
+	} else {
+		rv.hostname = rv.domain;
+	}
+
+	return mergeTargetWithDefaults(rv, defaultTargetProperties);
+}
+
+async function getTargetFromShorthandArray(arr, defaults) {
+	const [source, target, type, hostname] = arr;
+	const sourceData = await getSourceData(source);
+	const item = {
+		hostname,
+		mode,
+		source,
+		sourceData,
+		target,
+		type
+	};
+
+	if (type === 'article-script') {
+		const idx = target.indexOf('/');
+
+		if (idx > 0) {
+			item.target = target.substring(idx + 1);
+			item.targetArticleId = target.substring(0, idx);
+		} else {
+			throw new Error('To publish article scripts with array shorthand, use "articleName/target" as the target.');
+		}
+	}
+
+	item.domain = item.hostname;
+
+	return mergeTargetWithDefaults(item, defaults);
+}
+
+async function getTargetFromObject(item, defaults) {
+	const newItem = { ...item };
+
+	if (!newItem.sourceData) {
+		newItem.sourceData = await getSourceData()
+	}
+
+	return mergeTargetWithDefaults(newItem, defaults)
 }
 
 function validateConfiguration(config) {
@@ -83,44 +158,10 @@ async function publishItem(item) {
 	}
 }
 
-async function publishItemFromArray(array, fallbackHostname, mode) {
-	const [sourceFile, target, type, hostname] = array;
-	const source = getSourceData(sourceFile);
-	const item = {
-		hostname,
-		mode,
-		source,
-		target,
-		type
-	};
-
-	if (type === 'article-script') {
-		const idx = target.indexOf('/');
-
-		if (idx > 0) {
-			item.target = target.substring(idx + 1);
-			item.targetArticleId = target.substring(0, idx);
-		} else {
-			throw new Error('To publish article scripts with array shorthand, use "articleName/target" as the target.');
-		}
-	}
-
-	if (!item.hostname) {
-		item.hostname = fallbackHostname;
-	}
-
-	item.domain = item.hostname;
-
-	return await publishItem(item);
-}
-
 async function publish(args) {
 	const configFromFile = args.config ? require(resolve(args.config)) : {};
 	const config = Object.assign(
-		{
-			mode: 'test',
-			type: 'component-global'
-		},
+		defaultTargetProperties,
 		configFromFile,
 		getConfigFromArgs(args)
 	);
@@ -132,57 +173,56 @@ async function publish(args) {
 	if (await login(config.domain, config.user, config.password)) {
 		validateConfiguration(config);
 		
-		const { domain, hostname, mode, target, source, type } = config;
-		
-		let successCount = 0;
-		let count = 0;
-	
-		if (target && source && type) {
-			count++;
-			let success = await publishItem({ domain, hostname, mode, source, target, type });
+		const { domain, hostname, mode, type } = config;
+		const defaults = { ...defaultTargetProperties };
 
-			if (success) {
-				successCount++;
-			}
+		if (domain) defaults.domain = domain;
+		if (hostname) defaults.hostname = hostname;
+		if (mode) defaults.mode = mode;
+		if (type) defaults.type = type;
+
+		if (!domain && hostname) defaults.domain = hostname;
+		if (!hostname && domain) defaults.hostname = domain;
+
+		const targets = [];
+		const targetFromConfig = getTargetFromConfig(config);
+
+		if (targetFromConfig !== false) {
+			targets.push(targetFromConfig);
 		}
 
 		if (config.targets instanceof Array && config.targets.length > 0) {
 
 			if (config.targets[0] instanceof Array || typeof config.targets[0] === 'object') {
 				// config is array of publish items
-				const { hostname } = config;
-				count += config.targets.length;
-
 				for (let item of config.targets) {
-					let success = false;
 					if (item instanceof Array) {
-						success = await publishItemFromArray(item, hostname, mode);
+						targets.push(await getTargetFromShorthandArray(item, defaults));
 					} else {
-						success = await publishItem({ domain, hostname, mode, ...item });
-					}
-
-					if (success) {
-						successCount++;
+						targets.push(await getTargetFromObject(item, defaults));
 					}
 				}
 			} else {
-				// config is a single publish item
-				count++;
-				let success = await publishItem(item);
-
-				if (success) {
-					successCount++;
-				}
+				// config is a single array shorthand target
+				targets.push(await getTargetFromShorthandArray(item, defaults));
 			}
-
 		} else if (typeof config.targets === 'object') {
-			publishItem(config.targets);
+			// config is a single object target
+			targets.push(await getTargetFromObject(config.targets, defaults));
+		}
+
+		let successCount = 0;
+
+		for (let target of targets) {
+			let success = await publishItem(target);
+
+			if (success) successCount++;
 		}
 
 		if (successCount === 0) {
 			console.log('Nothing published successfully. Epic fail :(');
 		} else {
-			console.log(`Publish completed. ${successCount} of ${count} items published successfully.`);
+			console.log(`Publish completed. ${successCount} of ${targets.length} items published successfully.`);
 		}
 	}
 }
