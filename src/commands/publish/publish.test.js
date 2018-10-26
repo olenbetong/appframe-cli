@@ -1,5 +1,5 @@
 const { getSourceData } = require('./common');
-const { publishToArticleScript } = require('./article');
+const { publishToArticleScript, publishToArticleStyle } = require('./article');
 const { publishToGlobalComponent } = require('./component');
 const { publishToSiteScript, publishToSiteStyle } = require('./site');
 const { getItem, login } = require('../../appframe');
@@ -135,4 +135,28 @@ test('can publish to article script', async () => {
   const [,,,content] = publishedCode[0];
 
   expect(content).toEqual(sourceData);
+});
+
+test('can publish to article style', async () => {
+  const sourceData = `.test { content: '${config.sourceData}'; }`
+  const result = await publishToArticleStyle({
+    ...config,
+    target: 'publish-test',
+    source: 'jestTest',
+    sourceData,
+  });
+  
+  expect(result).toEqual(true);
+
+  const publishedCode = await getItem({
+    articleId: 'appdesigner-css',
+    dataObjectId: 'dsArticle',
+    domain: hostname,
+    filter: `[HostName] = '${hostname}' AND [ArticleID] = 'publish-test'`
+  });
+
+  const content = publishedCode[0][3];
+  const idx = content.indexOf(sourceData);
+
+  expect(idx).toBeGreaterThan(0);
 });
