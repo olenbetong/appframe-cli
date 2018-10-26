@@ -14,13 +14,13 @@ async function cli() {
 
 	switch (cmd) {
 		case 'help':
-			require('./src/cmds/help')(args);
+			require('./src/commands/help')(args);
 			break;
 		case 'version':
-			require('./src/cmds/version')(args);
+			require('./src/commands/version')(args);
 			break;
 		case 'publish':
-			await require('./src/cmds/publish')(args);
+			await require('./src/commands/publish')(args);
 			break;
 		default:
 			console.error(`"${cmd}" is not a valid command!`);
