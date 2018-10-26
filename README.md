@@ -10,7 +10,7 @@ npm install -g @bjornarvh/appframe-cli
 appframe help
 ```
 
-or install as a development dependancy, and use npx:
+or install as a development dependency, and use npx:
 
 ```
 npm install --save-dev @bjornarvh/appframe-cli
@@ -78,7 +78,7 @@ appframe publish --hostname mydomain.com --user myuser --password mypassword --s
 
 ### Targets
 
-A target to publish to can be described either an array or an object. The parameter can contain a single target, or an array of targets.
+A target to publish to can be described either as an array or an object. The parameter can contain a single target, or an array of targets.
 
 #### Array target
 
