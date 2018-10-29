@@ -1,14 +1,14 @@
 const { createItem, executeProcedure, getItem, putData } = require('../../appframe');
 
-async function installLocalComponent(hostname) {
+async function installLocalComponent(hostname, actualDomain) {
 	const articleId = 'components';
 	const dataObjectId = 'dsSiteComponents';
 	const filter = `[HostName] = '${hostname}' AND [ArticleId] = '${articleId}' AND [ID] = '${dataObjectId}'`;
+	const domain = actualDomain || hostname;
 	const options = {
 		articleId: 'appdesigner',
 		dataObjectId: 'dsDataSources',
-		domain: hostname,
-		
+		domain,
 	};
 
 	try {
@@ -45,13 +45,13 @@ async function installLocalComponent(hostname) {
 				AllowInsert: true,
 				AllowUpdate: true
 			},
-			domain: hostname,
+			domain,
 			primKey
 		});
 
 		const addFieldOptions = {
 			articleId: 'appdesigner-datasource',
-			domain: hostname,
+			domain,
 			procedure: 'procFieldAdd',
 		};
 
@@ -62,7 +62,7 @@ async function installLocalComponent(hostname) {
 
 			await executeProcedure({
 				articleId: 'appdesigner-datasource',
-				domain: hostname,
+				domain,
 				procedure: 'procFieldAdd',
 				params: {
 					ArticleId: articleId,
@@ -77,7 +77,7 @@ async function installLocalComponent(hostname) {
 
 		await executeProcedure({
 			articleId: 'appdesigner',
-			domain: hostname,
+			domain,
 			procedure: 'procPublish',
 			params: {
 				Description: '[appframe-cli] Added site component data source',

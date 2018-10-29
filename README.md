@@ -34,6 +34,17 @@ Due to the way data objects work, changes in data objects in these articles may 
 
 You can use `appframe help [command]` to get some basic information about a command. `appframe help` without a command name will list available commands.
 
+## Install
+
+The development articles do not contain any data source for site components, so to be able to publish to site components, you can run `appframe install <options>` to add the needed data source to the `components` article.
+
+### Parameters
+
+ * **hostname** - Hostname to install the components to
+ * **domain** (optional) - If hostname isn't a valid domain, use this to specify which domain we should use to publish.
+ * **user** - Appframe login to use to install
+ * **password** - Password for the user
+
 ## Publish scripts and styles
 
 Use `appframe publish` to publish one or more scripts to an Appframe website.
@@ -65,6 +76,7 @@ What kind of target we're publishing to. Available types are:
   * article-script
   * article-style
   * component-global
+  * component-site (if the install command has been run for the target hostname)
   * site-script
   * site-style
 * **targets**
