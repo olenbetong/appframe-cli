@@ -19,7 +19,22 @@ async function publishToGlobalComponent(config) {
 }
 
 async function publishToSiteComponent(config) {
+	const { hostname, mode, target } = config;
 
+	return await publishItemToDataObject({
+		...config,
+		createArticleId: 'components',
+		createDataObjectId: 'dsSiteComponents',
+		fieldName: mode.toLowerCase() === 'production' ? 'Content' : 'ContentTest',
+		filter: `[HostName] = '${hostname}' AND [Path] = '${target}'`,
+		item: {
+			HostName: hostname,
+			Path: target
+		},
+		primKeyIndex: 0,
+		updateArticleId: 'components',
+		updateDataObjectId: 'dsSiteComponents'
+	});
 }
 
 module.exports = {

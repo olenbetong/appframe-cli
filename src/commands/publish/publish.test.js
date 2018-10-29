@@ -1,6 +1,6 @@
 const { getSourceData } = require('./common');
 const { publishToArticleScript, publishToArticleStyle } = require('./article');
-const { publishToGlobalComponent } = require('./component');
+const { publishToGlobalComponent, publishToSiteComponent } = require('./component');
 const { publishToSiteScript, publishToSiteStyle } = require('./site');
 const { getItem, login } = require('../../appframe');
 const dotenv = require('dotenv');
@@ -54,6 +54,34 @@ test('can publish to global component', async () => {
   });
 
   const [path,,content,contentTest,] = publishedCode[0];
+
+  expect(contentTest).toEqual(sourceData);
+  expect(content).toEqual(sourceData);
+});
+
+test('can publish to site component', async () => {
+  const resultTest = await publishToSiteComponent({
+    ...config,
+    mode: 'test'
+  });
+
+  expect(resultTest).toEqual(true);
+
+  const resultProd = await publishToSiteComponent({
+    ...config,
+    mode: 'production',
+  });
+
+  expect(resultProd).toEqual(true);
+
+  const publishedCode = await getItem({
+    articleId: 'components',
+    dataObjectId: 'dsSiteComponents',
+    domain: hostname,
+    filter: `[HostName] = '${config.hostname}' AND [Path] = '${config.target}'`,
+  });
+
+  const [primKey,,path,content,contentTest] = publishedCode[0];
 
   expect(contentTest).toEqual(sourceData);
   expect(content).toEqual(sourceData);

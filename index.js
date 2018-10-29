@@ -22,6 +22,9 @@ async function cli() {
 		case 'publish':
 			await require('./src/commands/publish')(args);
 			break;
+		case 'install':
+			await require('./src/commands/install')(args);
+			break;
 		default:
 			console.error(`"${cmd}" is not a valid command!`);
 			break;

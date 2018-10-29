@@ -85,10 +85,32 @@ async function putData(options) {
 	} = options;
 
 	const url = `https://${domain}/update/${articleId}/${dataObjectId}`;
-	const body = JSON.stringify({
-		[fieldName]: data,
-		PrimKey: primKey
-	});
+	const body = typeof data === 'object'
+		? JSON.stringify({ ...data, PrimKey: primKey })
+		: JSON.stringify({ [fieldName]: data, PrimKey: primKey });
+
+	const reqOptions = {
+		...commonOptions,
+		body,
+		headers: {
+			...commonHeaders
+		},
+		url
+	};
+
+	return await request(reqOptions);
+}
+
+async function executeProcedure(options) {
+	const {
+		domain,
+		articleId,
+		procedure,
+		params
+	} = options;
+
+	const url = `https://${domain}/exec/${articleId}/${procedure}`;
+	const body = JSON.stringify(params);
 
 	const reqOptions = {
 		...commonOptions,
@@ -172,6 +194,7 @@ function getErrorFromBody(body) {
 
 module.exports = {
 	createItem,
+	executeProcedure,
 	getItem,
 	login,
 	putData
