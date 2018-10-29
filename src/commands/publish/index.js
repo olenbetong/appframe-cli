@@ -119,7 +119,7 @@ async function getTargetFromObject(item, defaults) {
 	const newItem = { ...item };
 
 	if (!newItem.sourceData) {
-		newItem.sourceData = await getSourceData()
+		newItem.sourceData = await getSourceData(item.source)
 	}
 
 	return mergeTargetWithDefaults(newItem, defaults)
@@ -131,26 +131,21 @@ function validateConfiguration(config) {
 
 async function publishItem(item) {
 	const { hostname, source, type, target } = item;
-	const sourceData = getSourceData(source);
-	const newItem = {
-		...item,
-		sourceData
-	};
 
 	console.log(`Publishing '${source}' to ${type} '${target}' in ${hostname}...`);
 
 	if (type === 'article-script') {
-		return await publishToArticleScript(newItem);
+		return await publishToArticleScript(item);
 	} else if (type === 'article-style') {
-		return await publishToArticleStyle(newItem);
+		return await publishToArticleStyle(item);
 	} else if (type === 'component-global') {
-		return await publishToGlobalComponent(newItem);
+		return await publishToGlobalComponent(item);
 	} else if (type === 'component-site') {
-		return await publishToSiteComponent(newItem);
+		return await publishToSiteComponent(item);
 	} else if (type === 'site-script') {
-		return await publishToSiteScript(newItem);
+		return await publishToSiteScript(item);
 	} else if (type === 'site-style') {
-		return await publishToSiteStyle(newItem);
+		return await publishToSiteStyle(item);
 	} else {
 		console.error(`Type '${type}' is not supported.`);
 
