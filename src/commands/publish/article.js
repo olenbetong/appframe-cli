@@ -2,6 +2,59 @@
 const { getItemIfExists, getSourceData, publishItemToDataObject } = require('./common.js');
 const { putData } = require('../../appframe');
 
+async function getArticleScript(options) {
+	const { domain } = options;
+
+	const record = await getItemIfExists({
+		articleId: 'appdesigner-script',
+			domain,
+			dataObjectId: 'dsScripts',
+			filter: `[HostName] = '${options.hostname}' AND [ArticleID] = '${options.articleId}' AND [ID] = '${options.id}`,
+			hostname: options.hostname
+	});
+
+	if (!record) {
+		return false;
+	}
+
+	const [hostname, articleId, id, script, exclude, primKey] = record;
+
+	return {
+		articleId,
+		exclude,
+		hostname,
+		id,
+		primKey,
+		script,
+	};
+}
+
+async function getArticleStyle(options) {
+	const { domain } = options;
+
+	const record = await getItemIfExists({
+		articleId: 'appdesigner-css',
+		domain,
+		dataObjectId: 'dsArticle',
+		filter: `[HostName] = '${options.hostname}' AND [ArticleID] = '${options.articleId}'`,
+		hostname: options.hostname
+	});
+
+	if (!record) {
+		return false;
+	}
+
+	const [hostname, articleId, checkedOutBy, content, primKey] = record;
+
+	return {
+		articleId,
+		checkedOutBy,
+		content,
+		hostname,
+		primKey,
+	};
+}
+
 async function publishToArticleScript(config) {
 	const { hostname, target, targetArticleId } = config;
 
@@ -77,6 +130,8 @@ async function publishToArticleStyle(config) {
 }
 
 module.exports = {
+	getArticleScript,
+	getArticleStyle,
 	publishToArticleScript,
 	publishToArticleStyle
 }

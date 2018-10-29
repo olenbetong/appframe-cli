@@ -61,7 +61,7 @@ function mergeTargetWithDefaults(target, defaults) {
 	return merged;
 };
 
-function getTargetFromConfig(config) {
+async function getTargetFromConfig(config) {
 	const { domain, hostname, mode, target, source, type } = config;
 
 	if (!hostname || !target || !source || !type) {
@@ -74,7 +74,7 @@ function getTargetFromConfig(config) {
 		mode,
 		target,
 		source,
-		sourceData: getSourceData(source),
+		sourceData: await getSourceData(source),
 		type
 	};
 
@@ -92,7 +92,6 @@ async function getTargetFromShorthandArray(arr, defaults) {
 	const sourceData = await getSourceData(source);
 	const item = {
 		hostname,
-		mode,
 		source,
 		sourceData,
 		target,
@@ -180,7 +179,7 @@ async function publish(args) {
 		if (!hostname && domain) defaults.hostname = domain;
 
 		const targets = [];
-		const targetFromConfig = getTargetFromConfig(config);
+		const targetFromConfig = await getTargetFromConfig(config);
 
 		if (targetFromConfig !== false) {
 			targets.push(targetFromConfig);

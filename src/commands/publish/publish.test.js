@@ -1,4 +1,6 @@
 const { getSourceData } = require('./common');
+const fs = require('fs');
+const publishCommand = require('./index');
 const { publishToArticleScript, publishToArticleStyle } = require('./article');
 const { publishToGlobalComponent, publishToSiteComponent } = require('./component');
 const { publishToSiteScript, publishToSiteStyle } = require('./site');
@@ -187,4 +189,9 @@ test('can publish to article style', async () => {
   const idx = content.indexOf(sourceData);
 
   expect(idx).toBeGreaterThan(0);
+});
+
+test('can publish from command line', async () => {
+  fs.writeFileSync('./test/testsource.js', sourceData, { flag: 'w' });
+  await publishCommand({ config: './test/test.config' });
 });
