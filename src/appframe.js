@@ -94,8 +94,7 @@ async function putData(options) {
 		...commonOptions,
 		body,
 		headers: {
-			...commonHeaders,
-			'Content-Length': body.length
+			...commonHeaders
 		},
 		url
 	};
