@@ -19,6 +19,18 @@
 			]
 		},
 		{
+			"type": "node",
+			"request": "launch",
+			"name": "Launch install",
+			"program": "${workspaceFolder}/bin/appframe",
+			"args": [
+				"install"
+			],
+			"skipFiles": [
+				"<node_internals>/**/*.js"
+			]
+		},
+		{
 			"name": "Debug Jest Tests",
 			"type": "node",
 			"request": "launch",

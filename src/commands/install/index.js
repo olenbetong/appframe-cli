@@ -1,28 +1,20 @@
 const { installLocalComponent } = require('./install-components');
 const { login } = require('../../appframe');
+const { getRequiredCommandParameters } = require('./common');
 
 async function install(args) {
 	let {
 		domain,
 		hostname,
 		password,
-		user,
-	} = args;
-
-	if (!hostname && domain) {
-		hostname = domain;
-	} if (!domain && hostname) {
-		domain = hostname;
-	}
-
-	if (!hostname || !password || !user) {
-		console.error(`Hostname, username and password must be specified to install data sources`);
-		return;
-	}
+		user
+	} = await getRequiredCommandParameters(args);
 
 	if (await login(domain, user, password)) {
 		console.log(`Adding required data sources to '${hostname}'...`)
 		await installLocalComponent(hostname, domain);
+	} else {
+		console.error('Login failed.');
 	}
 }
 
