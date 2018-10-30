@@ -3,7 +3,7 @@ const { login } = require('../../appframe');
 const { getSourceData } = require('./common');
 const { publishToGlobalComponent, publishToSiteComponent } = require('./component');
 const { publishToSiteScript, publishToSiteStyle } = require('./site');
-const { publishToArticleScript, publishToArticleStyle } = require('./article');
+const { publishToArticleScript, publishToArticleStyle } = require('../../targets/article');
 
 const types = [
 	'article-script',

@@ -1,10 +1,10 @@
 const { getSourceData } = require('./common');
 const fs = require('fs');
 const publishCommand = require('./index');
-const { publishToArticleScript, publishToArticleStyle } = require('./article');
+const { publishToArticleScript, publishToArticleStyle } = require('../../targets/article');
 const { publishToGlobalComponent, publishToSiteComponent } = require('./component');
 const { publishToSiteScript, publishToSiteStyle } = require('./site');
-const { getItem, login } = require('../../appframe');
+const { getData, login } = require('../../appframe');
 const dotenv = require('dotenv');
 
 dotenv.load();
@@ -48,7 +48,7 @@ test('can publish to global component', async () => {
 
   expect(resultProd).toEqual(true);
 
-  const publishedCode = await getItem({
+  const publishedCode = await getData({
     articleId: 'components-editor',
     dataObjectId: 'dsComponent',
     domain: hostname,
@@ -76,7 +76,7 @@ test('can publish to site component', async () => {
 
   expect(resultProd).toEqual(true);
 
-  const publishedCode = await getItem({
+  const publishedCode = await getData({
     articleId: 'components',
     dataObjectId: 'dsSiteComponents',
     domain: hostname,
@@ -104,7 +104,7 @@ test('can publish to site script', async () => {
 
   expect(resultProd).toEqual(true);
 
-  const publishedCode = await getItem({
+  const publishedCode = await getData({
     articleId: 'sitesetup-script',
     dataObjectId: 'dsScript',
     domain: hostname,
@@ -134,7 +134,7 @@ test('can publish to site style', async () => {
 
   expect(resultProd).toEqual(true);
 
-  const publishedCode = await getItem({
+  const publishedCode = await getData({
     articleId: 'sitesetup-stylesheet',
     dataObjectId: 'dsStylesheet',
     domain: hostname,
@@ -155,7 +155,7 @@ test('can publish to article script', async () => {
 
   expect(result).toEqual(true);
 
-  const publishedCode = await getItem({
+  const publishedCode = await getData({
     articleId: 'appdesigner-script',
     dataObjectId: 'dsScripts',
     domain: hostname,
@@ -178,7 +178,7 @@ test('can publish to article style', async () => {
   
   expect(result).toEqual(true);
 
-  const publishedCode = await getItem({
+  const publishedCode = await getData({
     articleId: 'appdesigner-css',
     dataObjectId: 'dsArticle',
     domain: hostname,

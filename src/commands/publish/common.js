@@ -1,4 +1,4 @@
-const { createItem, getItem, putData } = require('../../appframe');
+const { createItem, getData, updateItem } = require('../../appframe');
 const fs = require('fs');
 
 async function getItemIfExists(options) {
@@ -11,7 +11,7 @@ async function getItemIfExists(options) {
 	} = options;
 
 	try {
-		const record = await getItem({
+		const record = await getData({
 			articleId,
 			dataObjectId,
 			domain,
@@ -111,7 +111,7 @@ async function publishItemToDataObject(config) {
 			primKey
 		};
 
-		const status = await putData(putDataOptions);
+		const status = await updateItem(putDataOptions);
 
 		return status ? true : false;
 	} catch (ex) {

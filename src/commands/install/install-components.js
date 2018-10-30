@@ -1,4 +1,4 @@
-const { createItem, executeProcedure, getItem, putData } = require('../../appframe');
+const { createItem, executeProcedure, getData, updateItem } = require('../../appframe');
 
 async function installLocalComponent(hostname, actualDomain) {
 	const articleId = 'components';
@@ -12,7 +12,7 @@ async function installLocalComponent(hostname, actualDomain) {
 	};
 
 	try {
-		let record = await getItem({
+		let record = await getData({
 			...options,
 			filter
 		});
@@ -37,7 +37,7 @@ async function installLocalComponent(hostname, actualDomain) {
 
 		console.log('Setting data source permissions...');
 
-		await putData({
+		await updateItem({
 			articleId: 'appdesigner-datasource',
 			dataObjectId: 'dsDataSource',
 			data: {

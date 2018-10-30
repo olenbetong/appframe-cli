@@ -40,7 +40,7 @@ async function createItem(options) {
 	return await request(reqOptions);
 }
 
-async function getItem(options) {
+async function getData(options) {
 	const {
 		domain,
 		articleId,
@@ -74,7 +74,7 @@ async function getItem(options) {
 	return await request(reqOptions);
 }
 
-async function putData(options) {
+async function updateItem(options) {
 	const {
 		domain,
 		articleId,
@@ -97,6 +97,31 @@ async function putData(options) {
 		},
 		url
 	};
+
+	return await request(reqOptions);
+}
+
+async function deleteItem(options) {
+	const {
+		domain,
+		articleId,
+		dataObjectId,
+		primKey
+	} = options;
+
+	const url = `https://${domain}/destroy/${articleId}/${dataObjectId}`;
+	const body = JSON.stringify({
+		PrimKey: primKey
+	});
+
+	const reqOptions = {
+		...commonOptions,
+		body,
+		headers: {
+			...commonHeaders
+		},
+		url
+	}
 
 	return await request(reqOptions);
 }
@@ -194,8 +219,9 @@ function getErrorFromBody(body) {
 
 module.exports = {
 	createItem,
+	deleteItem,
 	executeProcedure,
-	getItem,
+	getData,
 	login,
-	putData
+	updateItem
 }
