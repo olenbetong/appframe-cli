@@ -140,3 +140,18 @@ A version command is available to see which version of the Appframe CLI you are 
 ```
 appframe version
 ```
+
+# Changes
+
+## Version 1.1.2 - 2018-10-30
+
+ * Added 'Changes' section to README
+
+## Version 1.1.1 - 2018-10-29
+
+ * Install command will now prompt the user if parameters are missing
+
+## Version 1.1 - 2018-10-29
+
+ * New publish target `component-site` - Publishes a component only available for 1 website
+ * New command `appframe install` - Adds a data source to the `components` application on a website. This is required to use the `component-site` publish target.
