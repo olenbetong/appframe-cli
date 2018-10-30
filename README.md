@@ -20,6 +20,7 @@ npx appframe help
 Appframe CLI also requires the following development applications to be installed on the domain you are publishing to:
 
 * appdesigner
+* appdesigner-datasource
 * appdesigner-script
 * appdesigner-css
 * components
