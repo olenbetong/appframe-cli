@@ -139,7 +139,7 @@ Example to publish a source file named `./dist/bundle.min.js` to a global compon
 }
 ```
 
-### Configuration example
+### Example: Publishing with a configuration file
 
 Given this configuration file called `appframe.config.js`
 
