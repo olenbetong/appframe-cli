@@ -49,12 +49,6 @@ async function installLocalComponent(hostname, actualDomain) {
 			primKey
 		});
 
-		const addFieldOptions = {
-			articleId: 'appdesigner-datasource',
-			domain,
-			procedure: 'procFieldAdd',
-		};
-
 		const fields = ['PrimKey', 'Content', 'ContentTest', 'HostName', 'Path'];
 
 		for (let field of fields) {

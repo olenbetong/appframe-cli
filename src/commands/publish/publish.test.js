@@ -1,4 +1,3 @@
-const { getSourceData } = require('./common');
 const fs = require('fs');
 const publishCommand = require('./index');
 const { publishToArticleScript, publishToArticleStyle } = require('../../targets/article');
@@ -55,7 +54,7 @@ test('can publish to global component', async () => {
     filter: `[Path] = '${config.target}'`,
   });
 
-  const [path,,content,contentTest,] = publishedCode[0];
+  const [,,content,contentTest,] = publishedCode[0];
 
   expect(contentTest).toEqual(sourceData);
   expect(content).toEqual(sourceData);
@@ -83,7 +82,7 @@ test('can publish to site component', async () => {
     filter: `[HostName] = '${config.hostname}' AND [Path] = '${config.target}'`,
   });
 
-  const [primKey,,path,content,contentTest] = publishedCode[0];
+  const [,,,content,contentTest] = publishedCode[0];
 
   expect(contentTest).toEqual(sourceData);
   expect(content).toEqual(sourceData);

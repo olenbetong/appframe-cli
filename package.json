@@ -16,7 +16,8 @@
   ],
   "devDependencies": {
     "dotenv": "^6.1.0",
-    "eslint": "^5.6.1",
+    "eslint": "^5.8.0",
+    "eslint-plugin-jest": "^21.27.0",
     "jest": "^23.6.0"
   },
   "dependencies": {

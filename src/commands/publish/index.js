@@ -59,7 +59,7 @@ function mergeTargetWithDefaults(target, defaults) {
 	}
 
 	return merged;
-};
+}
 
 async function getTargetFromConfig(config) {
 	const { domain, hostname, mode, target, source, type } = config;
@@ -124,8 +124,8 @@ async function getTargetFromObject(item, defaults) {
 	return mergeTargetWithDefaults(newItem, defaults)
 }
 
-function validateConfiguration(config) {
-
+function validateConfiguration() {
+	return true;
 }
 
 async function publishItem(item) {
@@ -198,7 +198,7 @@ async function publish(args) {
 				}
 			} else {
 				// config is a single array shorthand target
-				targets.push(await getTargetFromShorthandArray(item, defaults));
+				targets.push(await getTargetFromShorthandArray(config.targets[0], defaults));
 			}
 		} else if (typeof config.targets === 'object') {
 			// config is a single object target

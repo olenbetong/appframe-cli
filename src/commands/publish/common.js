@@ -7,7 +7,6 @@ async function getItemIfExists(options) {
 		dataObjectId,
 		domain,
 		filter,
-		hostname,
 	} = options;
 
 	try {
@@ -63,7 +62,6 @@ async function publishItemToDataObject(config) {
 		filter,
 		item,
 		primKeyIndex,
-		source,
 		sourceData,
 		target,
 		type,
