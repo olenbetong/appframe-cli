@@ -168,7 +168,7 @@ module.exports = {
     { source, target, type: 'site-script' }
   ],
   domain: 'appframe.example.com',
-  hostname: 'AppframeWeb2016,
+  hostname: 'AppframeWeb2016',
   password,
   source,
   target,
@@ -203,7 +203,11 @@ appframe version
 
 # Changes
 
-### Version 1.1.3 -
+### Version 1.1.4 - 2018-11-09
+
+ * Minor fixes to README
+
+### Version 1.1.3 - 2018-10-31
 
  * Separate publish parameters in readme to clarify what they are used for
 
