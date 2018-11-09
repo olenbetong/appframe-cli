@@ -16,6 +16,17 @@ const {
   APPFRAME_HOSTNAME: hostname
 } = process.env;
 
+test('failed login error message makes sense', async () => {
+	let outputData = '';
+	const storeLog = inputs => (outputData += inputs);
+	
+	console["warn"] = jest.fn(storeLog);
+	
+	await login(hostname, 'asldkfjø', 'asdlkfje');
+
+	expect(outputData).toEqual('Login failed. Please check your credentials.');
+});
+
 test('can create, get, update and delete records', async () => {
 	await login(hostname, user, password);
 
