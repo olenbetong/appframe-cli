@@ -203,6 +203,11 @@ appframe version
 
 # Changes
 
+### Version 1.1.5 - 2018-11-15
+
+ * Improved error handling for invalid targets
+ * Updated dependencies
+
 ### Version 1.1.4 - 2018-11-09
 
  * Minor fixes to README
