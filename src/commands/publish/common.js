@@ -29,6 +29,10 @@ async function getItemIfExists(options) {
 }
 
 function getSourceData(file) {
+	if (!file) {
+		return Promise.resolve(false);
+	}
+
 	return new Promise((res, reject) => {
 		try {
 			const cwd = process.cwd();

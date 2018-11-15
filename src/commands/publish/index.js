@@ -88,40 +88,61 @@ async function getTargetFromConfig(config) {
 }
 
 async function getTargetFromShorthandArray(arr, defaults) {
-	const [source, target, type, hostname] = arr;
-	const sourceData = await getSourceData(source);
-	const item = {
-		hostname,
-		source,
-		sourceData,
-		target,
-		type
-	};
-
-	if (type === 'article-script') {
-		const idx = target.indexOf('/');
-
-		if (idx > 0) {
-			item.target = target.substring(idx + 1);
-			item.targetArticleId = target.substring(0, idx);
-		} else {
-			throw new Error('To publish article scripts with array shorthand, use "articleName/target" as the target.');
+	try {
+		const [source, target, type, hostname] = arr;
+		const sourceData = await getSourceData(source);
+	
+		if (sourceData === false) {
+			throw new Error(`Failed to read source '${source}'`);
 		}
+
+		const item = {
+			hostname,
+			source,
+			sourceData,
+			target,
+			type
+		};
+	
+		if (type === 'article-script') {
+			const idx = target.indexOf('/');
+	
+			if (idx > 0) {
+				item.target = target.substring(idx + 1);
+				item.targetArticleId = target.substring(0, idx);
+			} else {
+				throw new Error('To publish article scripts with array shorthand, use "articleName/target" as the target.');
+			}
+		}
+	
+		item.domain = item.hostname;
+	
+		return mergeTargetWithDefaults(item, defaults);
+	} catch (error) {
+		console.error(error.message);
+
+		return false;
 	}
-
-	item.domain = item.hostname;
-
-	return mergeTargetWithDefaults(item, defaults);
 }
 
 async function getTargetFromObject(item, defaults) {
-	const newItem = { ...item };
+	try {
+		const newItem = { ...item };
+	
+		if (!newItem.sourceData) {
+			newItem.sourceData = await getSourceData(item.source)
+	
+			if (newItem.sourceData === false) {
+				throw new Error(`Failed to read source '${item.source}'`);
+			}
+		}
+	
+		return mergeTargetWithDefaults(newItem, defaults)
+	} catch (error) {
+		console.error(error.message);
 
-	if (!newItem.sourceData) {
-		newItem.sourceData = await getSourceData(item.source)
+		return false;
 	}
-
-	return mergeTargetWithDefaults(newItem, defaults)
 }
 
 function validateConfiguration() {
@@ -191,18 +212,38 @@ async function publish(args) {
 				// config is array of publish items
 				for (let item of config.targets) {
 					if (item instanceof Array) {
-						targets.push(await getTargetFromShorthandArray(item, defaults));
+						const target = await getTargetFromShorthandArray(item, defaults);
+
+						if (target !== false) {
+							targets.push(target);
+						}
 					} else {
-						targets.push(await getTargetFromObject(item, defaults));
+						const target = await await getTargetFromObject(item, defaults);
+
+						if (target !== false) {
+							targets.push(target);
+						}
 					}
 				}
 			} else {
 				// config is a single array shorthand target
-				targets.push(await getTargetFromShorthandArray(config.targets[0], defaults));
+				const target = await getTargetFromShorthandArray(config.targets[0], defaults)
+				
+				if (target !== false) {
+					targets.push(target);
+				}
 			}
 		} else if (typeof config.targets === 'object') {
 			// config is a single object target
-			targets.push(await getTargetFromObject(config.targets, defaults));
+			const target = await getTargetFromObject(config.targets, defaults);
+			if (target !== false) {
+				targets.push(target);
+			}
+		}
+
+		if (targets.length === 0) {
+			console.warn('No valid targets found for publishing.');
+			return;
 		}
 
 		let successCount = 0;
