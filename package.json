@@ -1,6 +1,6 @@
 {
   "name": "@bjornarvh/appframe-cli",
-  "description": "Utility functions for Appframe",
+  "description": "Utility functions for AppframeWeb",
   "bin": {
     "appframe": "./bin/appframe"
   },
@@ -22,11 +22,12 @@
   },
   "dependencies": {
     "cheerio": "^1.0.0-rc.2",
+    "merge": "^1.2.1",
     "minimist": "^1.2.0",
     "querystring": "^0.2.0",
     "request": "^2.88.0",
     "readline-promise": "^1.0.3",
     "request-promise-native": "^1.0.5"
   },
-  "repository": "https://bvhansen.visualstudio.com/_git/appframe-cli"
+  "repository": "https://github.com/bjornarvh/appframe-cli.git"
 }
