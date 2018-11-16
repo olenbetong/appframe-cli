@@ -5,7 +5,6 @@
 ### Added
 - New CHANGELOG.md file
 
-
 ## [1.1.6] - 2018-11-16
 - Moved repository to GitHub
 - Updated dependencies
