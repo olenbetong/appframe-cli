@@ -1,9 +1,6 @@
 const { resolve } = require('path');
-const { login } = require('../../appframe');
+const { PublishClient } = require('./client');
 const { getSourceData } = require('./common');
-const { publishToGlobalComponent, publishToSiteComponent } = require('./component');
-const { publishToSiteScript, publishToSiteStyle } = require('./site');
-const { publishToArticleScript, publishToArticleStyle } = require('../../targets/article');
 
 const types = [
 	'article-script',
@@ -62,14 +59,13 @@ function mergeTargetWithDefaults(target, defaults) {
 }
 
 async function getTargetFromConfig(config) {
-	const { domain, hostname, mode, target, source, type } = config;
+	const { hostname, mode, target, source, type } = config;
 
 	if (!hostname || !target || !source || !type) {
 		return false;
 	}
 
 	const rv = {
-		domain,
 		hostname,
 		mode,
 		target,
@@ -115,8 +111,6 @@ async function getTargetFromShorthandArray(arr, defaults) {
 			}
 		}
 	
-		item.domain = item.hostname;
-	
 		return mergeTargetWithDefaults(item, defaults);
 	} catch (error) {
 		console.error(error.message);
@@ -149,23 +143,23 @@ function validateConfiguration() {
 	return true;
 }
 
-async function publishItem(item) {
+async function publishItem(client, item) {
 	const { hostname, source, type, target } = item;
 
 	console.log(`Publishing '${source}' to ${type} '${target}' in ${hostname}...`);
 
 	if (type === 'article-script') {
-		return await publishToArticleScript(item);
+		return await client.publishToArticleScript(item);
 	} else if (type === 'article-style') {
-		return await publishToArticleStyle(item);
+		return await client.publishToArticleStyle(item);
 	} else if (type === 'component-global') {
-		return await publishToGlobalComponent(item);
+		return await client.publishToGlobalComponent(item);
 	} else if (type === 'component-site') {
-		return await publishToSiteComponent(item);
+		return await client.publishToSiteComponent(item);
 	} else if (type === 'site-script') {
-		return await publishToSiteScript(item);
+		return await client.publishToSiteScript(item);
 	} else if (type === 'site-style') {
-		return await publishToSiteStyle(item);
+		return await client.publishToSiteStyle(item);
 	} else {
 		console.error(`Type '${type}' is not supported.`);
 
@@ -185,7 +179,15 @@ async function publish(args) {
 		config.domain = config.hostname;
 	}
 
-	if (await login(config.domain, config.user, config.password)) {
+	const client = new PublishClient({
+		hostname: config.domain,
+		password: config.password,
+		username: config.user,
+	})
+
+	const auth = await client.login(config.domain, config.user, config.password);
+
+	if (auth.success) {
 		validateConfiguration(config);
 		
 		const { domain, hostname, mode, type } = config;
@@ -249,7 +251,7 @@ async function publish(args) {
 		let successCount = 0;
 
 		for (let target of targets) {
-			let success = await publishItem(target);
+			let success = await publishItem(client, target);
 
 			if (success) successCount++;
 		}
@@ -259,6 +261,8 @@ async function publish(args) {
 		} else {
 			console.log(`Publish completed. ${successCount} of ${targets.length} items published successfully.`);
 		}
+	} else {
+		console.warn('Authentication failed. Publish stopped.');
 	}
 }
 

@@ -38,7 +38,7 @@ async function getRequiredCommandParameters(args, reader) {
 	}
 
 	if (!config.user) {
-		config.user = await getInputOrDefault(rl, 'Login?');
+		config.username = await getInputOrDefault(rl, 'Login?');
 	}
 
 	if (!config.password) {

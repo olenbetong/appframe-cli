@@ -1,45 +1,48 @@
 const installCommand = require('./index');
 const { getRequiredCommandParameters } = require('./common');
-const { installLocalComponent } = require('./install-components');
-const { login } = require('../../appframe');
+const { InstallClient } = require('./client');
 const dotenv = require('dotenv');
 
 dotenv.load();
 
 const {
-  APPFRAME_LOGIN: user,
+  APPFRAME_LOGIN: username,
   APPFRAME_PWD: password,
   APPFRAME_HOSTNAME: hostname
 } = process.env;
 
-test('installs without error', async () => {
-	await login(hostname, user, password);
-	await installLocalComponent(hostname);
-});
+describe('Install command', () => {
+  const client = new InstallClient({ hostname, password, username });
 
-test('install from command line', async () => {
-  await installCommand({
-    domain: hostname,
-    hostname,
-    user,
-    password
+  test('installs without error', async () => {
+    await client.login();
+    await client.installLocalComponent(hostname);
   });
-});
-
-test('get missing parameters', async () => {
-  let readCount = 0;
-  const values = [hostname, '', user, password];
-  const mockReadline = {
-    close: () => null,
-    questionAsync: () => Promise.resolve(values[readCount++])
-  };
-
-  const config = await getRequiredCommandParameters({}, mockReadline);
-
-  expect(config).toEqual({
-    domain: hostname,
-    hostname,
-    user,
-    password
+  
+  test('install from command line', async () => {
+    await installCommand({
+      domain: hostname,
+      hostname,
+      username,
+      password
+    });
   });
-});
+  
+  test('get missing parameters', async () => {
+    let readCount = 0;
+    const values = [hostname, '', username, password];
+    const mockReadline = {
+      close: () => null,
+      questionAsync: () => Promise.resolve(values[readCount++])
+    };
+  
+    const config = await getRequiredCommandParameters({}, mockReadline);
+  
+    expect(config).toEqual({
+      domain: hostname,
+      hostname,
+      username,
+      password
+    });
+  });
+})

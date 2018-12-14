@@ -36,9 +36,8 @@
 			"request": "launch",
 			"runtimeArgs": [
 				"--inspect-brk",
-				"${workspaceRoot}/node_modules/.bin/jest",
-				"--runInBand",
-				"./src/appframe.test.js"
+				"${workspaceRoot}/node_modules/jest/bin/jest.js",
+				"--runInBand"
 			],
 			"internalConsoleOptions": "neverOpen",
 			"port": 9229,

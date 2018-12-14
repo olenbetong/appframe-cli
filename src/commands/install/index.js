@@ -1,5 +1,4 @@
-const { installLocalComponent } = require('./install-components');
-const { login } = require('../../appframe');
+const { PublishClient } = require('./client');
 const { getRequiredCommandParameters } = require('./common');
 
 async function install(args) {
@@ -7,12 +6,15 @@ async function install(args) {
 		domain,
 		hostname,
 		password,
-		user
+		username
 	} = await getRequiredCommandParameters(args);
 
-	if (await login(domain, user, password)) {
+	const client = new PublishClient({ hostname: domain, password, username });
+	const auth = await client.login();
+
+	if (auth.success) {
 		console.log(`Adding required data sources to '${hostname}'...`)
-		await installLocalComponent(hostname, domain);
+		await client.installLocalComponent(hostname);
 	} else {
 		console.error('Login failed.');
 	}

@@ -7,7 +7,7 @@
   "version": "1.1.6",
   "license": "MIT",
   "scripts": {
-    "test": "jest"
+    "test": "node ./node_modules/jest/bin/jest.js"
   },
   "keywords": [
     "appframe",
@@ -21,12 +21,13 @@
     "jest": "^23.6.0"
   },
   "dependencies": {
+    "@olenbetong/appframe-client": "^2.0.0",
     "cheerio": "^1.0.0-rc.2",
     "merge": "^1.2.1",
     "minimist": "^1.2.0",
     "querystring": "^0.2.0",
-    "request": "^2.88.0",
     "readline-promise": "^1.0.3",
+    "request": "^2.88.0",
     "request-promise-native": "^1.0.5"
   },
   "repository": "https://github.com/bjornarvh/appframe-cli.git"
