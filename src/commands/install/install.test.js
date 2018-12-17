@@ -12,16 +12,19 @@ const {
 } = process.env;
 
 describe('Install command', () => {
-  const client = new InstallClient({ hostname, password, username });
+  const client = new InstallClient({ hostname: 'test.synergi.olenbetong.no', password, username });
 
   test('installs without error', async () => {
-    await client.login();
+    const auth = await client.login();
+
+    expect(auth.success).toBe(true);
+
     await client.installLocalComponent(hostname);
   });
   
   test('install from command line', async () => {
     await installCommand({
-      domain: hostname,
+      domain: 'test.synergi.olenbetong.no',
       hostname,
       username,
       password

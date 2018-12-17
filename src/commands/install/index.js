@@ -1,4 +1,4 @@
-const { PublishClient } = require('./client');
+const { InstallClient } = require('./client');
 const { getRequiredCommandParameters } = require('./common');
 
 async function install(args) {
@@ -9,7 +9,7 @@ async function install(args) {
 		username
 	} = await getRequiredCommandParameters(args);
 
-	const client = new PublishClient({ hostname: domain, password, username });
+	const client = new InstallClient({ hostname: domain, password, username });
 	const auth = await client.login();
 
 	if (auth.success) {

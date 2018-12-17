@@ -1,6 +1,20 @@
 const AppframeClient = require('@olenbetong/appframe-client');
 
 class AppframeDataClient extends AppframeClient {
+	// async getHostNameFromAlias(alias) {
+	//   const records = await this.getData({
+	//     articleId: 'sitesetup-general',
+	//     dataObjectId: 'dsAliases',
+	//     filter: `[Alias] = '${alias}'`
+	//   });
+
+	//   if (records.length === 0) {
+	//     throw new Error(`No website found with alias '${alias}'`);
+	//   }
+
+	//   return records[0][0];
+	// }
+
 	async createItem(options) {
 		const {
 			articleId,

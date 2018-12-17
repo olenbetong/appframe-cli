@@ -125,4 +125,9 @@ describe('AppframeDataClient', () => {
 		expect(noData.length).toBe(0);
 	});
 
+	test('get hostname for alias', async () => {
+		const hostname = await client.getHostNameFromAlias('test.synergi.olenbetong.no');
+		expect(hostname).toBe('synergi.olenbetong.no');
+	})
+
 })

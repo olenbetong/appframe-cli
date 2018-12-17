@@ -15,8 +15,8 @@
     "appframe web"
   ],
   "devDependencies": {
-    "dotenv": "^6.1.0",
-    "eslint": "^5.9.0",
+    "dotenv": "^6.2.0",
+    "eslint": "^5.10.0",
     "eslint-plugin-jest": "^21.27.2",
     "jest": "^23.6.0"
   },

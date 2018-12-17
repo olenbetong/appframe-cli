@@ -2,6 +2,10 @@
 # Changelog
 
 ## [Unreleased]
+### Fixed
+- No longer reports success on failed authentication
+### Changed
+- Use [@olenbetong.no/appframe-client](https://www.npmjs.com/package/@olenbetong/appframe-client) to communicate with the Appframe website
 ### Added
 - New CHANGELOG.md file
 
