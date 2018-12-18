@@ -27,7 +27,7 @@ class AppframeDataClient extends AppframeClient {
 		const reqOptions = {
 			body,
 			headers: {
-				'Content-Length': body.length,
+				// 'Content-Length': body.length,
 				'Content-Type': 'application/json; charset=utf-8',
 			},
 			url
@@ -59,7 +59,7 @@ class AppframeDataClient extends AppframeClient {
 		const reqOptions = {
 			body,
 			headers: {
-				'Content-Length': body.length,
+				// 'Content-Length': body.length,
 				'Content-Type': 'application/json; charset=utf-8',
 			},
 			url
@@ -91,7 +91,7 @@ class AppframeDataClient extends AppframeClient {
 		const reqOptions = {
 			body,
 			headers: {
-				'Content-Length': body.length,
+				// 'Content-Length': body.length,
 				'Content-Type': 'application/json; charset=utf-8',
 			},
 			url
@@ -115,7 +115,7 @@ class AppframeDataClient extends AppframeClient {
 		const reqOptions = {
 			body,
 			headers: {
-				'Content-Length': body.length,
+				// 'Content-Length': body.length,
 				'Content-Type': 'application/json; charset=utf-8',
 			},
 			url
@@ -143,7 +143,7 @@ class AppframeDataClient extends AppframeClient {
 		const reqOptions = {
 			body,
 			headers: {
-				'Content-Length': body.length,
+				// 'Content-Length': body.length,
 				'Content-Type': 'application/json; charset=utf-8',
 			},
 			url
