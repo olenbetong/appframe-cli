@@ -1,12 +1,13 @@
 
 # Changelog
 
-## [UNRELEASED]
+## [1.1.8] - 2018-12-18
 
 ### Fixed
 - Publishing that failed with server error reported as succeeded (Issue #1)
+- Server fails to deserialize JSON for some large requests (Issue #1)
 
-## [1.1.7]
+## [1.1.7] - 2018-12-17
 ### Fixed
 - No longer reports success on failed authentication
 ### Changed
