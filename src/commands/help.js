@@ -52,7 +52,7 @@ const menus = {
 			['./dist/bundle.min.js', '[article-name]/bundle.min.js', 'article-script', 'another-hostname.com']
 		]
 	`
-}
+};
 
 function help(args) {
 	const subCmd = args._[0] === 'help'

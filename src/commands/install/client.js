@@ -27,7 +27,7 @@ class InstallClient extends AppframeDataClient {
 						HostName: hostname,
 						ViewName: 'stbv_WebSiteCMS_Components'
 					}
-				})
+				});
 			} else {
 				record = record[0];
 			}
@@ -63,7 +63,7 @@ class InstallClient extends AppframeDataClient {
 				});
 			}
 
-			console.log(`Publishing changes...`);
+			console.log('Publishing changes...');
 
 			await this.executeProcedure({
 				articleId: 'appdesigner',
@@ -85,4 +85,4 @@ class InstallClient extends AppframeDataClient {
 
 module.exports = {
 	InstallClient
-}
+};

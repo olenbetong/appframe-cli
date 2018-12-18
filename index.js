@@ -13,21 +13,21 @@ async function cli() {
 	}
 
 	switch (cmd) {
-		case 'help':
-			require('./src/commands/help')(args);
-			break;
-		case 'version':
-			require('./src/commands/version')(args);
-			break;
-		case 'publish':
-			await require('./src/commands/publish')(args);
-			break;
-		case 'install':
-			await require('./src/commands/install')(args);
-			break;
-		default:
-			console.error(`"${cmd}" is not a valid command!`);
-			break;
+	case 'help':
+		require('./src/commands/help')(args);
+		break;
+	case 'version':
+		require('./src/commands/version')(args);
+		break;
+	case 'publish':
+		await require('./src/commands/publish')(args);
+		break;
+	case 'install':
+		await require('./src/commands/install')(args);
+		break;
+	default:
+		console.error(`"${cmd}" is not a valid command!`);
+		break;
 	}
 }
 

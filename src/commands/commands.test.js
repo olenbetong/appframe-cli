@@ -2,7 +2,7 @@ test('help outputs documentation for the right command', () => {
 	let outputData = '';
 	const storeLog = inputs => (outputData += inputs);
 
-	console["log"] = jest.fn(storeLog);
+	console['log'] = jest.fn(storeLog);
 
 	const help = require('./help');
 
@@ -21,7 +21,7 @@ test('help outputs commands if no command is specified', () => {
 	let outputData = '';
 	const storeLog = inputs => (outputData += inputs);
 
-	console["log"] = jest.fn(storeLog);
+	console['log'] = jest.fn(storeLog);
 
 	const help = require('./help');
 
@@ -34,11 +34,11 @@ test('version outputs version', () => {
 	let outputData = '';
 	const storeLog = inputs => (outputData += inputs);
 
-	console["log"] = jest.fn(storeLog);
+	console['log'] = jest.fn(storeLog);
 
 	const version = require('./version');
 	const { version: currentVersion } = require('../../package.json');
 	version();
 
 	expect(outputData).toContain(`v${currentVersion}`);
-})
+});

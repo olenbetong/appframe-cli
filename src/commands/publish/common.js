@@ -22,7 +22,7 @@ function getSourceData(file) {
 				} else {
 					res(data);
 				}
-			})
+			});
 		} catch (error) {
 			reject(error);
 		}
@@ -31,4 +31,4 @@ function getSourceData(file) {
 
 module.exports = {
 	getSourceData,
-}
+};

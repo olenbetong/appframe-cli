@@ -6,9 +6,9 @@ const {
 dotenv.load();
 
 const {
-  APPFRAME_LOGIN: username,
-  APPFRAME_PWD: password,
-  APPFRAME_HOSTNAME: hostname
+	APPFRAME_LOGIN: username,
+	APPFRAME_PWD: password,
+	APPFRAME_HOSTNAME: hostname
 } = process.env;
 
 describe('AppframeDataClient', () => {
@@ -22,7 +22,7 @@ describe('AppframeDataClient', () => {
 		let outputData = '';
 		const storeLog = inputs => (outputData += inputs);
 		
-		console["warn"] = jest.fn(storeLog);
+		console['warn'] = jest.fn(storeLog);
 		const client = new AppframeDataClient({ hostname, username: 'asdfjkl', password: 'asdfjkl' });
 		const auth = await client.login();
 	
@@ -42,7 +42,7 @@ describe('AppframeDataClient', () => {
 	
 		const { success: existing } = await client.getData({
 			...commonOptions,
-			filter: `[Path] = 'jest-test-appframe.js'` 
+			filter: '[Path] = \'jest-test-appframe.js\''
 		});
 	
 		if (existing.length > 0) {
@@ -128,6 +128,6 @@ describe('AppframeDataClient', () => {
 	test('get hostname for alias', async () => {
 		const hostname = await client.getHostNameFromAlias('test.synergi.olenbetong.no');
 		expect(hostname).toBe('synergi.olenbetong.no');
-	})
+	});
 
-})
+});
