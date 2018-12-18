@@ -59,7 +59,11 @@ class PublishClient extends AppframeDataClient {
 	
 			const status = await this.updateItem(putDataOptions);
 	
-			return status ? true : false;
+			if (status.success === false && status.error) {
+				console.error(`Failed to publish to ${type}: ${status.error}`);
+			}
+
+			return status.success instanceof Array;
 		} catch (ex) {
 			console.error(`Failed to publish to ${type}: ${ex.message}`);
 	

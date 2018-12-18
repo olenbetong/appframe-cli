@@ -97,13 +97,7 @@ class AppframeDataClient extends AppframeClient {
 			url
 		};
 	
-		const response = await this.request(reqOptions);
-	
-		if (response.success) {
-			return response.success;
-		}
-
-		return response;
+		return await this.request(reqOptions);
 	}
 
 	async deleteItem(options) {

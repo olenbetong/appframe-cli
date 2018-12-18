@@ -1,6 +1,11 @@
 
 # Changelog
 
+## [UNRELEASED]
+
+### Fixed
+- Publishing that failed with server error reported as succeeded (Issue #1)
+
 ## [1.1.7]
 ### Fixed
 - No longer reports success on failed authentication
