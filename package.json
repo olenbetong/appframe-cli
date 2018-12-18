@@ -1,5 +1,5 @@
 {
-  "name": "@bjornarvh/appframe-cli",
+  "name": "@olenbetong/appframe-cli",
   "description": "Utility functions for AppframeWeb",
   "bin": {
     "appframe": "./bin/appframe"
@@ -30,5 +30,5 @@
     "request": "^2.88.0",
     "request-promise-native": "^1.0.5"
   },
-  "repository": "https://github.com/bjornarvh/appframe-cli.git"
+  "repository": "https://github.com/olenbetong/appframe-cli.git"
 }

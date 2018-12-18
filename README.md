@@ -6,14 +6,14 @@
 Install globally:
 
 ```
-npm install -g @bjornarvh/appframe-cli
+npm install -g @olenbetong/appframe-cli
 appframe help
 ```
 
 or install as a development dependency, and use npx:
 
 ```
-npm install --save-dev @bjornarvh/appframe-cli
+npm install --save-dev @olenbetong/appframe-cli
 npx appframe help
 ```
 
