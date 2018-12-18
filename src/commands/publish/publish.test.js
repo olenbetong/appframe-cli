@@ -193,4 +193,20 @@ describe('PublishClient', () => {
     fs.writeFileSync('./test/testsource.js', sourceData, { flag: 'w' });
     await publishCommand({ config: './test/test.config' });
   });
+
+  test('can publish large files', async () => {
+    const largeConfig = {
+      ...config,
+      mode: 'test',
+      target: 'jest-test-large-bundle.js',
+      type: 'component-global'
+    };
+
+    const largeSource = fs.readFileSync('./test/large-file.js.map', 'utf8');
+    largeConfig.sourceData = largeSource;
+
+    const result = await client.publishToGlobalComponent(largeConfig);
+
+    expect(result).toBe(true);;
+  });
 })
