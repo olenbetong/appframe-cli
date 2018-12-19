@@ -56,7 +56,8 @@
 ## [1.0.1] - 2018-10-23
 - Add support for production mode publish
 
-[UNRELEASED]: https://github.com/bjornarvh/appframe-cli/compare/v1.1.8...HEAD
+[UNRELEASED]: https://github.com/bjornarvh/appframe-cli/compare/v1.1.9...HEAD
+[1.1.9]: https://github.com/bjornarvh/appframe-cli/compare/v1.1.8...v1.1.9
 [1.1.8]: https://github.com/bjornarvh/appframe-cli/compare/v1.1.7...v1.1.8
 [1.1.7]: https://github.com/bjornarvh/appframe-cli/compare/v1.1.6...v1.1.7
 [1.1.6]: https://github.com/bjornarvh/appframe-cli/compare/v1.1.5...v1.1.6
