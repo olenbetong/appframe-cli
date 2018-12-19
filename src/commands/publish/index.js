@@ -124,14 +124,14 @@ async function getTargetFromObject(item, defaults) {
 		const newItem = { ...item };
 	
 		if (!newItem.sourceData) {
-			newItem.sourceData = await getSourceData(item.source)
+			newItem.sourceData = await getSourceData(item.source);
 	
 			if (newItem.sourceData === false) {
 				throw new Error(`Failed to read source '${item.source}'`);
 			}
 		}
 	
-		return mergeTargetWithDefaults(newItem, defaults)
+		return mergeTargetWithDefaults(newItem, defaults);
 	} catch (error) {
 		console.error(error.message);
 
@@ -183,7 +183,7 @@ async function publish(args) {
 		hostname: config.domain,
 		password: config.password,
 		username: config.user,
-	})
+	});
 
 	const auth = await client.login(config.domain, config.user, config.password);
 
@@ -229,7 +229,7 @@ async function publish(args) {
 				}
 			} else {
 				// config is a single array shorthand target
-				const target = await getTargetFromShorthandArray(config.targets[0], defaults)
+				const target = await getTargetFromShorthandArray(config.targets[0], defaults);
 				
 				if (target !== false) {
 					targets.push(target);

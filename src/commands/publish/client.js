@@ -38,11 +38,13 @@ class PublishClient extends AppframeDataClient {
 					item
 				};
 	
-				record = await this.createItem(createOptions);
+				const { success } = await this.createItem(createOptions);
 	
-				if (!record) {
+				if (!success) {
 					throw new Error('Failed to create new record.');
 				}
+
+				record = success;
 			} else {
 				console.log(`Updating '${target}'...`);
 			}
