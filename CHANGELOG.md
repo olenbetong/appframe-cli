@@ -1,6 +1,11 @@
 
 # Changelog
 
+## [1.1.9] - 2018-12-19
+
+### Fixed
+- PrimKey not supplied error when creating new records.
+
 ## [1.1.8] - 2018-12-18
 
 ### Fixed
