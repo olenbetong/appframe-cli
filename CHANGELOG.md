@@ -1,7 +1,7 @@
 
 # Changelog
 
-## [UNRELEASED]
+## [1.2.0] - 2019-01-18
 
 ### Added
 - New exclude parameter for publish type article-script.
