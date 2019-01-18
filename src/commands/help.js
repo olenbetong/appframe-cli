@@ -3,7 +3,6 @@ const menus = {
 	appframe [command] <options>
 
 	publish ................ publish module according to configuration
-	delete ................. delete module(s)
 	version ................ show package version
 	help ................... show help menu for a command
 	`,
