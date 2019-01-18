@@ -36,6 +36,7 @@ const menus = {
 	
 	--article ................. article to publish to (if type is script)
 	--config .................. config file to use
+	--exclude ................. set exclude field on article-script
 	--hostname ................ website hostname(s) to publish to
 	--password ................ password for the SQL server
 	--mode, -m ................ publish to production or test mode
