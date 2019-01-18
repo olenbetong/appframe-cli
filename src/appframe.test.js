@@ -40,19 +40,19 @@ describe('AppframeDataClient', () => {
 			domain: hostname
 		};
 	
-		const { success: existing } = await client.getData({
+		const existing = await client.getData({
 			...commonOptions,
 			filter: '[Path] = \'jest-test-appframe.js\''
 		});
 	
-		if (existing.length > 0) {
+		if (existing && existing.length > 0) {
 			await client.deleteItem({
 				...commonOptions,
 				primKey: existing[0][3]
 			});
 		}
 	
-		const { success: result } = await client.createItem({
+		const result = await client.createItem({
 			...commonOptions,
 			item: {
 				Path: 'jest-test-appframe.js'
@@ -60,10 +60,11 @@ describe('AppframeDataClient', () => {
 		});
 	
 		expect(result).toBeTruthy();
+		expect(result).toBeInstanceOf(Array);
 	
 		const primKey = result[3];
 	
-		const { success: records } = await client.getData({
+		const records = await client.getData({
 			...commonOptions,
 			filter: `[PrimKey] = '${primKey}'`
 		});
@@ -71,7 +72,7 @@ describe('AppframeDataClient', () => {
 		expect(records).toBeTruthy();
 		expect(records[0][3]).toEqual(primKey);
 	
-		const { success: updated } = await client.updateItem({
+		const updated = await client.updateItem({
 			...commonOptions,
 			fieldName: 'Path',
 			data: 'jest-test-appframe-updated.js',
@@ -81,7 +82,7 @@ describe('AppframeDataClient', () => {
 		expect(updated).toBeTruthy();
 		expect(updated[1]).toEqual('jest-test-appframe-updated.js');
 	
-		const { success: isDeleted } = await client.deleteItem({
+		const isDeleted = await client.deleteItem({
 			...commonOptions,
 			primKey
 		});

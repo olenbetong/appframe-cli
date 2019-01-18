@@ -1,6 +1,14 @@
 
 # Changelog
 
+## [UNRELEASED]
+
+### Added
+- New exclude parameter for publish type article-script.
+
+### Fixed
+- Article parameter was ignored by article-script type. Had to use targetArticleId
+
 ## [1.1.9] - 2018-12-19
 
 ### Fixed

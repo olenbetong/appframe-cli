@@ -6,7 +6,6 @@ class PublishClient extends AppframeDataClient {
 			createArticleId,
 			createDataObjectId,
 			domain,
-			extraFields,
 			fieldName,
 			filter,
 			item,
@@ -39,13 +38,11 @@ class PublishClient extends AppframeDataClient {
 					item
 				};
 	
-				const response = await this.createItem(createOptions);
+				record = await this.createItem(createOptions);
 	
-				if (response.error || !(response instanceof Array)) {
+				if (!record) {
 					throw new Error('Failed to create new record.');
 				}
-
-				record = response;
 			} else {
 				console.log(`Updating '${target}'...`);
 			}
@@ -55,7 +52,7 @@ class PublishClient extends AppframeDataClient {
 				...commonOptions,
 				articleId: updateArticleId,
 				dataObjectId: updateDataObjectId,
-				data: typeof extraFields === 'object' ? { [fieldName]: sourceData, ...extraFields } : sourceData,
+				data: sourceData,
 				fieldName,
 				primKey
 			};
@@ -66,7 +63,7 @@ class PublishClient extends AppframeDataClient {
 				console.error(`Failed to publish to ${type}: ${status.error}`);
 			}
 
-			return status instanceof Array;
+			return status.success instanceof Array;
 		} catch (ex) {
 			console.error(`Failed to publish to ${type}: ${ex.message}`);
 	
@@ -150,18 +147,12 @@ class PublishClient extends AppframeDataClient {
 	}
 
 	async publishToArticleScript(config) {
-		const {
-			exclude = false,
-			hostname,
-			target,
-			targetArticleId
-		} = config;
+		const { hostname, target, targetArticleId } = config;
 	
 		return await this.publishItemToDataObject({
 			...config,
 			createArticleId: 'appdesigner',
 			createDataObjectId: 'dsScripts',
-			extraFields: { Exclude: exclude },
 			fieldName: 'Script',
 			filter: `[HostName] = '${hostname}' AND [ArticleID] = '${targetArticleId}' AND [ID] = '${target}'`,
 			item: {
@@ -216,7 +207,7 @@ class PublishClient extends AppframeDataClient {
 					primKey,
 				});
 	
-				return status instanceof Array ? true : false;
+				return status instanceof Array;
 			} else {
 				console.error(`Article '${target}' not found in host '${hostname}'. Can't publish style.`);
 	

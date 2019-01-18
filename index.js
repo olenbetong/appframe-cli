@@ -25,6 +25,9 @@ async function cli() {
 	case 'install':
 		await require('./src/commands/install')(args);
 		break;
+	case 'delete':
+		await require('./src/commands/delete')(args);
+		break;
 	default:
 		console.error(`"${cmd}" is not a valid command!`);
 		break;

@@ -146,11 +146,21 @@ describe('PublishClient', () => {
 	});
 	
 	test('can publish to article script', async () => {
+		const before = await client.getData({
+			articleId: 'appdesigner-script',
+			dataObjectId: 'dsScripts',
+			domain: hostname,
+			filter: `[Hostname] = '${hostname}' AND [ArticleID] = 'publish-test' AND [ID] = '${config.target}'`
+		});
+		
+		const initialExclude = before[4];
+		
 		const result = await client.publishToArticleScript({
 			...config,
+			exclude: !initialExclude,
 			targetArticleId: 'publish-test'
 		});
-	
+
 		expect(result).toEqual(true);
 	
 		const publishedCode = await client.getData({
@@ -160,8 +170,9 @@ describe('PublishClient', () => {
 			filter: `[Hostname] = '${hostname}' AND [ArticleID] = 'publish-test' AND [ID] = '${config.target}'`
 		});
 	
-		const [,,,content] = publishedCode[0];
+		const [,,,content, exclude] = publishedCode[0];
 	
+		expect(exclude).toEqual(!initialExclude);
 		expect(content).toEqual(sourceData);
 	});
 	

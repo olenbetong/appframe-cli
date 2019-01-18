@@ -67,10 +67,6 @@ Domain used for authentication, and to publish the scripts/styles. Must have the
 
 #### Publish target
 
-
-
-* **article**
-Article to publish to for types article-script and article-style. Will be ignored for other target types.
 * **hostname**
 Hostname for the website.
 * **mode**
@@ -87,6 +83,13 @@ What kind of target we're publishing to. Available types are:
   * component-site (if the install command has been run for the target hostname)
   * site-script
   * site-style
+
+These parameters are used for type article-script only:
+
+* **article**
+Article to publish to for types article-script. Will be ignored for other target types.
+* **exclude**
+If type is article-script, include this parameter to set the exclude field to true (or false). This will make Appframe not include the script in the markup. Useful if you use code splitting to import modules dynamically.
 
 Example command to publish a site script using command line parameters:
 

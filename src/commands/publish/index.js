@@ -21,6 +21,7 @@ function getConfigFromArgs(args) {
 	const potentialArgs = [
 		'article',
 		'domain',
+		'exclude',
 		'hostname',
 		'mode',
 		'password',
@@ -147,6 +148,10 @@ async function publishItem(client, item) {
 	const { hostname, source, type, target } = item;
 
 	console.log(`Publishing '${source}' to ${type} '${target}' in ${hostname}...`);
+
+	if (item.article) {
+		item.targetArticleId = item.article;
+	}
 
 	if (type === 'article-script') {
 		return await client.publishToArticleScript(item);

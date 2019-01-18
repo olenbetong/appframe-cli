@@ -3,8 +3,19 @@ const menus = {
 	appframe [command] <options>
 
 	publish ................ publish module according to configuration
+	delete ................. delete module(s)
 	version ................ show package version
 	help ................... show help menu for a command
+	`,
+	delete: `
+	appframe delete <options>
+
+	--type ................. type of item we should delete
+	--confirm .............. automatically confirm deletion
+	--pattern .............. pattern files should match to be deleted
+	--article .............. article to delete from if type is article type
+
+	Deletes one or more script or style records matching a pattern.
 	`,
 	install: `
 	appframe install <options>

@@ -33,7 +33,13 @@ class AppframeDataClient extends AppframeClient {
 			url
 		};
 
-		return await this.request(reqOptions);
+		const response = await this.request(reqOptions);
+
+		if (response.success) {
+			return response.success;
+		}
+
+		return response;
 	}
 
 	async getData(options) {
@@ -97,7 +103,13 @@ class AppframeDataClient extends AppframeClient {
 			url
 		};
 	
-		return await this.request(reqOptions);
+		const response = await this.request(reqOptions);
+
+		if (response.success) {
+			return response.success;
+		}
+
+		return response;
 	}
 
 	async deleteItem(options) {
