@@ -1,32 +1,19 @@
 module.exports = {
-    'env': {
-        'node': true,
-        'jest/globals': true,
-        'commonjs': true,
-        'es6': true
-    },
-    'plugins': [
-        'jest'
-    ],
-    'extends': 'eslint:recommended',
-    'parserOptions': {
-        'ecmaVersion': 2018
-    },
-    'rules': {
-        'react/prop-types': 'off',
-        'indent': [
-            'error',
-            'tab'
-        ],
-        'linebreak-style': 'off',
-        'quotes': [
-            'error',
-            'single'
-        ],
-        'semi': [
-            'error',
-            'always'
-        ],
-        'no-console': 'off',
-    }
+  env: {
+    node: true,
+    "jest/globals": true,
+    commonjs: true,
+    es6: true
+  },
+  extends: ["eslint:recommended", "plugin:prettier/recommended"],
+  parser: "babel-eslint",
+  parserOptions: {
+    ecmaVersion: 2018,
+    sourceType: "module"
+  },
+  plugins: ["prettier", "jest"],
+  rules: {
+    "react/prop-types": "off",
+    "no-console": "off"
+  }
 };

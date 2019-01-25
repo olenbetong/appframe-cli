@@ -1,12 +1,12 @@
 const menus = {
-	main: `
+  main: `
 	appframe [command] <options>
 
 	publish ................ publish module according to configuration
 	version ................ show package version
 	help ................... show help menu for a command
 	`,
-	delete: `
+  delete: `
 	appframe delete <options>
 
 	--type ................. type of item we should delete
@@ -16,7 +16,7 @@ const menus = {
 
 	Deletes one or more script or style records matching a pattern.
 	`,
-	install: `
+  install: `
 	appframe install <options>
 
 	--domain ................. domain used to install required components
@@ -31,7 +31,7 @@ const menus = {
 	This will add data sources required by the CLI, that are not provided by
 	the default developer articles.
 	`,
-	publish: `
+  publish: `
 	appframe publish <options>
 	
 	--article ................. article to publish to (if type is script)
@@ -66,11 +66,9 @@ const menus = {
 };
 
 function help(args) {
-	const subCmd = args._[0] === 'help'
-		? args._[1]
-		: args._[0];
-	
-	console.log(menus[subCmd] || menus.main);
+  const subCmd = args._[0] === "help" ? args._[1] : args._[0];
+
+  console.log(menus[subCmd] || menus.main);
 }
 
 module.exports = help;

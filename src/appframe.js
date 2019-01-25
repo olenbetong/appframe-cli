@@ -1,201 +1,176 @@
-const AppframeClient = require('@olenbetong/appframe-client');
+const AppframeClient = require("@olenbetong/appframe-client");
 
 class AppframeDataClient extends AppframeClient {
-	// async getHostNameFromAlias(alias) {
-	//   const records = await this.getData({
-	//     articleId: 'sitesetup-general',
-	//     dataObjectId: 'dsAliases',
-	//     filter: `[Alias] = '${alias}'`
-	//   });
+  // async getHostNameFromAlias(alias) {
+  //   const records = await this.getData({
+  //     articleId: 'sitesetup-general',
+  //     dataObjectId: 'dsAliases',
+  //     filter: `[Alias] = '${alias}'`
+  //   });
 
-	//   if (records.length === 0) {
-	//     throw new Error(`No website found with alias '${alias}'`);
-	//   }
+  //   if (records.length === 0) {
+  //     throw new Error(`No website found with alias '${alias}'`);
+  //   }
 
-	//   return records[0][0];
-	// }
+  //   return records[0][0];
+  // }
 
-	async createItem(options) {
-		const {
-			articleId,
-			dataObjectId,
-			item
-		} = options;
-	
-		const url = this.getUrl(`create/${articleId}/${dataObjectId}`);
-		const body = JSON.stringify(item);
-		const reqOptions = {
-			body,
-			headers: {
-				// 'Content-Length': body.length,
-				'Content-Type': 'application/json; charset=utf-8',
-			},
-			url
-		};
+  async createItem(options) {
+    const { articleId, dataObjectId, item } = options;
 
-		const response = await this.request(reqOptions);
+    const url = this.getUrl(`create/${articleId}/${dataObjectId}`);
+    const body = JSON.stringify(item);
+    const reqOptions = {
+      body,
+      headers: {
+        // 'Content-Length': body.length,
+        "Content-Type": "application/json; charset=utf-8"
+      },
+      url
+    };
 
-		if (response.success) {
-			return response.success;
-		}
+    const response = await this.request(reqOptions);
 
-		return response;
-	}
+    if (response.success) {
+      return response.success;
+    }
 
-	async getData(options) {
-		const {
-			articleId,
-			dataObjectId,
-			filter
-		} = options;
-	
-		const url = this.getUrl(`retrieve/${articleId}/${dataObjectId}`);
-	
-		const body = JSON.stringify({
-			distinctRows: false,
-			filterObject: null,
-			filterString: '',
-			masterChildCriteria: {},
-			maxRecords: 100,
-			sortOrder: [],
-			whereClause: typeof filter === 'string' ? filter : '',
-			whereObject: typeof filter === 'object' ? filter : null
-		});
-	
-		const reqOptions = {
-			body,
-			headers: {
-				// 'Content-Length': body.length,
-				'Content-Type': 'application/json; charset=utf-8',
-			},
-			url
-		};
-	
-		const response = await this.request(reqOptions);
-	
-		if (response.success) {
-			return response.success;
-		}
+    return response;
+  }
 
-		return response;
-	}
+  async getData(options) {
+    const { articleId, dataObjectId, filter } = options;
 
-	async updateItem(options) {
-		const {
-			articleId,
-			data,
-			dataObjectId,
-			fieldName,
-			primKey
-		} = options;
-	
-		const url = this.getUrl(`update/${articleId}/${dataObjectId}`);
-		const body = typeof data === 'object'
-			? JSON.stringify({ ...data, PrimKey: primKey })
-			: JSON.stringify({ [fieldName]: data, PrimKey: primKey });
-	
-		const reqOptions = {
-			body,
-			headers: {
-				// 'Content-Length': body.length,
-				'Content-Type': 'application/json; charset=utf-8',
-			},
-			url
-		};
-	
-		const response = await this.request(reqOptions);
+    const url = this.getUrl(`retrieve/${articleId}/${dataObjectId}`);
 
-		if (response.success) {
-			return response.success;
-		}
+    const body = JSON.stringify({
+      distinctRows: false,
+      filterObject: null,
+      filterString: "",
+      masterChildCriteria: {},
+      maxRecords: 100,
+      sortOrder: [],
+      whereClause: typeof filter === "string" ? filter : "",
+      whereObject: typeof filter === "object" ? filter : null
+    });
 
-		return response;
-	}
+    const reqOptions = {
+      body,
+      headers: {
+        // 'Content-Length': body.length,
+        "Content-Type": "application/json; charset=utf-8"
+      },
+      url
+    };
 
-	async deleteItem(options) {
-		const {
-			articleId,
-			dataObjectId,
-			primKey
-		} = options;
-	
-		const url = this.getUrl(`destroy/${articleId}/${dataObjectId}`);
-		const body = JSON.stringify({
-			PrimKey: primKey
-		});
-	
-		const reqOptions = {
-			body,
-			headers: {
-				// 'Content-Length': body.length,
-				'Content-Type': 'application/json; charset=utf-8',
-			},
-			url
-		};
-	
-		const response = await this.request(reqOptions);
-	
-		if (response.success) {
-			return response.success;
-		}
+    const response = await this.request(reqOptions);
 
-		return response;
-	}
+    if (response.success) {
+      return response.success;
+    }
 
-	async executeProcedure(options) {
-		const {
-			articleId,
-			procedure,
-			params
-		} = options;
-	
-		const url = this.getUrl(`exec/${articleId}/${procedure}`);
-		const body = JSON.stringify(params);
-	
-		const reqOptions = {
-			body,
-			headers: {
-				// 'Content-Length': body.length,
-				'Content-Type': 'application/json; charset=utf-8',
-			},
-			url
-		};
-	
-		const response = await this.request(reqOptions);
-	
-		if (response.success) {
-			return response.success;
-		}
+    return response;
+  }
 
-		return response;
-	}
+  async updateItem(options) {
+    const { articleId, data, dataObjectId, fieldName, primKey } = options;
 
-	async getItemIfExists(options) {
-		const {
-			articleId,
-			dataObjectId,
-			filter,
-		} = options;
+    const url = this.getUrl(`update/${articleId}/${dataObjectId}`);
+    const body =
+      typeof data === "object"
+        ? JSON.stringify({ ...data, PrimKey: primKey })
+        : JSON.stringify({ [fieldName]: data, PrimKey: primKey });
 
-		try {
-			const record = await this.getData({
-				articleId,
-				dataObjectId,
-				filter
-			});
+    const reqOptions = {
+      body,
+      headers: {
+        // 'Content-Length': body.length,
+        "Content-Type": "application/json; charset=utf-8"
+      },
+      url
+    };
 
-			if (record.length === 0) {
-				return false;
-			}
+    const response = await this.request(reqOptions);
 
-			return record[0];
-		} catch (ex) {
-			console.error(ex);
-			return false;
-		}
-	}
+    if (response.success) {
+      return response.success;
+    }
+
+    return response;
+  }
+
+  async deleteItem(options) {
+    const { articleId, dataObjectId, primKey } = options;
+
+    const url = this.getUrl(`destroy/${articleId}/${dataObjectId}`);
+    const body = JSON.stringify({
+      PrimKey: primKey
+    });
+
+    const reqOptions = {
+      body,
+      headers: {
+        // 'Content-Length': body.length,
+        "Content-Type": "application/json; charset=utf-8"
+      },
+      url
+    };
+
+    const response = await this.request(reqOptions);
+
+    if (response.success) {
+      return response.success;
+    }
+
+    return response;
+  }
+
+  async executeProcedure(options) {
+    const { articleId, procedure, params } = options;
+
+    const url = this.getUrl(`exec/${articleId}/${procedure}`);
+    const body = JSON.stringify(params);
+
+    const reqOptions = {
+      body,
+      headers: {
+        // 'Content-Length': body.length,
+        "Content-Type": "application/json; charset=utf-8"
+      },
+      url
+    };
+
+    const response = await this.request(reqOptions);
+
+    if (response.success) {
+      return response.success;
+    }
+
+    return response;
+  }
+
+  async getItemIfExists(options) {
+    const { articleId, dataObjectId, filter } = options;
+
+    try {
+      const record = await this.getData({
+        articleId,
+        dataObjectId,
+        filter
+      });
+
+      if (record.length === 0) {
+        return false;
+      }
+
+      return record[0];
+    } catch (ex) {
+      console.error(ex);
+      return false;
+    }
+  }
 }
 
 module.exports = {
-	AppframeDataClient
+  AppframeDataClient
 };

@@ -126,7 +126,7 @@ For example, to publish the file `./dist/bundle.min.js` to a site script called 
 ['./dist/bundle.min.js', 'mylibrary.min.js', 'site-script']
 ```
 
-Note that for the `article-script` type, the target name have to be in the format `[article-name]/[script-name]`. For the `article-style` type, the target name should be the article name.
+Note that for the `article-script` and `article-style` type, the target name have to be in the format `[article-name]/[target-name]`.
 
 #### Object target
 

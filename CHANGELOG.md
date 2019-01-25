@@ -1,6 +1,11 @@
 
 # Changelog
 
+## [2.0.0] - 2019
+
+### Breaking changes
+- Article styles no longer use the article ID as target. An identifier that can be used to recognize it in the article style later should be used instead 
+
 ## [1.2.0] - 2019-01-18
 
 ### Added
@@ -65,6 +70,7 @@
 - Add support for production mode publish
 
 [UNRELEASED]: https://github.com/bjornarvh/appframe-cli/compare/v1.1.9...HEAD
+[1.2.0]: https://github.com/bjornarvh/appframe-cli/compare/v1.1.9...v1.2.0
 [1.1.9]: https://github.com/bjornarvh/appframe-cli/compare/v1.1.8...v1.1.9
 [1.1.8]: https://github.com/bjornarvh/appframe-cli/compare/v1.1.7...v1.1.8
 [1.1.7]: https://github.com/bjornarvh/appframe-cli/compare/v1.1.6...v1.1.7

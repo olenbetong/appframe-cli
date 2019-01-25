@@ -1,55 +1,57 @@
-const readline = require('readline-promise');
+const readline = require("readline-promise");
 
 async function getInputOrDefault(input, question, defaultValue) {
-	let q = question + ' ';
+  let q = question + " ";
 
-	if (defaultValue) {
-		q = `${q}(${defaultValue}) `;
-	}
+  if (defaultValue) {
+    q = `${q}(${defaultValue}) `;
+  }
 
-	let answer = await input.questionAsync(q);
+  let answer = await input.questionAsync(q);
 
-	if (!answer && defaultValue) {
-		answer = defaultValue;
-	} else if (!answer) {
-		console.warn('Please enter a value');
+  if (!answer && defaultValue) {
+    answer = defaultValue;
+  } else if (!answer) {
+    console.warn("Please enter a value");
 
-		return await getInputOrDefault(input, question, defaultValue);
-	}
+    return await getInputOrDefault(input, question, defaultValue);
+  }
 
-	return answer;
+  return answer;
 }
 
 async function getRequiredCommandParameters(args, reader) {
-	const rl = reader || readline.default.createInterface({
-		input: process.stdin,
-		output: process.stdout,
-		terminal: true
-	});
+  const rl =
+    reader ||
+    readline.default.createInterface({
+      input: process.stdin,
+      output: process.stdout,
+      terminal: true
+    });
 
-	const config = { ...args };
+  const config = { ...args };
 
-	if (!config.hostname) {
-		config.hostname = await getInputOrDefault(rl, 'Hostname?', config.domain);
-	}
+  if (!config.hostname) {
+    config.hostname = await getInputOrDefault(rl, "Hostname?", config.domain);
+  }
 
-	if (!config.domain) {
-		config.domain = await getInputOrDefault(rl, 'Domain?', config.hostname);
-	}
+  if (!config.domain) {
+    config.domain = await getInputOrDefault(rl, "Domain?", config.hostname);
+  }
 
-	if (!config.user) {
-		config.username = await getInputOrDefault(rl, 'Login?');
-	}
+  if (!config.user) {
+    config.username = await getInputOrDefault(rl, "Login?");
+  }
 
-	if (!config.password) {
-		config.password = await getInputOrDefault(rl, 'Password?');
-	}
+  if (!config.password) {
+    config.password = await getInputOrDefault(rl, "Password?");
+  }
 
-	rl.close();
+  rl.close();
 
-	return config;
+  return config;
 }
 
 module.exports = {
-	getRequiredCommandParameters
-}
+  getRequiredCommandParameters
+};
