@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.0.2] - 2019-06-06
+
+### 🏠 Internal
+
+- Updated dependencies
+
 ## [2.0.0] - 2019-01-25
 
 ### Breaking changes
@@ -8,38 +14,38 @@
 
 ## [1.2.0] - 2019-01-18
 
-### Added
+### 🚀 Enhancements
 
 - New exclude parameter for publish type article-script.
 
-### Fixed
+### 🐛 Bug Fix
 
 - Article parameter was ignored by article-script type. Had to use targetArticleId
 
 ## [1.1.9] - 2018-12-19
 
-### Fixed
+### 🐛 Bug Fix
 
 - PrimKey not supplied error when creating new records.
 
 ## [1.1.8] - 2018-12-18
 
-### Fixed
+### 🐛 Bug Fix
 
 - Publishing that failed with server error reported as succeeded ([Issue #1])
 - Server fails to deserialize JSON for some large requests ([Issue #1])
 
 ## [1.1.7] - 2018-12-17
 
-### Fixed
+### 🐛 Bug Fix
 
 - No longer reports success on failed authentication
 
-### Changed
+### 🏠 Internal
 
 - Use [@olenbetong.no/appframe-client](https://www.npmjs.com/package/@olenbetong/appframe-client) to communicate with the Appframe website
 
-### Added
+### 📃 Documentation
 
 - New CHANGELOG.md file
 
@@ -90,7 +96,8 @@
 
 - Add support for production mode publish
 
-[unreleased]: https://github.com/bjornarvh/appframe-cli/compare/v2.0.0...HEAD
+[unreleased]: https://github.com/bjornarvh/appframe-cli/compare/v2.0.2...HEAD
+[2.0.0]: https://github.com/bjornarvh/appframe-cli/compare/v2.0.0...v2.0.2
 [2.0.0]: https://github.com/bjornarvh/appframe-cli/compare/v1.2.0...v2.0.0
 [1.2.0]: https://github.com/bjornarvh/appframe-cli/compare/v1.1.9...v1.2.0
 [1.1.9]: https://github.com/bjornarvh/appframe-cli/compare/v1.1.8...v1.1.9

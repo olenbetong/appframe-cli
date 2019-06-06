@@ -1,4 +1,5 @@
 # Appframe CLI
+
 ### Development tools for Appframe Web
 
 ## Installation
@@ -19,15 +20,15 @@ npx appframe help
 
 Appframe CLI also requires the following development applications to be installed on the domain you are publishing to:
 
-* appdesigner
-* appdesigner-datasource
-* appdesigner-script
-* appdesigner-css
-* components
-* components-editor
-* sitesetup
-* sitesetup-stylesheet
-* sitesetup-script
+- appdesigner
+- appdesigner-datasource
+- appdesigner-script
+- appdesigner-css
+- components
+- components-editor
+- sitesetup
+- sitesetup-stylesheet
+- sitesetup-script
 
 Due to the way data objects work, changes in data objects in these articles may cause the CLI to be incompatible. Specifically this will happen if the index of the primkey column is changed.
 
@@ -41,10 +42,10 @@ The development articles do not contain any data source for site components, so 
 
 ### Parameters
 
- * **hostname** - Hostname to install the components to
- * **domain** (optional) - If hostname isn't a valid domain, use this to specify which domain we should use to publish.
- * **user** - Appframe login to use to install
- * **password** - Password for the user
+- **hostname** - Hostname to install the components to
+- **domain** (optional) - If hostname isn't a valid domain, use this to specify which domain we should use to publish.
+- **user** - Appframe login to use to install
+- **password** - Password for the user
 
 ## Publish scripts and styles
 
@@ -58,38 +59,38 @@ Most parameters can be passed either as a command line parameter, or in a config
 
 Credentials and domain used to publish sources.
 
-* **user**
-Appframe username used to publish the script/style.
-* **password**
-Password for the Appframe-user
-* **domain** (optional)
-Domain used for authentication, and to publish the scripts/styles. Must have the articles specified in the "Installation" section. If left blank, the `hostname` parameter will be used
+- **user**
+  Appframe username used to publish the script/style.
+- **password**
+  Password for the Appframe-user
+- **domain** (optional)
+  Domain used for authentication, and to publish the scripts/styles. Must have the articles specified in the "Installation" section. If left blank, the `hostname` parameter will be used
 
 #### Publish target
 
-* **hostname**
-Hostname for the website.
-* **mode**
-'test', 'production' or both. This parameter is not used for article-script and article-style
-* **source**
-Path to the file containing the source code to publish
-* **target**
-Name of the target we're publishing to. Will be used as path for components, or file name for site and article scripts/styles
-* **type**
-What kind of target we're publishing to. Available types are:
-  * article-script
-  * article-style
-  * component-global
-  * component-site (if the install command has been run for the target hostname)
-  * site-script
-  * site-style
+- **hostname**
+  Hostname for the website.
+- **mode**
+  'test', 'production' or both. This parameter is not used for article-script and article-style
+- **source**
+  Path to the file containing the source code to publish
+- **target**
+  Name of the target we're publishing to. Will be used as path for components, or file name for site and article scripts/styles
+- **type**
+  What kind of target we're publishing to. Available types are:
+  - article-script
+  - article-style
+  - component-global
+  - component-site (if the install command has been run for the target hostname)
+  - site-script
+  - site-style
 
 These parameters are used for type article-script only:
 
-* **article**
-Article to publish to for types article-script. Will be ignored for other target types.
-* **exclude**
-If type is article-script, include this parameter to set the exclude field to true (or false). This will make Appframe not include the script in the markup. Useful if you use code splitting to import modules dynamically.
+- **article**
+  Article to publish to for types article-script. Will be ignored for other target types.
+- **exclude**
+  If type is article-script, include this parameter to set the exclude field to true (or false). This will make Appframe not include the script in the markup. Useful if you use code splitting to import modules dynamically.
 
 Example command to publish a site script using command line parameters:
 
@@ -101,11 +102,10 @@ appframe publish --hostname mydomain.com --user myuser --password mypassword --s
 
 If you need to publish multiple sources/targets or get parameters programmatically (e.g. get username/password from an ENV variable.), you can use a configuration file instead of CLI parameters.
 
-* **config**
-Path to a configuration file. We use node `require()` to get the configuration, so this may be a JSON file, or a javascript file that exports an object.
-* **targets**
-If you're using a configuration file, the `targets` parameter can be used to publish multiple sources. See the Targets section below for usage description
-
+- **config**
+  Path to a configuration file. We use node `require()` to get the configuration, so this may be a JSON file, or a javascript file that exports an object.
+- **targets**
+  If you're using a configuration file, the `targets` parameter can be used to publish multiple sources. See the Targets section below for usage description
 
 ### Targets
 
@@ -123,7 +123,7 @@ Array items:
 For example, to publish the file `./dist/bundle.min.js` to a site script called `mylibrary.min.js`:
 
 ```js
-['./dist/bundle.min.js', 'mylibrary.min.js', 'site-script']
+["./dist/bundle.min.js", "mylibrary.min.js", "site-script"];
 ```
 
 Note that for the `article-script` and `article-style` type, the target name have to be in the format `[article-name]/[target-name]`.
@@ -147,35 +147,31 @@ Example to publish a source file named `./dist/bundle.min.js` to a global compon
 Given this configuration file called `appframe.config.js`
 
 ```js
-const dotenv = require('dotenv');
+const dotenv = require("dotenv");
 
-dotenv.load();
+dotenv.config();
 
-const {
-  APPFRAME_HOSTNAME: hostname,
-  APPFRAME_LOGIN: user,
-  APPFRAME_PWD: password
-} = process.env;
+const { APPFRAME_HOSTNAME: hostname, APPFRAME_LOGIN: user, APPFRAME_PWD: password } = process.env;
 
-const source = './test/testsource.js';
-const target = 'jest-test-source.min.js';
-const testArticle = 'publish-test';
+const source = "./test/testsource.js";
+const target = "jest-test-source.min.js";
+const testArticle = "publish-test";
 
 module.exports = {
-  mode: 'production',
+  mode: "production",
   targets: [
-    ['./test/testsource.js', testArticle, 'article-style'],
-    ['./test/testsource.js', `${testArticle}/${target}`, 'article-script'],
-    { source, target, type: 'component-site' },
-    { source, target, type: 'component-global' },
-    { source, target, type: 'site-script' }
+    ["./test/testsource.js", testArticle, "article-style"],
+    ["./test/testsource.js", `${testArticle}/${target}`, "article-script"],
+    { source, target, type: "component-site" },
+    { source, target, type: "component-global" },
+    { source, target, type: "site-script" }
   ],
-  domain: 'appframe.example.com',
-  hostname: 'AppframeWeb2016',
+  domain: "appframe.example.com",
+  hostname: "AppframeWeb2016",
   password,
   source,
   target,
-  type: 'site-style',
+  type: "site-style",
   user
 };
 ```
