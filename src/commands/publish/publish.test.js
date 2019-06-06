@@ -3,7 +3,7 @@ const publishCommand = require("./index");
 const { PublishClient } = require("./client");
 const dotenv = require("dotenv");
 
-dotenv.load();
+dotenv.config();
 
 const sourceData = Math.random()
   .toString(32)

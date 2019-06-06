@@ -1,7 +1,7 @@
 const dotenv = require("dotenv");
 const { AppframeDataClient } = require("./appframe");
 
-dotenv.load();
+dotenv.config();
 
 const { APPFRAME_LOGIN: username, APPFRAME_PWD: password, APPFRAME_HOSTNAME: hostname } = process.env;
 

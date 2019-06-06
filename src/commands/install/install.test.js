@@ -3,7 +3,7 @@ const { getRequiredCommandParameters } = require("./common");
 const { InstallClient } = require("./client");
 const dotenv = require("dotenv");
 
-dotenv.load();
+dotenv.config();
 
 const { APPFRAME_LOGIN: username, APPFRAME_PWD: password, APPFRAME_HOSTNAME: hostname } = process.env;
 

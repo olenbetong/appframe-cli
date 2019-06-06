@@ -16,23 +16,23 @@
   ],
   "devDependencies": {
     "babel-eslint": "^10.0.1",
-    "dotenv": "^6.2.0",
-    "eslint": "^5.13.0",
-    "eslint-config-prettier": "^4.0.0",
-    "eslint-plugin-jest": "^22.2.2",
-    "eslint-plugin-prettier": "^3.0.1",
-    "jest": "^24.1.0",
-    "prettier": "^1.16.4"
+    "dotenv": "^8.0.0",
+    "eslint": "^5.16.0",
+    "eslint-config-prettier": "^4.3.0",
+    "eslint-plugin-jest": "^22.6.4",
+    "eslint-plugin-prettier": "^3.1.0",
+    "jest": "^24.8.0",
+    "prettier": "^1.17.1"
   },
   "dependencies": {
-    "@olenbetong/appframe-client": "^2.1.3",
-    "cheerio": "^1.0.0-rc.2",
+    "@olenbetong/appframe-client": "^2.1.4",
+    "cheerio": "^1.0.0-rc.3",
     "merge": "^1.2.1",
     "minimist": "^1.2.0",
     "querystring": "^0.2.0",
-    "readline-promise": "^1.0.3",
+    "readline-promise": "^1.0.4",
     "request": "^2.88.0",
-    "request-promise-native": "^1.0.5"
+    "request-promise-native": "^1.0.7"
   },
   "repository": "https://github.com/olenbetong/appframe-cli.git"
 }

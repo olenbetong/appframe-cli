@@ -1,6 +1,6 @@
 const dotenv = require("dotenv");
 
-dotenv.load();
+dotenv.config();
 
 const { APPFRAME_HOSTNAME: hostname, APPFRAME_LOGIN: user, APPFRAME_PWD: password } = process.env;
 
