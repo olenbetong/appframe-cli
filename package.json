@@ -30,11 +30,14 @@
     "graceful-fs": "^4.1.15",
     "merge": "^1.2.1",
     "minimist": "^1.2.0",
+    "mkdirp": "^0.5.1",
     "npmlog": "^4.1.2",
     "querystring": "^0.2.0",
     "readline-promise": "^1.0.4",
     "request": "^2.88.0",
-    "request-promise-native": "^1.0.7"
+    "request-promise-native": "^1.0.7",
+    "uuid": "^3.3.2",
+    "write-file-atomic": "^3.0.0"
   },
   "repository": "https://github.com/olenbetong/appframe-cli.git"
 }
