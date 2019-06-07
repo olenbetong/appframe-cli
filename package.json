@@ -27,8 +27,10 @@
   "dependencies": {
     "@olenbetong/appframe-client": "^2.1.4",
     "cheerio": "^1.0.0-rc.3",
+    "graceful-fs": "^4.1.15",
     "merge": "^1.2.1",
     "minimist": "^1.2.0",
+    "npmlog": "^4.1.2",
     "querystring": "^0.2.0",
     "readline-promise": "^1.0.4",
     "request": "^2.88.0",

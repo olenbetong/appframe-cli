@@ -1,2 +1,13 @@
 #!/usr/bin/env node
-require('..')();
+const { spawn } = require("child_process");
+const [node, , ...args] = process.argv;
+
+const cli = spawn(node, [
+  "--experimental-modules",
+  "./appframe-cli.mjs",
+  ...args
+]);
+
+cli.stdout.on("data", data => console.log("OUT", data.toString()));
+cli.stderr.on("data", data => console.error("ERR", data.toString()));
+cli.on("exit", code => console.group(`CLI exited with code ${code}`));
