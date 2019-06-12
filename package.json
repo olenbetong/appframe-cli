@@ -28,6 +28,7 @@
     "@olenbetong/appframe-client": "^2.1.4",
     "abbrev": "^1.1.1",
     "cheerio": "^1.0.0-rc.3",
+    "glob": "^7.1.4",
     "graceful-fs": "^4.1.15",
     "merge": "^1.2.1",
     "minimist": "^1.2.0",
@@ -39,6 +40,7 @@
     "readline-promise": "^1.0.4",
     "request": "^2.88.0",
     "request-promise-native": "^1.0.7",
+    "rimraf": "^2.6.3",
     "uuid": "^3.3.2",
     "write-file-atomic": "^3.0.0"
   },
