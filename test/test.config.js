@@ -2,7 +2,11 @@ const dotenv = require("dotenv");
 
 dotenv.config();
 
-const { APPFRAME_HOSTNAME: hostname, APPFRAME_LOGIN: user, APPFRAME_PWD: password } = process.env;
+const {
+  APPFRAME_HOSTNAME: hostname,
+  APPFRAME_LOGIN: user,
+  APPFRAME_PWD: password
+} = process.env;
 
 const source = "./test/testsource.js";
 const target = "jest-test-source.min.js";
