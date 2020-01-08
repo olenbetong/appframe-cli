@@ -171,57 +171,24 @@ class PublishClient extends AppframeDataClient {
   }
 
   async publishToArticleStyle(config) {
-    const { domain, hostname, source, sourceData, target, targetArticleId } = config;
+    const { exclude = false, hostname, target, targetArticleId } = config;
 
-    try {
-      const record = await this.getItemIfExists({
-        articleId: "appdesigner-css",
-        domain,
-        dataObjectId: "dsArticle",
-        filter: `[HostName] = '${hostname}' AND [ArticleID] = '${targetArticleId}'`,
-        hostname
-      });
-
-      if (record) {
-        const startString = `/***** @appframe-publish-start: ${target} ---- ****/`;
-        const endString = `/***** @appframe-publish-end: '${target}' ---- ****/`;
-        let [, , , css, primKey] = record;
-
-        const startIdx = css.indexOf(startString);
-        const endIdx = css.indexOf(endString) + endString.length;
-
-        if (css.indexOf(startString) < 0) {
-          console.log(`Inserting styles from '${source}' in article '${targetArticleId}'...`);
-          css += `\n\n${startString}\n${sourceData}\n${endString}\n\n`;
-        } else {
-          console.log(`Updating styles from '${source}' in article '${targetArticleId}'...`);
-          const before = css.substring(0, startIdx);
-          const after = css.substring(endIdx);
-
-          css = `${before}${startString}\n${sourceData}\n${endString}${after}`;
-        }
-
-        const status = await this.updateItem({
-          articleId: "appdesigner-css",
-          dataObjectId: "dsArticle",
-          data: css,
-          domain,
-          fieldName: "CSS",
-          hostname,
-          primKey
-        });
-
-        return status instanceof Array ? true : false;
-      } else {
-        console.error(`Article '${targetArticleId}' not found in host '${hostname}'. Can't publish style.`);
-
-        return false;
-      }
-    } catch (ex) {
-      console.error(ex.message);
-
-      return false;
-    }
+    return await this.publishItemToDataObject({
+      ...config,
+      createArticleId: "appdesigner",
+      createDataObjectId: "dsStylesheets",
+      extraFields: { Exclude: exclude },
+      fieldName: "Script",
+      filter: `[HostName] = '${hostname}' AND [ArticleID] = '${targetArticleId}' AND [ID] = '${target}'`,
+      item: {
+        ArticleID: targetArticleId,
+        ID: target,
+        HostName: hostname
+      },
+      primKeyIndex: 4,
+      updateArticleId: "appdesigner-css",
+      updateDataObjectId: "dsStyles"
+    });
   }
 }
 
