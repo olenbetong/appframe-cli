@@ -178,7 +178,7 @@ class PublishClient extends AppframeDataClient {
       createArticleId: "appdesigner",
       createDataObjectId: "dsStylesheets",
       extraFields: { Exclude: exclude },
-      fieldName: "Script",
+      fieldName: "Style",
       filter: `[HostName] = '${hostname}' AND [ArticleID] = '${targetArticleId}' AND [ID] = '${target}'`,
       item: {
         ArticleID: targetArticleId,
