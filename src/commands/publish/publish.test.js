@@ -5,9 +5,7 @@ const dotenv = require("dotenv");
 
 dotenv.config();
 
-const sourceData = Math.random()
-  .toString(32)
-  .slice(2);
+const sourceData = Math.random().toString(32).slice(2);
 
 const { APPFRAME_LOGIN: username, APPFRAME_PWD: password, APPFRAME_HOSTNAME: hostname } = process.env;
 
@@ -17,7 +15,7 @@ const config = {
   password,
   sourceData,
   target: "jest-test-module.min.js",
-  username
+  username,
 };
 
 describe("PublishClient", () => {
@@ -32,14 +30,14 @@ describe("PublishClient", () => {
     const resultTest = await client.publishToGlobalComponent({
       ...config,
       mode: "test",
-      type: "component-global"
+      type: "component-global",
     });
 
     expect(resultTest).toEqual(true);
 
     const resultProd = await client.publishToGlobalComponent({
       ...config,
-      mode: "production"
+      mode: "production",
     });
 
     expect(resultProd).toEqual(true);
@@ -48,7 +46,7 @@ describe("PublishClient", () => {
       articleId: "components-editor",
       dataObjectId: "dsComponent",
       domain: hostname,
-      filter: `[Path] = '${config.target}'`
+      filter: `[Path] = '${config.target}'`,
     });
 
     const [, , content, contentTest] = publishedCode[0];
@@ -60,14 +58,14 @@ describe("PublishClient", () => {
   test("can publish to site component", async () => {
     const resultTest = await client.publishToSiteComponent({
       ...config,
-      mode: "test"
+      mode: "test",
     });
 
     expect(resultTest).toEqual(true);
 
     const resultProd = await client.publishToSiteComponent({
       ...config,
-      mode: "production"
+      mode: "production",
     });
 
     expect(resultProd).toEqual(true);
@@ -76,7 +74,7 @@ describe("PublishClient", () => {
       articleId: "components",
       dataObjectId: "dsSiteComponents",
       domain: hostname,
-      filter: `[HostName] = '${config.hostname}' AND [Path] = '${config.target}'`
+      filter: `[HostName] = '${config.hostname}' AND [Path] = '${config.target}'`,
     });
 
     const [, , , content, contentTest] = publishedCode[0];
@@ -88,14 +86,14 @@ describe("PublishClient", () => {
   test("can publish to site script", async () => {
     const resultTest = await client.publishToSiteScript({
       ...config,
-      mode: "test"
+      mode: "test",
     });
 
     expect(resultTest).toEqual(true);
 
     const resultProd = await client.publishToSiteScript({
       ...config,
-      mode: "production"
+      mode: "production",
     });
 
     expect(resultProd).toEqual(true);
@@ -104,7 +102,7 @@ describe("PublishClient", () => {
       articleId: "sitesetup-script",
       dataObjectId: "dsScript",
       domain: hostname,
-      filter: `[Hostname] = '${hostname}' AND [Name] = '${config.target}'`
+      filter: `[Hostname] = '${hostname}' AND [Name] = '${config.target}'`,
     });
 
     const [, content, contentTest] = publishedCode[0];
@@ -117,7 +115,7 @@ describe("PublishClient", () => {
     const resultTest = await client.publishToSiteStyle({
       ...config,
       mode: "test",
-      target: "jest-test-module.min.css"
+      target: "jest-test-module.min.css",
     });
 
     expect(resultTest).toEqual(true);
@@ -125,7 +123,7 @@ describe("PublishClient", () => {
     const resultProd = await client.publishToSiteStyle({
       ...config,
       mode: "production",
-      target: "jest-test-module.min.css"
+      target: "jest-test-module.min.css",
     });
 
     expect(resultProd).toEqual(true);
@@ -134,7 +132,7 @@ describe("PublishClient", () => {
       articleId: "sitesetup-stylesheet",
       dataObjectId: "dsStylesheet",
       domain: hostname,
-      filter: `[Hostname] = '${hostname}' AND [Name] = 'jest-test-module.min.css'`
+      filter: `[Hostname] = '${hostname}' AND [Name] = 'jest-test-module.min.css'`,
     });
 
     const [, , content, contentTest] = publishedCode[0];
@@ -148,7 +146,7 @@ describe("PublishClient", () => {
       articleId: "appdesigner-script",
       dataObjectId: "dsScripts",
       domain: hostname,
-      filter: `[Hostname] = '${hostname}' AND [ArticleID] = 'publish-test' AND [ID] = '${config.target}'`
+      filter: `[Hostname] = '${hostname}' AND [ArticleID] = 'publish-test' AND [ID] = '${config.target}'`,
     });
 
     const initialExclude = before[4];
@@ -156,7 +154,7 @@ describe("PublishClient", () => {
     const result = await client.publishToArticleScript({
       ...config,
       exclude: !initialExclude,
-      targetArticleId: "publish-test"
+      targetArticleId: "publish-test",
     });
 
     expect(result).toEqual(true);
@@ -165,7 +163,7 @@ describe("PublishClient", () => {
       articleId: "appdesigner-script",
       dataObjectId: "dsScripts",
       domain: hostname,
-      filter: `[Hostname] = '${hostname}' AND [ArticleID] = 'publish-test' AND [ID] = '${config.target}'`
+      filter: `[Hostname] = '${hostname}' AND [ArticleID] = 'publish-test' AND [ID] = '${config.target}'`,
     });
 
     const [, , , content, exclude] = publishedCode[0];
@@ -181,7 +179,7 @@ describe("PublishClient", () => {
       target: "publish-test",
       targetArticleId: "publish-test",
       source: "jestTest",
-      sourceData
+      sourceData,
     });
 
     expect(result).toEqual(true);
@@ -190,7 +188,7 @@ describe("PublishClient", () => {
       articleId: "appdesigner-css",
       dataObjectId: "dsArticle",
       domain: hostname,
-      filter: `[HostName] = '${hostname}' AND [ArticleID] = 'publish-test'`
+      filter: `[HostName] = '${hostname}' AND [ArticleID] = 'publish-test'`,
     });
 
     const content = publishedCode[0][3];
@@ -209,7 +207,7 @@ describe("PublishClient", () => {
       ...config,
       mode: "test",
       target: "jest-test-large-bundle.js",
-      type: "component-global"
+      type: "component-global",
     };
 
     const largeSource = fs.readFileSync("./test/large-file.js.map", "utf8");

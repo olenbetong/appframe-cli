@@ -1,6 +1,6 @@
 test("help outputs documentation for the right command", () => {
   let outputData = "";
-  const storeLog = inputs => (outputData += inputs);
+  const storeLog = (inputs) => (outputData += inputs);
 
   console["log"] = jest.fn(storeLog);
 
@@ -19,7 +19,7 @@ test("help outputs documentation for the right command", () => {
 
 test("help outputs commands if no command is specified", () => {
   let outputData = "";
-  const storeLog = inputs => (outputData += inputs);
+  const storeLog = (inputs) => (outputData += inputs);
 
   console["log"] = jest.fn(storeLog);
 
@@ -32,7 +32,7 @@ test("help outputs commands if no command is specified", () => {
 
 test("version outputs version", () => {
   let outputData = "";
-  const storeLog = inputs => (outputData += inputs);
+  const storeLog = (inputs) => (outputData += inputs);
 
   console["log"] = jest.fn(storeLog);
 

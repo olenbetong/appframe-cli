@@ -6,7 +6,7 @@ const types = ["article-script", "article-style", "component-global", "component
 
 const defaultTargetProperties = {
   mode: "test",
-  type: "component-global"
+  type: "component-global",
 };
 
 function getConfigFromArgs(args) {
@@ -55,7 +55,7 @@ async function getTargetFromConfig(config) {
     target,
     source,
     sourceData: await getSourceData(source),
-    type
+    type,
   };
 
   if (!rv.domain && rv.hostname) {
@@ -81,7 +81,7 @@ async function getTargetFromShorthandArray(arr, defaults) {
       source,
       sourceData,
       target,
-      type
+      type,
     };
 
     if (type === "article-script" || type === "article-style") {
@@ -186,7 +186,7 @@ async function publish(args) {
   const client = new PublishClient({
     hostname: config.domain,
     password: config.password,
-    username: config.user
+    username: config.user,
   });
 
   const auth = await client.login(config.domain, config.user, config.password);

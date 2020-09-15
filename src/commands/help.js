@@ -62,7 +62,7 @@ const menus = {
 			{ source: './demo.js', target: '/path/to/module/demo.js', type: 'component-global' },
 			['./dist/bundle.min.js', '[article-name]/bundle.min.js', 'article-script', 'another-hostname.com']
 		]
-	`
+	`,
 };
 
 function help(args) {

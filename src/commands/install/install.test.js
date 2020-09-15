@@ -23,7 +23,7 @@ describe("Install command", () => {
       domain: "test.synergi.olenbetong.no",
       hostname,
       username,
-      password
+      password,
     });
   });
 
@@ -32,7 +32,7 @@ describe("Install command", () => {
     const values = [hostname, "", username, password];
     const mockReadline = {
       close: () => null,
-      questionAsync: () => Promise.resolve(values[readCount++])
+      questionAsync: () => Promise.resolve(values[readCount++]),
     };
 
     const config = await getRequiredCommandParameters({}, mockReadline);
@@ -41,7 +41,7 @@ describe("Install command", () => {
       domain: hostname,
       hostname,
       username,
-      password
+      password,
     });
   });
 });

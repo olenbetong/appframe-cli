@@ -30,5 +30,5 @@ function getSourceData(file) {
 }
 
 module.exports = {
-  getSourceData
+  getSourceData,
 };

@@ -9,7 +9,7 @@ class AppframeArticleClient extends AppframeDataclient {
       domain,
       dataObjectId: "dsScripts",
       filter: `[HostName] = '${options.hostname}' AND [ArticleID] = '${options.articleId}' AND [ID] = '${options.id}`,
-      hostname: options.hostname
+      hostname: options.hostname,
     });
 
     if (!record) {
@@ -24,7 +24,7 @@ class AppframeArticleClient extends AppframeDataclient {
       hostname,
       id,
       primKey,
-      script
+      script,
     };
   }
 
@@ -36,7 +36,7 @@ class AppframeArticleClient extends AppframeDataclient {
       domain,
       dataObjectId: "dsArticle",
       filter: `[HostName] = '${options.hostname}' AND [ArticleID] = '${options.articleId}'`,
-      hostname: options.hostname
+      hostname: options.hostname,
     });
 
     if (!record) {
@@ -50,11 +50,11 @@ class AppframeArticleClient extends AppframeDataclient {
       checkedOutBy,
       content,
       hostname,
-      primKey
+      primKey,
     };
   }
 }
 
 module.exports = {
-  AppframeArticleClient
+  AppframeArticleClient,
 };

@@ -14,18 +14,18 @@ class PublishClient extends AppframeDataClient {
       target,
       type,
       updateArticleId,
-      updateDataObjectId
+      updateDataObjectId,
     } = config;
 
     const commonOptions = {
       articleId: createArticleId,
       dataObjectId: createDataObjectId,
-      domain
+      domain,
     };
 
     const getItemOptions = {
       ...commonOptions,
-      filter
+      filter,
     };
 
     try {
@@ -35,7 +35,7 @@ class PublishClient extends AppframeDataClient {
         console.log(`Creating '${target}'...`);
         const createOptions = {
           ...commonOptions,
-          item
+          item,
         };
 
         record = await this.createItem(createOptions);
@@ -54,7 +54,7 @@ class PublishClient extends AppframeDataClient {
         dataObjectId: updateDataObjectId,
         data: sourceData,
         fieldName,
-        primKey
+        primKey,
       };
 
       const status = await this.updateItem(putDataOptions);
@@ -81,11 +81,11 @@ class PublishClient extends AppframeDataClient {
       fieldName: mode.toLowerCase() === "production" ? "Content" : "ContentTest",
       filter: `[Path] = '${target}'`,
       item: {
-        Path: target
+        Path: target,
       },
       primKeyIndex: 3,
       updateArticleId: "components-editor",
-      updateDataObjectId: "dsComponent"
+      updateDataObjectId: "dsComponent",
     });
   }
 
@@ -100,11 +100,11 @@ class PublishClient extends AppframeDataClient {
       filter: `[HostName] = '${hostname}' AND [Path] = '${target}'`,
       item: {
         HostName: hostname,
-        Path: target
+        Path: target,
       },
       primKeyIndex: 0,
       updateArticleId: "components",
-      updateDataObjectId: "dsSiteComponents"
+      updateDataObjectId: "dsSiteComponents",
     });
   }
 
@@ -119,11 +119,11 @@ class PublishClient extends AppframeDataClient {
       filter: `[HostName] = '${hostname}' AND [Name] = '${target}'`,
       item: {
         Name: target,
-        HostName: hostname
+        HostName: hostname,
       },
       primKeyIndex: 4,
       updateArticleId: "sitesetup-stylesheet",
-      updateDataObjectId: "dsStylesheet"
+      updateDataObjectId: "dsStylesheet",
     });
   }
 
@@ -138,11 +138,11 @@ class PublishClient extends AppframeDataClient {
       filter: `[HostName] = '${hostname}' AND [Name] = '${target}'`,
       item: {
         Name: target,
-        HostName: hostname
+        HostName: hostname,
       },
       primKeyIndex: 4,
       updateArticleId: "sitesetup-script",
-      updateDataObjectId: "dsScript"
+      updateDataObjectId: "dsScript",
     });
   }
 
@@ -158,11 +158,11 @@ class PublishClient extends AppframeDataClient {
       item: {
         ArticleID: targetArticleId,
         ID: target,
-        HostName: hostname
+        HostName: hostname,
       },
       primKeyIndex: 4,
       updateArticleId: "appdesigner-script",
-      updateDataObjectId: "dsScripts"
+      updateDataObjectId: "dsScripts",
     });
   }
 
@@ -175,7 +175,7 @@ class PublishClient extends AppframeDataClient {
         domain,
         dataObjectId: "dsArticle",
         filter: `[HostName] = '${hostname}' AND [ArticleID] = '${target}'`,
-        hostname
+        hostname,
       });
 
       if (record) {
@@ -204,7 +204,7 @@ class PublishClient extends AppframeDataClient {
           domain,
           fieldName: "CSS",
           hostname,
-          primKey
+          primKey,
         });
 
         return status instanceof Array;
@@ -222,5 +222,5 @@ class PublishClient extends AppframeDataClient {
 }
 
 module.exports = {
-  PublishClient
+  PublishClient,
 };

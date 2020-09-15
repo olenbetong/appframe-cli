@@ -26,7 +26,7 @@ async function getRequiredCommandParameters(args, reader) {
     readline.default.createInterface({
       input: process.stdin,
       output: process.stdout,
-      terminal: true
+      terminal: true,
     });
 
   const config = { ...args };
@@ -53,5 +53,5 @@ async function getRequiredCommandParameters(args, reader) {
 }
 
 module.exports = {
-  getRequiredCommandParameters
+  getRequiredCommandParameters,
 };

@@ -7,13 +7,13 @@ class InstallClient extends AppframeDataClient {
     const filter = `[HostName] = '${hostname}' AND [ArticleId] = '${articleId}' AND [ID] = '${dataObjectId}'`;
     const options = {
       articleId: "appdesigner",
-      dataObjectId: "dsDataSources"
+      dataObjectId: "dsDataSources",
     };
 
     try {
       let record = await this.getData({
         ...options,
-        filter
+        filter,
       });
 
       if (record.length === 0) {
@@ -25,8 +25,8 @@ class InstallClient extends AppframeDataClient {
             ArticleId: articleId,
             ID: dataObjectId,
             HostName: hostname,
-            ViewName: "stbv_WebSiteCMS_Components"
-          }
+            ViewName: "stbv_WebSiteCMS_Components",
+          },
         });
       } else {
         record = record[0];
@@ -42,9 +42,9 @@ class InstallClient extends AppframeDataClient {
         data: {
           AllowDelete: true,
           AllowInsert: true,
-          AllowUpdate: true
+          AllowUpdate: true,
         },
-        primKey
+        primKey,
       });
 
       const fields = ["PrimKey", "Content", "ContentTest", "HostName", "Path"];
@@ -58,8 +58,8 @@ class InstallClient extends AppframeDataClient {
             ArticleId: articleId,
             DataSourceID: dataObjectId,
             FieldName: field,
-            HostName: hostname
-          }
+            HostName: hostname,
+          },
         });
       }
 
@@ -72,8 +72,8 @@ class InstallClient extends AppframeDataClient {
           Description: "[appframe-cli] Added site component data source",
           FromArticle: "components",
           FromHostName: hostname,
-          toArticle: "components"
-        }
+          toArticle: "components",
+        },
       });
 
       console.log("Done!");
@@ -84,5 +84,5 @@ class InstallClient extends AppframeDataClient {
 }
 
 module.exports = {
-  InstallClient
+  InstallClient,
 };

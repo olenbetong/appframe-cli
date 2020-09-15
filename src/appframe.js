@@ -24,9 +24,9 @@ class AppframeDataClient extends AppframeClient {
       body,
       headers: {
         // 'Content-Length': body.length,
-        "Content-Type": "application/json; charset=utf-8"
+        "Content-Type": "application/json; charset=utf-8",
       },
-      url
+      url,
     };
 
     const response = await this.request(reqOptions);
@@ -51,16 +51,16 @@ class AppframeDataClient extends AppframeClient {
       maxRecords: 100,
       sortOrder: [],
       whereClause: typeof filter === "string" ? filter : "",
-      whereObject: typeof filter === "object" ? filter : null
+      whereObject: typeof filter === "object" ? filter : null,
     });
 
     const reqOptions = {
       body,
       headers: {
         // 'Content-Length': body.length,
-        "Content-Type": "application/json; charset=utf-8"
+        "Content-Type": "application/json; charset=utf-8",
       },
-      url
+      url,
     };
 
     const response = await this.request(reqOptions);
@@ -85,9 +85,9 @@ class AppframeDataClient extends AppframeClient {
       body,
       headers: {
         // 'Content-Length': body.length,
-        "Content-Type": "application/json; charset=utf-8"
+        "Content-Type": "application/json; charset=utf-8",
       },
-      url
+      url,
     };
 
     const response = await this.request(reqOptions);
@@ -104,16 +104,16 @@ class AppframeDataClient extends AppframeClient {
 
     const url = this.getUrl(`destroy/${articleId}/${dataObjectId}`);
     const body = JSON.stringify({
-      PrimKey: primKey
+      PrimKey: primKey,
     });
 
     const reqOptions = {
       body,
       headers: {
         // 'Content-Length': body.length,
-        "Content-Type": "application/json; charset=utf-8"
+        "Content-Type": "application/json; charset=utf-8",
       },
-      url
+      url,
     };
 
     const response = await this.request(reqOptions);
@@ -135,9 +135,9 @@ class AppframeDataClient extends AppframeClient {
       body,
       headers: {
         // 'Content-Length': body.length,
-        "Content-Type": "application/json; charset=utf-8"
+        "Content-Type": "application/json; charset=utf-8",
       },
-      url
+      url,
     };
 
     const response = await this.request(reqOptions);
@@ -156,7 +156,7 @@ class AppframeDataClient extends AppframeClient {
       const record = await this.getData({
         articleId,
         dataObjectId,
-        filter
+        filter,
       });
 
       if (record.length === 0) {
@@ -172,5 +172,5 @@ class AppframeDataClient extends AppframeClient {
 }
 
 module.exports = {
-  AppframeDataClient
+  AppframeDataClient,
 };

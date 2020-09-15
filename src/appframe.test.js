@@ -14,7 +14,7 @@ describe("AppframeDataClient", () => {
 
   test("failed login returns success false", async () => {
     let outputData = "";
-    const storeLog = inputs => (outputData += inputs);
+    const storeLog = (inputs) => (outputData += inputs);
 
     console["warn"] = jest.fn(storeLog);
     const client = new AppframeDataClient({ hostname, username: "asdfjkl", password: "asdfjkl" });
@@ -31,26 +31,26 @@ describe("AppframeDataClient", () => {
     const commonOptions = {
       articleId: "components",
       dataObjectId: "dsComponents",
-      domain: hostname
+      domain: hostname,
     };
 
     const existing = await client.getData({
       ...commonOptions,
-      filter: "[Path] = 'jest-test-appframe.js'"
+      filter: "[Path] = 'jest-test-appframe.js'",
     });
 
     if (existing && existing.length > 0) {
       await client.deleteItem({
         ...commonOptions,
-        primKey: existing[0][3]
+        primKey: existing[0][3],
       });
     }
 
     const result = await client.createItem({
       ...commonOptions,
       item: {
-        Path: "jest-test-appframe.js"
-      }
+        Path: "jest-test-appframe.js",
+      },
     });
 
     expect(result).toBeTruthy();
@@ -60,7 +60,7 @@ describe("AppframeDataClient", () => {
 
     const records = await client.getData({
       ...commonOptions,
-      filter: `[PrimKey] = '${primKey}'`
+      filter: `[PrimKey] = '${primKey}'`,
     });
 
     expect(records).toBeTruthy();
@@ -70,7 +70,7 @@ describe("AppframeDataClient", () => {
       ...commonOptions,
       fieldName: "Path",
       data: "jest-test-appframe-updated.js",
-      primKey
+      primKey,
     });
 
     expect(updated).toBeTruthy();
@@ -78,14 +78,14 @@ describe("AppframeDataClient", () => {
 
     const isDeleted = await client.deleteItem({
       ...commonOptions,
-      primKey
+      primKey,
     });
 
     expect(isDeleted).toBe(true);
 
     const noData = await client.getData({
       ...commonOptions,
-      filter: `[PrimKey] = '${primKey}'`
+      filter: `[PrimKey] = '${primKey}'`,
     });
 
     expect(noData.length).toBe(0);
@@ -99,13 +99,13 @@ describe("AppframeDataClient", () => {
         ArticleId: "components",
         DataSourceID: "dsSiteComponents",
         FieldName: "Created",
-        HostName: hostname
-      }
+        HostName: hostname,
+      },
     };
 
     const tables = await client.executeProcedure({
       ...commonOptions,
-      procedure: "procFieldAdd"
+      procedure: "procFieldAdd",
     });
 
     expect(tables.length).toBe(1);
@@ -114,7 +114,7 @@ describe("AppframeDataClient", () => {
 
     const noData = await client.executeProcedure({
       ...commonOptions,
-      procedure: "procFieldRemove"
+      procedure: "procFieldRemove",
     });
 
     expect(noData.length).toBe(0);
