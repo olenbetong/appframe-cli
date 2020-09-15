@@ -16,21 +16,6 @@ const menus = {
 
 	Deletes one or more script or style records matching a pattern.
 	`,
-  install: `
-	appframe install <options>
-
-	--domain ................. domain used to install required components
-	--hostname ............... hostname to install required components to
-	--password ............... password used to install components
-	--user ................... username used to install components
-
-	Installs components used by the CLI to the specified hostname. If hostname
-	is not a valid domain, use the domain option to select which domain we should
-	connect to.
-
-	This will add data sources required by the CLI, that are not provided by
-	the default developer articles.
-	`,
   publish: `
 	appframe publish <options>
 	
