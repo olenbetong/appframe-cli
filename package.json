@@ -22,10 +22,10 @@
     "eslint-plugin-jest": "^24.0.1",
     "eslint-plugin-prettier": "^3.1.4",
     "jest": "^26.4.2",
-    "prettier": "^2.1.1"
+    "prettier": "^2.1.2"
   },
   "dependencies": {
-    "@olenbetong/appframe-client": "^2.1.5",
+    "@olenbetong/appframe-client": "^2.1.6",
     "cheerio": "^1.0.0-rc.3",
     "merge": "^1.2.1",
     "minimist": "^1.2.5",
