@@ -1,35 +1,22 @@
 const AppframeClient = require("@olenbetong/appframe-client");
 
-class AppframeDataClient extends AppframeClient {
-  // async getHostNameFromAlias(alias) {
-  //   const records = await this.getData({
-  //     articleId: 'sitesetup-general',
-  //     dataObjectId: 'dsAliases',
-  //     filter: `[Alias] = '${alias}'`
-  //   });
+class AppframeApiClient extends AppframeClient {
+  async __apiRequest(options) {
+    let requestOptions = {
+      ...options,
+      fields: options.fields?.map((field) => (typeof field === "string" ? { name: field } : field)),
+    };
 
-  //   if (records.length === 0) {
-  //     throw new Error(`No website found with alias '${alias}'`);
-  //   }
-
-  //   return records[0][0];
-  // }
-
-  async createItem(options) {
-    const { articleId, dataObjectId, item } = options;
-
-    const url = this.getUrl(`create/${articleId}/${dataObjectId}`);
-    const body = JSON.stringify(item);
-    const reqOptions = {
+    let body = JSON.stringify(requestOptions);
+    let reqOptions = {
       body,
       headers: {
         // 'Content-Length': body.length,
         "Content-Type": "application/json; charset=utf-8",
       },
-      url,
     };
 
-    const response = await this.request(reqOptions);
+    let response = await this.post("api/data", reqOptions);
 
     if (response.success) {
       return response.success;
@@ -38,126 +25,58 @@ class AppframeDataClient extends AppframeClient {
     return response;
   }
 
-  async getData(options) {
-    const { articleId, dataObjectId, filter } = options;
-
-    const url = this.getUrl(`retrieve/${articleId}/${dataObjectId}`);
-
-    const body = JSON.stringify({
-      distinctRows: false,
-      filterObject: null,
-      filterString: "",
-      masterChildCriteria: {},
-      maxRecords: 100,
-      sortOrder: [],
-      whereClause: typeof filter === "string" ? filter : "",
-      whereObject: typeof filter === "object" ? filter : null,
+  async retrieve(resourceName, parameters) {
+    return this.__apiRequest({
+      operation: "retrieve",
+      resourceName,
+      ...parameters,
     });
-
-    const reqOptions = {
-      body,
-      headers: {
-        // 'Content-Length': body.length,
-        "Content-Type": "application/json; charset=utf-8",
-      },
-      url,
-    };
-
-    const response = await this.request(reqOptions);
-
-    if (response.success) {
-      return response.success;
-    }
-
-    return response;
   }
 
-  async updateItem(options) {
-    const { articleId, data, dataObjectId, fieldName, primKey } = options;
-
-    const url = this.getUrl(`update/${articleId}/${dataObjectId}`);
-    const body =
-      typeof data === "object"
-        ? JSON.stringify({ ...data, PrimKey: primKey })
-        : JSON.stringify({ [fieldName]: data, PrimKey: primKey });
-
-    const reqOptions = {
-      body,
-      headers: {
-        // 'Content-Length': body.length,
-        "Content-Type": "application/json; charset=utf-8",
-      },
-      url,
-    };
-
-    const response = await this.request(reqOptions);
-
-    if (response.success) {
-      return response.success;
-    }
-
-    return response;
-  }
-
-  async deleteItem(options) {
-    const { articleId, dataObjectId, primKey } = options;
-
-    const url = this.getUrl(`destroy/${articleId}/${dataObjectId}`);
-    const body = JSON.stringify({
-      PrimKey: primKey,
+  async create(resourceName, parameters) {
+    return this.__apiRequest({
+      operation: "create",
+      resourceName,
+      uniqueName: parameters?.uniqueName ?? resourceName,
+      excludeFieldNames: false,
+      ...parameters,
     });
-
-    const reqOptions = {
-      body,
-      headers: {
-        // 'Content-Length': body.length,
-        "Content-Type": "application/json; charset=utf-8",
-      },
-      url,
-    };
-
-    const response = await this.request(reqOptions);
-
-    if (response.success) {
-      return response.success;
-    }
-
-    return response;
   }
 
-  async executeProcedure(options) {
-    const { articleId, procedure, params } = options;
-
-    const url = this.getUrl(`exec/${articleId}/${procedure}`);
-    const body = JSON.stringify(params);
-
-    const reqOptions = {
-      body,
-      headers: {
-        // 'Content-Length': body.length,
-        "Content-Type": "application/json; charset=utf-8",
-      },
-      url,
-    };
-
-    const response = await this.request(reqOptions);
-
-    if (response.success) {
-      return response.success;
-    }
-
-    return response;
+  async update(resourceName, PrimKey, parameters) {
+    return this.__apiRequest({
+      operation: "update",
+      resourceName,
+      uniqueName: parameters?.uniqueName ?? resourceName,
+      excludeFieldNames: false,
+      PrimKey,
+      ...parameters,
+    });
   }
 
-  async getItemIfExists(options) {
-    const { articleId, dataObjectId, filter } = options;
+  async destroy(resourceName, PrimKey, parameters = {}) {
+    return this.__apiRequest({
+      operation: "destroy",
+      resourceName,
+      uniqueName: parameters.uniqueName ?? resourceName,
+      excludeFieldNames: false,
+      PrimKey,
+      ...parameters,
+    });
+  }
 
+  async execute(resourceName, PrimKey, parameters) {
+    return this.__apiRequest({
+      operation: "execute",
+      resourceName,
+      excludeFieldNames: true,
+      ...parameters,
+    });
+  }
+
+  async getItemIfExists(resourceName, options) {
     try {
-      const record = await this.getData({
-        articleId,
-        dataObjectId,
-        filter,
-      });
+      let record = await this.retrieve(resourceName, options);
 
       if (record.length === 0) {
         return false;
@@ -169,8 +88,36 @@ class AppframeDataClient extends AppframeClient {
       return false;
     }
   }
+
+  async getSiteComponent(hostName, path) {
+    return await this.getItemIfExists("stbv_WebSiteCMS_Components", {
+      fields: ["HostName", "Path", "Content", "ContentTest"],
+      filterString: `[HostName] = '${hostName}' AND [Path] = '${path}'`,
+    });
+  }
+
+  async getSiteStyle(hostName, name) {
+    return await this.getItemIfExists("stbv_WebSiteCMS_Styles", {
+      fields: ["HostName", "Name", "StyleContent", "StyleContentTest"],
+      filterString: `[HostName] = '${hostName}' AND [Name] = '${name}'`,
+    });
+  }
+
+  async getSiteScript(hostName, name) {
+    return await this.getItemIfExists("stbv_WebSiteCMS_Scripts", {
+      fields: ["HostName", "Name", "ScriptContent", "ScriptContentTest"],
+      filterString: `[HostName] = '${hostName}' AND [Name] = '${name}'`,
+    });
+  }
+
+  async getArticleScript(hostName, name) {
+    return await this.getItemIfExists("stbv_WebSiteCMS_Scripts", {
+      fields: ["HostName", "Name", "ScriptContent", "ScriptContentTest"],
+      filterString: `[HostName] = '${hostName}' AND [Name] = '${name}'`,
+    });
+  }
 }
 
 module.exports = {
-  AppframeDataClient,
+  AppframeApiClient,
 };

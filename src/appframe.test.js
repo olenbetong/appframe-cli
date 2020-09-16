@@ -1,12 +1,12 @@
 const dotenv = require("dotenv");
-const { AppframeDataClient } = require("./appframe");
+const { AppframeApiClient } = require("./appframe");
 
 dotenv.config();
 
-const { APPFRAME_LOGIN: username, APPFRAME_PWD: password, APPFRAME_HOSTNAME: hostname } = process.env;
+const { APPFRAME_LOGIN: username, APPFRAME_PWD: password, APPFRAME_DEVHOST: devHost } = process.env;
 
-describe("AppframeDataClient", () => {
-  const client = new AppframeDataClient({ hostname, username, password });
+describe("AppframeApiClient", () => {
+  const client = new AppframeApiClient({ hostname: devHost, username, password });
 
   beforeEach(() => {
     client.logout();
@@ -17,7 +17,7 @@ describe("AppframeDataClient", () => {
     const storeLog = (inputs) => (outputData += inputs);
 
     console["warn"] = jest.fn(storeLog);
-    const client = new AppframeDataClient({ hostname, username: "asdfjkl", password: "asdfjkl" });
+    const client = new AppframeApiClient({ hostname: devHost, username: "asdfjkl", password: "asdfjkl" });
     const auth = await client.login();
 
     expect(auth).toBeTruthy();
@@ -28,100 +28,54 @@ describe("AppframeDataClient", () => {
   test("can create, get, update and delete records", async () => {
     await client.login();
 
-    const commonOptions = {
-      articleId: "components",
-      dataObjectId: "dsComponents",
-      domain: hostname,
-    };
+    let testPath1 = `jest-test-appframe.${Math.floor(Math.random() * 5000000).toString(16)}.js`;
+    let testPath2 = `jest-test-appframe.${Math.floor(Math.random() * 5000000).toString(16)}.js`;
 
-    const existing = await client.getData({
-      ...commonOptions,
-      filter: "[Path] = 'jest-test-appframe.js'",
+    const existing = await client.retrieve("stbv_WebSiteCMS_GlobalComponents", {
+      fields: ["PrimKey", "Path", "Content"],
+      filterString: `[Path] = '${testPath1}'`,
     });
 
     if (existing && existing.length > 0) {
-      await client.deleteItem({
-        ...commonOptions,
-        primKey: existing[0][3],
-      });
+      await client.destroy("stbv_WebSiteCMS_GlobalComponents", existing[0].PrimKey);
     }
 
-    const result = await client.createItem({
-      ...commonOptions,
-      item: {
-        Path: "jest-test-appframe.js",
-      },
+    const result = await client.create("stbv_WebSiteCMS_GlobalComponents", {
+      fields: ["PrimKey", "Path"],
+      Path: testPath1,
     });
 
     expect(result).toBeTruthy();
-    expect(result).toBeInstanceOf(Array);
+    expect(result.length).toBe(1);
+    expect(result[0].Path).toEqual(testPath1);
 
-    const primKey = result[3];
-
-    const records = await client.getData({
-      ...commonOptions,
-      filter: `[PrimKey] = '${primKey}'`,
+    let primKey = result[0].PrimKey;
+    const records = await client.retrieve("stbv_WebSiteCMS_GlobalComponents", {
+      fields: ["PrimKey", "Path"],
+      filterString: `[PrimKey] = '${primKey}'`,
     });
 
     expect(records).toBeTruthy();
-    expect(records[0][3]).toEqual(primKey);
+    expect(records[0].PrimKey).toEqual(primKey);
+    expect(records[0].Path).toEqual(testPath1);
 
-    const updated = await client.updateItem({
-      ...commonOptions,
-      fieldName: "Path",
-      data: "jest-test-appframe-updated.js",
-      primKey,
+    const [updated] = await client.update("stbv_WebSiteCMS_GlobalComponents", primKey, {
+      fields: ["Path", "PrimKey"],
+      Path: testPath2,
     });
 
     expect(updated).toBeTruthy();
-    expect(updated[1]).toEqual("jest-test-appframe-updated.js");
+    expect(updated.Path).toEqual(testPath2);
 
-    const isDeleted = await client.deleteItem({
-      ...commonOptions,
-      primKey,
-    });
+    const isDeleted = await client.destroy("stbv_WebSiteCMS_GlobalComponents", primKey);
 
     expect(isDeleted).toBe(true);
 
-    const noData = await client.getData({
-      ...commonOptions,
-      filter: `[PrimKey] = '${primKey}'`,
+    const noData = await client.retrieve("stbv_WebSiteCMS_GlobalComponents", {
+      fields: ["PrimKey"],
+      filterString: `[PrimKey] = '${primKey}'`,
     });
 
     expect(noData.length).toBe(0);
-  });
-
-  test("can execute stored procedures", async () => {
-    const commonOptions = {
-      articleId: "appdesigner-datasource",
-      domain: hostname,
-      params: {
-        ArticleId: "components",
-        DataSourceID: "dsSiteComponents",
-        FieldName: "Created",
-        HostName: hostname,
-      },
-    };
-
-    const tables = await client.executeProcedure({
-      ...commonOptions,
-      procedure: "procFieldAdd",
-    });
-
-    expect(tables.length).toBe(1);
-    expect(tables[0].length).toBe(1);
-    expect(tables[0][0].FieldName).toBe("Created");
-
-    const noData = await client.executeProcedure({
-      ...commonOptions,
-      procedure: "procFieldRemove",
-    });
-
-    expect(noData.length).toBe(0);
-  });
-
-  test("get hostname for alias", async () => {
-    const hostname = await client.getHostNameFromAlias("test.synergi.olenbetong.no");
-    expect(hostname).toBe("synergi.olenbetong.no");
   });
 });

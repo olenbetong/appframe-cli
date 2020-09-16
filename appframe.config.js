@@ -14,16 +14,16 @@ module.exports = {
       source: "./test/1.bundle.min.js",
       target: "test/tester.min.js",
       targetArticleId: "publish-test",
-      type: "article-script"
+      type: "article-script",
     },
     {
       source: "./test/article-script.min.js",
       target: "article-script.min.js",
       targetArticleId: "publish-test",
-      type: "article-script"
-    }
+      type: "article-script",
+    },
   ],
   hostname: "synergi.olenbetong.no",
   password,
-  user
+  user,
 };

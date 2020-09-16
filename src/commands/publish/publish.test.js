@@ -7,7 +7,12 @@ dotenv.config();
 
 const sourceData = Math.random().toString(32).slice(2);
 
-const { APPFRAME_LOGIN: username, APPFRAME_PWD: password, APPFRAME_HOSTNAME: hostname } = process.env;
+const {
+  APPFRAME_LOGIN: username,
+  APPFRAME_PWD: password,
+  APPFRAME_HOSTNAME: hostname,
+  APPFRAME_DEVHOST: devHost,
+} = process.env;
 
 const config = {
   domain: hostname,
@@ -19,7 +24,8 @@ const config = {
 };
 
 describe("PublishClient", () => {
-  const client = new PublishClient({ hostname, password, username });
+  const client = new PublishClient({ hostname: devHost, password, username });
+
   test("can login", async () => {
     const result = await client.login();
 
@@ -42,17 +48,15 @@ describe("PublishClient", () => {
 
     expect(resultProd).toEqual(true);
 
-    const publishedCode = await client.getData({
-      articleId: "components-editor",
-      dataObjectId: "dsComponent",
-      domain: hostname,
-      filter: `[Path] = '${config.target}'`,
+    const publishedCode = await client.retrieve("stbv_WebSiteCMS_GlobalComponents", {
+      fields: ["Path", "Content", "ContentTest"],
+      filterString: `[Path] = '${config.target}'`,
     });
 
-    const [, , content, contentTest] = publishedCode[0];
+    const { Content, ContentTest } = publishedCode[0];
 
-    expect(contentTest).toEqual(sourceData);
-    expect(content).toEqual(sourceData);
+    expect(ContentTest).toEqual(sourceData);
+    expect(Content).toEqual(sourceData);
   });
 
   test("can publish to site component", async () => {
@@ -70,17 +74,15 @@ describe("PublishClient", () => {
 
     expect(resultProd).toEqual(true);
 
-    const publishedCode = await client.getData({
-      articleId: "components",
-      dataObjectId: "dsSiteComponents",
-      domain: hostname,
-      filter: `[HostName] = '${config.hostname}' AND [Path] = '${config.target}'`,
+    const publishedCode = await client.retrieve("stbv_WebSiteCMS_Components", {
+      fields: ["HostName", "Path", "Content", "ContentTest"],
+      filterString: `[HostName] = '${config.hostname}' AND [Path] = '${config.target}'`,
     });
 
-    const [, , , content, contentTest] = publishedCode[0];
+    const { Content, ContentTest } = publishedCode[0];
 
-    expect(contentTest).toEqual(sourceData);
-    expect(content).toEqual(sourceData);
+    expect(ContentTest).toEqual(sourceData);
+    expect(Content).toEqual(sourceData);
   });
 
   test("can publish to site script", async () => {
@@ -98,17 +100,15 @@ describe("PublishClient", () => {
 
     expect(resultProd).toEqual(true);
 
-    const publishedCode = await client.getData({
-      articleId: "sitesetup-script",
-      dataObjectId: "dsScript",
-      domain: hostname,
-      filter: `[Hostname] = '${hostname}' AND [Name] = '${config.target}'`,
+    const publishedCode = await client.retrieve("stbv_WebSiteCMS_Scripts", {
+      fields: ["HostName", "Name", "ScriptContent", "ScriptContentTest"],
+      filterString: `[Hostname] = '${hostname}' AND [Name] = '${config.target}'`,
     });
 
-    const [, content, contentTest] = publishedCode[0];
+    const { ScriptContent, ScriptContentTest } = publishedCode[0];
 
-    expect(content).toEqual(sourceData);
-    expect(contentTest).toEqual(sourceData);
+    expect(ScriptContent).toEqual(sourceData);
+    expect(ScriptContentTest).toEqual(sourceData);
   });
 
   test("can publish to site style", async () => {
@@ -128,28 +128,24 @@ describe("PublishClient", () => {
 
     expect(resultProd).toEqual(true);
 
-    const publishedCode = await client.getData({
-      articleId: "sitesetup-stylesheet",
-      dataObjectId: "dsStylesheet",
-      domain: hostname,
-      filter: `[Hostname] = '${hostname}' AND [Name] = 'jest-test-module.min.css'`,
+    const publishedCode = await client.retrieve("stbv_WebSiteCMS_Styles", {
+      fields: ["Name", "StyleContent", "StyleContentTest"],
+      filterString: `[Hostname] = '${hostname}' AND [Name] = 'jest-test-module.min.css'`,
     });
 
-    const [, , content, contentTest] = publishedCode[0];
+    const { StyleContent, StyleContentTest } = publishedCode[0];
 
-    expect(content).toEqual(sourceData);
-    expect(contentTest).toEqual(sourceData);
+    expect(StyleContent).toEqual(sourceData);
+    expect(StyleContentTest).toEqual(sourceData);
   });
 
   test("can publish to article script", async () => {
-    const before = await client.getData({
-      articleId: "appdesigner-script",
-      dataObjectId: "dsScripts",
-      domain: hostname,
-      filter: `[Hostname] = '${hostname}' AND [ArticleID] = 'publish-test' AND [ID] = '${config.target}'`,
+    const before = await client.retrieve("stbv_WebSiteCMS_ArticlesScripts", {
+      fields: ["HostName", "ArticleID", "ID", "Exclude"],
+      filterString: `[Hostname] = '${hostname}' AND [ArticleID] = 'publish-test' AND [ID] = '${config.target}'`,
     });
 
-    const initialExclude = before[4];
+    const initialExclude = before[0].Exclude;
 
     const result = await client.publishToArticleScript({
       ...config,
@@ -159,62 +155,65 @@ describe("PublishClient", () => {
 
     expect(result).toEqual(true);
 
-    const publishedCode = await client.getData({
-      articleId: "appdesigner-script",
-      dataObjectId: "dsScripts",
-      domain: hostname,
-      filter: `[Hostname] = '${hostname}' AND [ArticleID] = 'publish-test' AND [ID] = '${config.target}'`,
+    const publishedCode = await client.retrieve("stbv_WebSiteCMS_ArticlesScripts", {
+      fields: ["HostName", "ArticleID", "ID", "Exclude", "Script"],
+      filterString: `[Hostname] = '${hostname}' AND [ArticleID] = 'publish-test' AND [ID] = '${config.target}'`,
     });
 
-    const [, , , content, exclude] = publishedCode[0];
+    const { Exclude, Script } = publishedCode[0];
 
-    expect(exclude).toEqual(!initialExclude);
-    expect(content).toEqual(sourceData);
+    expect(Exclude).toEqual(!initialExclude);
+    expect(Script).toEqual(sourceData);
   });
 
   test("can publish to article style", async () => {
+    const before = await client.retrieve("stbv_WebSiteCMS_ArticlesStyles", {
+      fields: ["HostName", "ArticleID", "ID", "Exclude"],
+      filterString: `[Hostname] = '${hostname}' AND [ArticleID] = 'publish-test' AND [ID] = '${config.target}'`,
+    });
+
+    const initialExclude = before?.[0]?.Exclude ?? true;
+
     const sourceData = `.test { content: '${config.sourceData}'; }`;
     const result = await client.publishToArticleStyle({
       ...config,
-      target: "publish-test",
+      exclude: !initialExclude,
+      target: "publish-test.less",
       targetArticleId: "publish-test",
-      source: "jestTest",
       sourceData,
     });
 
     expect(result).toEqual(true);
 
-    const publishedCode = await client.getData({
-      articleId: "appdesigner-css",
-      dataObjectId: "dsArticle",
-      domain: hostname,
-      filter: `[HostName] = '${hostname}' AND [ArticleID] = 'publish-test'`,
+    const publishedCode = await client.retrieve("stbv_WebSiteCMS_ArticlesStyles", {
+      fields: ["HostName", "ArticleID", "ID", "Style", "Exclude"],
+      filterString: `[HostName] = '${hostname}' AND [ArticleID] = 'publish-test'`,
     });
 
-    const content = publishedCode[0][3];
-    const idx = content.indexOf(sourceData);
+    const { Exclude, Style } = publishedCode[0];
 
-    expect(idx).toBeGreaterThan(0);
+    expect(Exclude).toEqual(!initialExclude);
+    expect(Style).toEqual(sourceData);
   });
 
-  test("can publish from command line", async () => {
-    fs.writeFileSync("./test/testsource.js", sourceData, { flag: "w" });
-    await publishCommand({ config: "./test/test.config" });
-  });
+  // test("can publish from command line", async () => {
+  //   fs.writeFileSync("./test/testsource.js", sourceData, { flag: "w" });
+  //   await publishCommand({ config: "./test/test.config" });
+  // });
 
-  test("can publish large files", async () => {
-    const largeConfig = {
-      ...config,
-      mode: "test",
-      target: "jest-test-large-bundle.js",
-      type: "component-global",
-    };
+  // test("can publish large files", async () => {
+  //   const largeConfig = {
+  //     ...config,
+  //     mode: "test",
+  //     target: "jest-test-large-bundle.js",
+  //     type: "component-global",
+  //   };
 
-    const largeSource = fs.readFileSync("./test/large-file.js.map", "utf8");
-    largeConfig.sourceData = largeSource;
+  //   const largeSource = fs.readFileSync("./test/large-file.js.map", "utf8");
+  //   largeConfig.sourceData = largeSource;
 
-    const result = await client.publishToGlobalComponent(largeConfig);
+  //   const result = await client.publishToGlobalComponent(largeConfig);
 
-    expect(result).toBe(true);
-  });
+  //   expect(result).toBe(true);
+  // });
 });
