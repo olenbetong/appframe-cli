@@ -196,24 +196,24 @@ describe("PublishClient", () => {
     expect(Style).toEqual(sourceData);
   });
 
-  // test("can publish from command line", async () => {
-  //   fs.writeFileSync("./test/testsource.js", sourceData, { flag: "w" });
-  //   await publishCommand({ config: "./test/test.config" });
-  // });
+  test("can publish from command line", async () => {
+    fs.writeFileSync("./test/testsource.js", sourceData, { flag: "w" });
+    await publishCommand({ domain: devHost, config: "./test/test.config" });
+  });
 
-  // test("can publish large files", async () => {
-  //   const largeConfig = {
-  //     ...config,
-  //     mode: "test",
-  //     target: "jest-test-large-bundle.js",
-  //     type: "component-global",
-  //   };
+  test("can publish large files", async () => {
+    const largeConfig = {
+      ...config,
+      mode: "test",
+      target: "jest-test-large-bundle.js",
+      type: "component-global",
+    };
 
-  //   const largeSource = fs.readFileSync("./test/large-file.js.map", "utf8");
-  //   largeConfig.sourceData = largeSource;
+    const largeSource = fs.readFileSync("./test/large-file.js.map", "utf8");
+    largeConfig.sourceData = largeSource;
 
-  //   const result = await client.publishToGlobalComponent(largeConfig);
+    const result = await client.publishToGlobalComponent(largeConfig);
 
-  //   expect(result).toBe(true);
-  // });
+    expect(result).toBe(true);
+  });
 });
