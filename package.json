@@ -18,7 +18,7 @@
     "babel-eslint": "^10.1.0",
     "dotenv": "^8.2.0",
     "eslint": "^7.9.0",
-    "eslint-config-prettier": "^6.11.0",
+    "eslint-config-prettier": "^8.1.0",
     "eslint-plugin-jest": "^24.0.1",
     "eslint-plugin-prettier": "^3.1.4",
     "jest": "^26.4.2",
@@ -26,8 +26,8 @@
   },
   "dependencies": {
     "@olenbetong/appframe-client": "^2.1.5",
+    "@olenbetong/data-object": "^1.0.0-alpha.1",
     "cheerio": "^1.0.0-rc.3",
-    "merge": "^1.2.1",
     "minimist": "^1.2.5",
     "querystring": "^0.2.0",
     "readline-promise": "^1.0.4",

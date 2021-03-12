@@ -3,17 +3,17 @@ module.exports = {
     node: true,
     "jest/globals": true,
     commonjs: true,
-    es6: true
+    es6: true,
   },
   extends: ["eslint:recommended", "plugin:prettier/recommended"],
   parser: "babel-eslint",
   parserOptions: {
     ecmaVersion: 2018,
-    sourceType: "module"
+    sourceType: "module",
   },
   plugins: ["prettier", "jest"],
   rules: {
     "react/prop-types": "off",
-    "no-console": "off"
-  }
+    "no-console": "off",
+  },
 };
