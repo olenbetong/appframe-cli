@@ -12,6 +12,7 @@ class AppframeApiClient extends AppframeClient {
       body,
       headers: {
         // 'Content-Length': body.length,
+        Accept: "application/json",
         "Content-Type": "application/json; charset=utf-8",
       },
     };
