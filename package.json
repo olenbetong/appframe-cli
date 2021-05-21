@@ -4,7 +4,7 @@
   "bin": {
     "appframe": "./bin/appframe"
   },
-  "version": "2.0.7",
+  "version": "2.0.8",
   "license": "MIT",
   "scripts": {
     "test": "node ./node_modules/jest/bin/jest.js"
