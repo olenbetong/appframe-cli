@@ -1,9 +1,10 @@
 import { config } from "dotenv";
 import * as af from "@olenbetong/data-object/node";
+import { importJson } from "../lib/importJson.js";
 
 config({ path: process.cwd() + "/.env" });
 
-const pkg = require("../package.json");
+const pkg = await importJson("./package.json", true);
 let { APPFRAME_LOGIN: username, APPFRAME_PWD: password } = process.env;
 
 const procPublish = new af.ProcedureAPI({
