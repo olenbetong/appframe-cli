@@ -1,57 +1,21 @@
 import { config } from "dotenv";
 import * as af from "@olenbetong/data-object/node";
 import { importJson } from "../lib/importJson.js";
+import {
+  dsArticles,
+  dsArticlesVersions,
+  dsTransactions,
+  procCheckoutArticle,
+  procApply,
+  procDeploy,
+  procGenerate,
+  procPublishArticle,
+} from "../data/index.js";
 
 config({ path: process.cwd() + "/.env" });
 
 const pkg = await importJson("./package.json", true);
 let { APPFRAME_LOGIN: username, APPFRAME_PWD: password } = process.env;
-
-const procPublish = new af.ProcedureAPI({
-  procedureId: "sstp_WebSiteCMS_CopyArticle",
-});
-
-const procDeploy = new af.Procedure({
-  articleId: "af-updater",
-  procedureId: "procDeploy",
-});
-
-const procGenerate = new af.Procedure({
-  articleId: "af-updater",
-  procedureId: "procGenerate",
-});
-
-const procApply = new af.Procedure({
-  articleId: "af-updater",
-  procedureId: "procApply",
-});
-
-const dsTransactions = af.generateApiDataObject({
-  resource: "sviw_Deploy_Transactions",
-  id: "dsTransactions",
-  fields: ["ID", "Name", "Namespace_ID", "Description", "Status", "Version", "Type"],
-});
-
-const dsArticles = af.generateApiDataObject({
-  resource: "sviw_WebSiteCMS_Articles",
-  id: "dsArticles",
-  fields: ["HostName", "ArticleId", "Namespace_ID", "Namespace"],
-});
-
-const dsArticlesVersions = af.generateApiDataObject({
-  resource: "stbv_WebSiteCMS_ArticlesCheckInLog",
-  id: "dsArticlesVersions",
-  fields: ["HostName", "ArticleId"],
-  parameters: {
-    maxRecords: 1,
-    sortOrder: [{ ArticleId: "desc" }],
-  },
-});
-
-const procCheckoutArticle = new af.ProcedureAPI({
-  procedureId: "sstp_WebSiteCMS_CheckOutArticle",
-  fields: [{ name: "HostName" }, { name: "ArticleID" }, { name: "Forced" }],
-});
 
 async function checkOnlyOneTransaction(filter) {
   console.log("Getting transactions...");
@@ -64,13 +28,20 @@ async function checkOnlyOneTransaction(filter) {
   if (transactions > 1) {
     // Allow multiple transactions if they are all for the current article
     for (let record of dsTransactions.getData()) {
-      if (record.Name !== `${pkg.appframe.hostname}/${pkg.appframe.article}` && record.Type !== 98) {
+      if (
+        record.Name !== `${pkg.appframe.hostname}/${pkg.appframe.article}` &&
+        record.Type !== 98
+      ) {
         console.table(dsTransactions.getData());
-        throw Error("Found more than 1 transaction. Deploy have to be done manually.");
+        throw Error(
+          "Found more than 1 transaction. Deploy have to be done manually."
+        );
       }
     }
   } else if (transactions === 0) {
-    throw Error("No transactions found. Check if there is a versioning problem with the article.");
+    throw Error(
+      "No transactions found. Check if there is a versioning problem with the article."
+    );
   }
 }
 
@@ -108,7 +79,10 @@ async function runStageOperations(hostname, operations = ["download"]) {
       );
       await dsArticlesVersions.refreshDataSource();
 
-      dsTransactions.setParameter("whereClause", `[Name] = '${pkg.appframe.hostname}/${pkg.appframe.article}'`);
+      dsTransactions.setParameter(
+        "whereClause",
+        `[Name] = '${pkg.appframe.hostname}/${pkg.appframe.article}'`
+      );
       dsTransactions.setParameter("sortOrder", [{ Version: "desc" }]);
       await dsTransactions.refreshDataSource();
 
@@ -116,9 +90,14 @@ async function runStageOperations(hostname, operations = ["download"]) {
       // and transaction versions. To be able to generate a transaction, we have to publish
       // the app until the latest article version is higher than the latest transaction
       // version.
-      if (dsTransactions.getDataLength() > 0 && dsArticlesVersions.getDataLength() > 0) {
+      if (
+        dsTransactions.getDataLength() > 0 &&
+        dsArticlesVersions.getDataLength() > 0
+      ) {
         let transactionVersion = dsTransactions.getData(0, "Version");
-        let articleVersion = Number(dsArticlesVersions.getData(0, "ArticleId").split(".")[1]);
+        let articleVersion = Number(
+          dsArticlesVersions.getData(0, "ArticleId").split(".")[1]
+        );
 
         console.log(`Last published version: ${Number(articleVersion)}`);
         console.log(`Last transaction version: ${Number(transactionVersion)}`);
@@ -127,7 +106,7 @@ async function runStageOperations(hostname, operations = ["download"]) {
         while (articleVersion <= transactionVersion) {
           console.log(`Publishing app (v${pkg.version})...`);
 
-          await procPublish.execute({
+          await procPublishArticle.execute({
             FromHostName: pkg.appframe.hostname,
             FromArticle: pkg.appframe.article,
             ToArticle: pkg.appframe.article,
@@ -135,14 +114,16 @@ async function runStageOperations(hostname, operations = ["download"]) {
           });
 
           await dsArticlesVersions.refreshDataSource();
-          articleVersion = Number(dsArticlesVersions.getData(0, "ArticleId").split(".")[1]);
+          articleVersion = Number(
+            dsArticlesVersions.getData(0, "ArticleId").split(".")[1]
+          );
 
           lastSuccessfulStep = `publish(${publishCount})`;
         }
       } else {
         console.log(`Publishing app (v${pkg.version})...`);
 
-        await procPublish.execute({
+        await procPublishArticle.execute({
           FromHostName: pkg.appframe.hostname,
           FromArticle: pkg.appframe.article,
           ToArticle: pkg.appframe.article,
@@ -156,9 +137,12 @@ async function runStageOperations(hostname, operations = ["download"]) {
     if (operations.includes("download")) {
       console.log("Downloading updates...");
 
-      let result = await af.afFetch(`/api/ob-deploy/download/1/${article.Namespace}`, {
-        method: "POST",
-      });
+      let result = await af.afFetch(
+        `/api/ob-deploy/download/1/${article.Namespace}`,
+        {
+          method: "POST",
+        }
+      );
 
       if (result.headers.get("Content-Type")?.includes("json")) {
         let data = await result.json();
@@ -214,6 +198,10 @@ async function publishFromDev() {
 }
 
 publishFromDev().catch((error) => {
-  console.error(error.message, error.lastSuccessfulStep && `(Last step completed: ${error.lastSuccessfulStep})`);
+  console.error(
+    error.message,
+    error.lastSuccessfulStep &&
+      `(Last step completed: ${error.lastSuccessfulStep})`
+  );
   process.exit(1);
 });

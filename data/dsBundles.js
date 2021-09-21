@@ -1,6 +1,6 @@
-import { generateApiDataObject } from "../../es/node.js";
+import { generateApiDataObject } from "@olenbetong/data-object/node";
 
-export const dsBundles = generateApiDataObject({
+const dsBundles = generateApiDataObject({
   resource: "sviw_Bundle_ProjectsVersions",
   id: "dsBundles",
   fields: [
@@ -36,8 +36,18 @@ export const dsBundles = generateApiDataObject({
       identity: false,
       hasDefault: false,
     },
+    {
+      name: "Namespace_ID",
+      type: "number",
+      nullable: true,
+      computed: true,
+      identity: false,
+      hasDefault: false,
+    },
   ],
   parameters: {
     maxRecords: 50,
   },
 });
+
+export default dsBundles;

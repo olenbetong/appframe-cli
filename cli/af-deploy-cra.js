@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 import { Text, render, useApp } from "ink";
 import fs from "node:fs/promises";
 import { Fragment, createElement as h, useEffect, useState } from "react";
-import { readFile } from "node:fs/promises";
+
 import * as af from "@olenbetong/data-object/node";
 
 import { importJson } from "../lib/importJson.js";
@@ -42,7 +42,10 @@ const procRemovePreviousBuild = new af.ProcedureAPI({
 
 function shouldFileBeExcluded(file) {
   let exclude =
-    file.includes(".chunk") || file.endsWith(".map") || file.endsWith("LICENSE") || file.endsWith("LICENSE.txt");
+    file.includes(".chunk") ||
+    file.endsWith(".map") ||
+    file.endsWith("LICENSE") ||
+    file.endsWith("LICENSE.txt");
 
   let isMain = file.startsWith("main") || file.startsWith("vendors-main");
 
@@ -53,8 +56,12 @@ function shouldFileBeExcluded(file) {
   return exclude;
 }
 
-const scriptPath = `file://${process.cwd()}/build/file/article/script/${appframe.article}/`;
-const stylePath = `file://${process.cwd()}/build/file/article/style/${appframe.article}/`;
+const scriptPath = `file://${process.cwd()}/build/file/article/script/${
+  appframe.article
+}/`;
+const stylePath = `file://${process.cwd()}/build/file/article/style/${
+  appframe.article
+}/`;
 
 async function getFileContents(path, file) {
   let filePath = new URL(file, path);
@@ -101,7 +108,9 @@ function Deployer() {
           `[HostName] = '${appframe.hostname}' AND [ArticleID] = '${appframe.article}' AND [ID] = '${file}'`
         );
         await dsArticlesStyles.refreshDataSourceAsync();
-        dsArticlesStyles.setCurrentIndex(dsArticlesStyles.getDataLength() > 0 ? 0 : -1);
+        dsArticlesStyles.setCurrentIndex(
+          dsArticlesStyles.getDataLength() > 0 ? 0 : -1
+        );
         await dsArticlesStyles.saveAsync(record);
         setStyleDone((d) => d + 1);
       }
@@ -122,7 +131,9 @@ function Deployer() {
           `[HostName] = '${appframe.hostname}' AND [ArticleID] = '${appframe.article}' AND [ID] = '${file}'`
         );
         await dsArticlesScripts.refreshDataSourceAsync();
-        dsArticlesScripts.setCurrentIndex(dsArticlesScripts.getDataLength() > 0 ? 0 : -1);
+        dsArticlesScripts.setCurrentIndex(
+          dsArticlesScripts.getDataLength() > 0 ? 0 : -1
+        );
         await dsArticlesScripts.saveAsync(record);
         setScriptDone((d) => d + 1);
       }
@@ -136,7 +147,13 @@ function Deployer() {
   return h(
     Fragment,
     {},
-    h(Text, {}, hasCheckedOut ? "  ✅ Checked out article" : "  ⬛ Checking out article..."),
+    h(
+      Text,
+      {},
+      hasCheckedOut
+        ? "  ✅ Checked out article"
+        : "  ⬛ Checking out article..."
+    ),
     h(
       Text,
       {},

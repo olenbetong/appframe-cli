@@ -1,201 +1,60 @@
 # Appframe CLI
 
-### Development tools for Appframe Web
+Note that this project changed its scope completely in version 3, and none of the functionality in previous versions
+are available anymore.
 
 ## Installation
 
-Install globally:
-
-```
-npm install -g @olenbetong/appframe-cli
-appframe help
-```
-
-or install as a development dependency, and use npx:
+To add to the current project run this command
 
 ```
 npm install --save-dev @olenbetong/appframe-cli
-npx appframe help
 ```
 
-Appframe CLI also requires the following development applications to be installed on the domain you are publishing to:
+## Commands
 
-- appdesigner
-- appdesigner-datasource
-- appdesigner-script
-- appdesigner-css
-- components
-- components-editor
-- sitesetup
-- sitesetup-stylesheet
-- sitesetup-script
+### deploy-cra
 
-Due to the way data objects work, changes in data objects in these articles may cause the CLI to be incompatible. Specifically this will happen if the index of the primkey column is changed.
-
-## Help
-
-You can use `appframe help [command]` to get some basic information about a command. `appframe help` without a command name will list available commands.
-
-## Install
-
-The development articles do not contain any data source for site components, so to be able to publish to site components, you can run `appframe install <options>` to add the needed data source to the `components` article.
-
-### Parameters
-
-- **hostname** - Hostname to install the components to
-- **domain** (optional) - If hostname isn't a valid domain, use this to specify which domain we should use to publish.
-- **user** - Appframe login to use to install
-- **password** - Password for the user
-
-## Publish scripts and styles
-
-Use `appframe publish` to publish one or more scripts to an Appframe website.
-
-### Parameters
-
-Most parameters can be passed either as a command line parameter, or in a configuration file. The exceptions are `config`, which can only be used as a command line parameter, and `targets`, which can only be used in a config file.
-
-#### Authentication and target URL
-
-Credentials and domain used to publish sources.
-
-- **user**
-  Appframe username used to publish the script/style.
-- **password**
-  Password for the Appframe-user
-- **domain** (optional)
-  Domain used for authentication, and to publish the scripts/styles. Must have the articles specified in the "Installation" section. If left blank, the `hostname` parameter will be used
-
-#### Publish target
-
-- **hostname**
-  Hostname for the website.
-- **mode**
-  'test', 'production' or both. This parameter is not used for article-script and article-style
-- **source**
-  Path to the file containing the source code to publish
-- **target**
-  Name of the target we're publishing to. Will be used as path for components, or file name for site and article scripts/styles
-- **type**
-  What kind of target we're publishing to. Available types are:
-  - article-script
-  - article-style
-  - component-global
-  - component-site (if the install command has been run for the target hostname)
-  - site-script
-  - site-style
-
-These parameters are used for type article-script only:
-
-- **article**
-  Article to publish to for types article-script. Will be ignored for other target types.
-- **exclude**
-  If type is article-script, include this parameter to set the exclude field to true (or false). This will make Appframe not include the script in the markup. Useful if you use code splitting to import modules dynamically.
-
-Example command to publish a site script using command line parameters:
+In a create-react-app project with @olenbetong/react-scripts, run this command after building to deploy the application:
 
 ```
-appframe publish --hostname mydomain.com --user myuser --password mypassword --source ./dist/bundle.min.js --target mylibrary.min.js --type site-script
+npx af deploy-cra
 ```
 
-#### Using a config file
+### generate-data-object
 
-If you need to publish multiple sources/targets or get parameters programmatically (e.g. get username/password from an ENV variable.), you can use a configuration file instead of CLI parameters.
-
-- **config**
-  Path to a configuration file. We use node `require()` to get the configuration, so this may be a JSON file, or a javascript file that exports an object.
-- **targets**
-  If you're using a configuration file, the `targets` parameter can be used to publish multiple sources. See the Targets section below for usage description
-
-### Targets
-
-A target to publish to can be described either as an array or an object. The parameter can contain a single target, or an array of targets.
-
-#### Array target
-
-Array items:
-
-1. source file
-2. target name
-3. target type
-4. hostname (optional)
-
-For example, to publish the file `./dist/bundle.min.js` to a site script called `mylibrary.min.js`:
-
-```js
-["./dist/bundle.min.js", "mylibrary.min.js", "site-script"];
-```
-
-Note that for the `article-script` and `article-style` type, the target name have to be in the format `[article-name]/[target-name]`.
-
-#### Object target
-
-An object with keys matching the parameters above. Source, target and type parameters are required, while the other parameters will use the parameters specified at root level if they are not given.
-
-Example to publish a source file named `./dist/bundle.min.js` to a global component named `modules/mycomponent.min.js`:
-
-```js
-{
-  source: './dist/bundle.min.js',
-  target: 'modules/mycomponent.min.js',
-  type: 'component-global'
-}
-```
-
-### Example: Publishing with a configuration file
-
-Given this configuration file called `appframe.config.js`
-
-```js
-const dotenv = require("dotenv");
-
-dotenv.config();
-
-const { APPFRAME_HOSTNAME: hostname, APPFRAME_LOGIN: user, APPFRAME_PWD: password } = process.env;
-
-const source = "./test/testsource.js";
-const target = "jest-test-source.min.js";
-const testArticle = "publish-test";
-
-module.exports = {
-  mode: "production",
-  targets: [
-    ["./test/testsource.js", testArticle, "article-style"],
-    ["./test/testsource.js", `${testArticle}/${target}`, "article-script"],
-    { source, target, type: "component-site" },
-    { source, target, type: "component-global" },
-    { source, target, type: "site-script" }
-  ],
-  domain: "appframe.example.com",
-  hostname: "AppframeWeb2016",
-  password,
-  source,
-  target,
-  type: "site-style",
-  user
-};
-```
-
-you can publish using this command
+To generate data object or procedure definitions for data API resources, run this command:
 
 ```
-appframe publish --config appframe.config.js
+npx af generate-data-object -r <resource-name>
 ```
 
-### Type notes
+### prepare-bundle
 
-#### `article-style`
-
-Since articles only contain a single stylesheet, the CLI will wrap the source in a comment containing the source file name. When publishing, we look for the wrapping comment and replace the block. If the comment is not found, it is appended to the existing stylesheet.
-
-This means that if you rename the source file, the styles will be appended another time instead of replacing the old styles.
-
-The target for an `article-style` should always be the article ID.
-
-## Version
-
-A version command is available to see which version of the Appframe CLI you are using.
+For projects that should be uploaded to AF Bundles, run this command to pack the project and upload it:
 
 ```
-appframe version
+npx af prepare-bundle
+```
+
+This command assumes the bundle has the same name as the name property in package.json.
+
+### publish-bundle
+
+When a bundle has been uploaded, run this command to deploy it from dev.obet.no to test.obet.no. It will
+only be downloaded on the production server, not applied.
+
+```
+npx af publish-bundle
+```
+
+### publish-to-prod
+
+This command publishes the article on dev.obet.no and deploys it to test.obet.no. It is not applied
+only the productions server, only downloaded.
+
+The article ID and hostname is read from the appframe property in package.json.
+
+```
+npx af publish-to-prod
 ```

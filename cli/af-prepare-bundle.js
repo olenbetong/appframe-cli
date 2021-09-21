@@ -41,10 +41,14 @@ try {
   await login(username, password);
 
   console.log("Get bundle ID...");
-  dsBundles.setParameter("whereClause", `[Name] = '${packageConfig.name}' AND [Version] = 0`);
+  dsBundles.setParameter(
+    "whereClause",
+    `[Name] = '${packageConfig.name}' AND [Version] = 0`
+  );
   await dsBundles.refreshDataSource();
 
-  let { ID: id, Project_ID } = dsBundles.getDataLength() > 0 ? dsBundles.getData(0) : {};
+  let { ID: id, Project_ID } =
+    dsBundles.getDataLength() > 0 ? dsBundles.getData(0) : {};
   if (id) {
     console.log(`Found bundle with Version/Project ID: ${id}/${Project_ID}`);
   } else {
@@ -60,7 +64,9 @@ try {
   console.log(`Extracting '${tarball}'...`);
   await execShellCommand(`tar -xvzf ${tarball} -C ${packageConfig.name}`);
   console.log(`Moving from 'package' to '${packageConfig.version}'...`);
-  await execShellCommand(`mv ${packageConfig.name}/package ${packageConfig.name}/${packageConfig.version}`);
+  await execShellCommand(
+    `mv ${packageConfig.name}/package ${packageConfig.name}/${packageConfig.version}`
+  );
   console.log("Zipping...");
   await execShellCommand(`zip -r ${zipFileName} ./${rootOutputFolder}`);
   console.log("Cleaning...");
@@ -69,8 +75,13 @@ try {
 
   if (id) {
     console.log("Uploading zip...");
-    let uploader = new FileUploader({ route: `/api/bundle-push/${id}`, hostname });
-    let zipFile = await fileFromPath(`${safePackageName}-${packageConfig.version}.zip`);
+    let uploader = new FileUploader({
+      route: `/api/bundle-push/${id}`,
+      hostname,
+    });
+    let zipFile = await fileFromPath(
+      `${safePackageName}-${packageConfig.version}.zip`
+    );
     await uploader.upload(zipFile, { Project_ID });
     await execShellCommand(`rm ${zipFileName}`);
     console.log("Done!");
@@ -78,7 +89,7 @@ try {
     console.log("Launching explorer...");
     try {
       await execShellCommand("explorer.exe .");
-    } catch (error) {}
+    } catch (error) {} // eslint-disable-line
   }
 } catch (error) {
   console.log(error.message);

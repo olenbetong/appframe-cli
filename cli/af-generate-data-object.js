@@ -8,24 +8,30 @@ const { APPFRAME_LOGIN: username, APPFRAME_PWD: password } = process.env;
 
 const program = new Command();
 program.version("1.0.0");
-program.option("-r, --resource <resource>", "Name of the data API resource to generate a definition for");
+program.option(
+  "-r, --resource <resource>",
+  "Name of the data API resource to generate a definition for"
+);
 program.option("-l, --list", "List available resources");
 program.parse();
 
 const options = program.opts();
 
-function afTypeToTsType(type, isProc = false) {
-  if (["uniqueidentifier", "nvarchar", "varchar", "varbinary"].includes(type)) {
-    return "string";
-  } else if (["int", "decimal"].includes(type)) {
-    return "number";
-  } else if (type === "bit") {
-    return "boolean";
-  } else if (["datetime2"].includes(type)) {
-    return "datetime";
+function afTypeToTsType(type /*isProc = false*/) {
+  switch (type) {
+    case "int":
+    case "decimal":
+      return "number";
+    case "bit":
+      return "boolean";
+    case "datetime2":
+    case "datetime":
+      return "datetime";
+    case "date":
+      return "date";
+    default:
+      return "string";
   }
-
-  return type;
 }
 
 function getProcedureDefinition(name, procDefinition) {
