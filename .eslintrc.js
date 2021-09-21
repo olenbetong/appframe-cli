@@ -5,6 +5,7 @@ module.exports = {
     commonjs: true,
     es6: true,
   },
+  sourceType: "module",
   extends: ["eslint:recommended", "plugin:prettier/recommended"],
   parser: "babel-eslint",
   parserOptions: {

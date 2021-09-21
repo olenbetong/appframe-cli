@@ -2,8 +2,9 @@
   "name": "@olenbetong/appframe-cli",
   "description": "Utility functions for AppframeWeb",
   "bin": {
-    "appframe": "./bin/appframe"
+    "af": "./cli/af.js"
   },
+  "type": "module",
   "version": "2.0.8",
   "license": "MIT",
   "scripts": {
@@ -21,15 +22,19 @@
     "eslint-config-prettier": "^8.1.0",
     "eslint-plugin-jest": "^24.0.1",
     "eslint-plugin-prettier": "^3.1.4",
-    "jest": "^26.4.2",
+    "jest": "^27.2.1",
     "prettier": "^2.1.2"
   },
   "dependencies": {
     "@olenbetong/appframe-client": "^2.1.6",
-    "@olenbetong/data-object": "^1.0.0-alpha.1",
+    "@olenbetong/data-object": "^1.0.0-alpha.26",
     "cheerio": "^1.0.0-rc.3",
+    "commander": "^8.2.0",
+    "formdata-node": "^4.2.1",
+    "ink": "^3.0.9",
     "minimist": "^1.2.5",
     "querystring": "^0.2.0",
+    "react": "^17.0.2",
     "readline-promise": "^1.0.4",
     "request": "^2.88.2",
     "request-promise-native": "^1.0.9"
