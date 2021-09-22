@@ -17,7 +17,6 @@
   ],
   "devDependencies": {
     "babel-eslint": "^10.1.0",
-    "dotenv": "^9.0.2",
     "eslint": "^7.9.0",
     "eslint-config-prettier": "^8.1.0",
     "eslint-plugin-jest": "^24.0.1",
@@ -30,6 +29,7 @@
     "@olenbetong/data-object": "^1.0.0-alpha.26",
     "cheerio": "^1.0.0-rc.3",
     "commander": "^8.2.0",
+    "dotenv": "^9.0.2",
     "formdata-node": "^4.2.1",
     "ink": "^3.0.9",
     "minimist": "^1.2.5",
