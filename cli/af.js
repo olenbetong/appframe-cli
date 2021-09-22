@@ -27,6 +27,10 @@ program
   .command(
     "publish-bundle",
     "Publishes an Appframe bundle and sends it to the production server (download only)"
+  )
+  .command(
+    "namespace-to-prod",
+    "Generates, applies and daploys changes from dev to stage and then download them on prod."
   );
 
 program.action(() => {
