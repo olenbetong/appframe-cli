@@ -31,6 +31,10 @@ program
   .command(
     "namespace-to-prod",
     "Generates, applies and daploys changes from dev to stage and then download them on prod."
+  )
+  .command(
+    "generate-all",
+    "Generates all transactions on dev server, and lists them"
   );
 
 program.action(() => {
