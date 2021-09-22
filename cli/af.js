@@ -35,6 +35,10 @@ program
   .command(
     "generate-all",
     "Generates all transactions on dev server, and lists them"
+  )
+  .command(
+    "list-transactions",
+    "Lists transactions that will be applied or deployed"
   );
 
 program.action(() => {
