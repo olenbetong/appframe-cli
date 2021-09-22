@@ -7,10 +7,13 @@ const dsTransactions = generateApiDataObject({
     "ID",
     "Name",
     "Namespace_ID",
+    "Namespace",
     "Description",
     "Status",
     "Version",
     "Type",
+    "LocalCreatedBy",
+    "CreatedBy",
   ],
 });
 

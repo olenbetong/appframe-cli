@@ -18,7 +18,14 @@ async function generateAll() {
   );
   await dsTransactions.refreshDataSource();
   if (dsTransactions.getDataLength() > 0) {
-    console.table(dsTransactions.getData());
+    console.table(
+      dsTransactions.map((r) => ({
+        Namespace: r.Namespace,
+        Name: r.Name,
+        CreatedBy: r.CreatedBy,
+        LocalCreatedBy: r.LocalCreatedBy,
+      }))
+    );
   } else {
     console.log("No transactions found");
   }

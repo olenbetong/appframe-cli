@@ -11,39 +11,12 @@ import {
   procGenerate,
   procPublishArticle,
 } from "../data/index.js";
+import { checkOnlyOneTransaction } from "../lib/checkOnlyOneTransaction.js";
 
 config({ path: process.cwd() + "/.env" });
 
 const pkg = await importJson("./package.json", true);
 let { APPFRAME_LOGIN: username, APPFRAME_PWD: password } = process.env;
-
-async function checkOnlyOneTransaction(filter) {
-  console.log("Getting transactions...");
-
-  dsTransactions.setParameter("whereClause", filter);
-  await dsTransactions.refreshDataSource();
-
-  let transactions = dsTransactions.getDataLength();
-
-  if (transactions > 1) {
-    // Allow multiple transactions if they are all for the current article
-    for (let record of dsTransactions.getData()) {
-      if (
-        record.Name !== `${pkg.appframe.hostname}/${pkg.appframe.article}` &&
-        record.Type !== 98
-      ) {
-        console.table(dsTransactions.getData());
-        throw Error(
-          "Found more than 1 transaction. Deploy have to be done manually."
-        );
-      }
-    }
-  } else if (transactions === 0) {
-    throw Error(
-      "No transactions found. Check if there is a versioning problem with the article."
-    );
-  }
-}
 
 async function runStageOperations(hostname, operations = ["download"]) {
   let lastSuccessfulStep = "none";
@@ -61,6 +34,7 @@ async function runStageOperations(hostname, operations = ["download"]) {
     await dsArticles.refreshDataSource();
     lastSuccessfulStep = "getArticleInformation";
 
+    let transactionName = `${pkg.appframe.hostname}/${pkg.appframe.article}`;
     let article = dsArticles.getData(0);
 
     if (operations.includes("publish")) {
@@ -168,7 +142,8 @@ async function runStageOperations(hostname, operations = ["download"]) {
 
     if (operations.includes("apply")) {
       await checkOnlyOneTransaction(
-        `[Namespace_ID] = ${article.Namespace_ID} AND [Status] IN (0, 2, 4) AND [IsLocal] = 0`
+        `[Namespace_ID] = ${article.Namespace_ID} AND [Status] IN (0, 2, 4) AND [IsLocal] = 0`,
+        transactionName
       );
       console.log("Applying update...");
       await procApply.execute({ Namespaces: String(article.Namespace_ID) });
@@ -178,7 +153,8 @@ async function runStageOperations(hostname, operations = ["download"]) {
 
     if (operations.includes("deploy")) {
       await checkOnlyOneTransaction(
-        `[Namespace_ID] = ${article.Namespace_ID} AND (([Status] = 0 AND [IsLocal] = 1) OR [Status] = 1)`
+        `[Namespace_ID] = ${article.Namespace_ID} AND (([Status] = 0 AND [IsLocal] = 1) OR [Status] = 1)`,
+        transactionName
       );
       console.log("Deploying...");
       await procDeploy.execute({ Namespace_ID: article.Namespace_ID });
