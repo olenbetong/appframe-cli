@@ -4,8 +4,8 @@ import { exec } from "node:child_process";
 import { fileFromPath } from "formdata-node/file-from-path";
 
 import { FileUploader, login, setHostname } from "@olenbetong/data-object/node";
-import importJson from "../lib/importJson.js";
-import { dsBundles } from "./resources/dsBundles.js";
+import { importJson } from "../lib/importJson.js";
+import dsBundles from "../data/dsBundles.js";
 
 config({ path: process.cwd() + "/.env" });
 
@@ -29,7 +29,7 @@ dsBundles.errorHandler = (error) => {
 };
 
 try {
-  let packageConfig = await importJson("../package.json", true);
+  let packageConfig = await importJson("./package.json", true);
   let safePackageName = packageConfig.name.replace("@", "").replace("/", "-");
   let rootOutputFolder = packageConfig.name.split("/")[0];
   let tarball = `${safePackageName}-${packageConfig.version}.tgz`;

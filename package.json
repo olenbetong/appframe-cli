@@ -25,7 +25,6 @@
     "prettier": "^2.1.2"
   },
   "dependencies": {
-    "@olenbetong/appframe-client": "^2.1.6",
     "@olenbetong/data-object": "^1.0.0-alpha.26",
     "commander": "^8.2.0",
     "dotenv": "^10.0.0",
