@@ -30,15 +30,14 @@ async function runStageOperations(
       lastSuccessfulStep = "generate";
     }
 
-    if (operations.includes("verify") && isInteractive) {
+    if (operations.includes("verify-apply") && isInteractive) {
       let transactions = await server.list("apply");
       if (transactions.length > 0) {
         console.table(transactions);
         let result = await prompts({
           type: "confirm",
           name: "confirmApply",
-          message:
-            "Are you sure you want to apply/deploy these transactions? (y)",
+          message: "Are you sure you want to apply these transactions? (y)",
           initial: true,
         });
 
@@ -53,6 +52,23 @@ async function runStageOperations(
       lastSuccessfulStep = "apply";
     }
 
+    if (operations.includes("verify-deploy") && isInteractive) {
+      let transactions = await server.list("deploy");
+      if (transactions.length > 0) {
+        console.table(transactions);
+        let result = await prompts({
+          type: "confirm",
+          name: "confirmDeploy",
+          message: "Are you sure you want to deploy these transactions? (y)",
+          initial: true,
+        });
+
+        if (!result.confirmDeploy) {
+          process.exit(0);
+        }
+      }
+    }
+
     if (operations.includes("deploy")) {
       await server.deploy(record.ID);
       lastSuccessfulStep = "deploy";
@@ -65,9 +81,8 @@ async function runStageOperations(
 
 async function publishFromDev(namespace) {
   await runStageOperations(namespace, "dev.obet.no", [
-    "publish",
     "generate",
-    "verify",
+    "verify-deploy",
     "deploy",
   ]);
   await runStageOperations(namespace, "stage.obet.no", [

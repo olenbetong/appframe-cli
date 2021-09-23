@@ -5,7 +5,7 @@ async function generateAll() {
   let server = new Server("dev.obet.no");
   await server.login();
   await server.generate();
-  let transactions = await server.list();
+  let transactions = await server.list("deploy");
   if (transactions.length > 0) {
     console.table(transactions);
   } else {
