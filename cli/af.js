@@ -1,7 +1,11 @@
 #!/usr/bin/env node
+
+import chalk from "chalk";
 import { Command } from "commander";
 
+import { execShellCommand } from "../lib/execShellCommand.js";
 import { importJson } from "../lib/importJson.js";
+import { semverCompare } from "../lib/semverCompare.js";
 
 const appPkg = await importJson("../package.json");
 
@@ -45,7 +49,19 @@ program
     "Lists transactions that will be applied or deployed"
   );
 
-program.action(() => {
+program.action(async () => {
+  let latest = (
+    await execShellCommand("npm view @olenbetong/appframe-cli version")
+  ).trim();
+
+  if (semverCompare(latest, appPkg.version) > 0) {
+    console.error(
+      chalk.yellow(
+        `You are running \`@olenbetong/appframe-cli\` ${appPkg.version}, which is behind the latest release (${latest}).\n`
+      )
+    );
+  }
   program.help();
 });
-program.parse(process.argv);
+
+await program.parseAsync(process.argv);
