@@ -47,6 +47,10 @@ program
   .command(
     "list-transactions",
     "Lists transactions that will be applied or deployed"
+  )
+  .command(
+    "apply-prod",
+    "Applies all updates on production server. Will list transactions first, and, if in a TTY environment, prompt the user before applying."
   );
 
 program.action(async () => {
