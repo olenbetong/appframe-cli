@@ -1,28 +1,15 @@
 import { config } from "dotenv";
-import { exec } from "node:child_process";
-
 import { fileFromPath } from "formdata-node/file-from-path";
 
 import { FileUploader, login, setHostname } from "@olenbetong/data-object/node";
-import { importJson } from "../lib/importJson.js";
+
 import dsBundles from "../data/dsBundles.js";
+import { execShellCommand } from "../lib/execShellCommand.js";
+import { importJson } from "../lib/importJson.js";
 
 config({ path: process.cwd() + "/.env" });
 
 let { APPFRAME_LOGIN: username, APPFRAME_PWD: password } = process.env;
-
-function execShellCommand(cmd) {
-  return new Promise((resolve, reject) => {
-    exec(cmd, (error, stdout, stderr) => {
-      if (error) {
-        error.inner = stderr;
-        reject(error);
-      } else {
-        resolve(stdout ? stdout : stderr);
-      }
-    });
-  });
-}
 
 dsBundles.errorHandler = (error) => {
   throw Error(error);
