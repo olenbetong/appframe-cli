@@ -1,7 +1,10 @@
 import { Command } from "commander";
+import prompts from "prompts";
 import { importJson } from "../lib/importJson.js";
 
 import { Server } from "../lib/Server.js";
+
+const isInteractive = process.stdout.isTTY;
 
 async function runStageOperations(
   namespace,
@@ -27,6 +30,24 @@ async function runStageOperations(
       lastSuccessfulStep = "generate";
     }
 
+    if (operations.includes("verify") && isInteractive) {
+      let transactions = await server.list("apply");
+      if (transactions.length > 0) {
+        console.table(transactions);
+        let result = await prompts({
+          type: "confirm",
+          name: "confirmApply",
+          message:
+            "Are you sure you want to apply/deploy these transactions? (y)",
+          initial: true,
+        });
+
+        if (!result.confirmApply) {
+          process.exit(0);
+        }
+      }
+    }
+
     if (operations.includes("apply")) {
       await server.apply(record.ID);
       lastSuccessfulStep = "apply";
@@ -46,6 +67,7 @@ async function publishFromDev(namespace) {
   await runStageOperations(namespace, "dev.obet.no", [
     "publish",
     "generate",
+    "verify",
     "deploy",
   ]);
   await runStageOperations(namespace, "stage.obet.no", [

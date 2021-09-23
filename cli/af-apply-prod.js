@@ -20,7 +20,7 @@ try {
       let result = await prompts({
         type: "confirm",
         name: "confirmApply",
-        message: "Are you sure you want to apply these transactions?",
+        message: "Are you sure you want to apply these transactions? (n)",
         initial: false,
       });
 
