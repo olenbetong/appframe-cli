@@ -1,38 +1,20 @@
-import { config } from "dotenv";
-import { login, setHostname } from "@olenbetong/data-object/node";
-import { dsTransactions } from "../data/index.js";
+import chalk from "chalk";
 import { Command, Option } from "commander";
-import { importJson } from "../lib/importJson.js";
 
-config({ path: process.cwd() + "/.env" });
-let { APPFRAME_LOGIN: username, APPFRAME_PWD: password } = process.env;
+import { Server } from "../lib/Server.js";
+import { importJson } from "../lib/importJson.js";
 
 const appPkg = await importJson("../package.json");
 
 async function listTransactions(options) {
-  setHostname(options.server);
-  console.log(`Logging in (${options.server}, user '${username}')...`);
-  await login(username, password);
+  let server = new Server(options.server);
+  await server.login();
+  let transactions = await server.list(options.type);
 
-  console.log("Getting transactions...");
-  let filter =
-    options.type === "apply"
-      ? "[Status] IN (0, 2, 4) AND [IsLocal] = 0"
-      : "(([Status] = 0 AND [IsLocal] = 1) OR [Status] = 1)";
-  dsTransactions.setParameter("whereClause", filter);
-  await dsTransactions.refreshDataSource();
-
-  if (dsTransactions.getDataLength() > 0) {
-    console.table(
-      dsTransactions.map((r) => ({
-        Namespace: r.Namespace,
-        Name: r.Name,
-        CreatedBy: r.CreatedBy,
-        LocalCreatedBy: r.LocalCreatedBy,
-      }))
-    );
+  if (transactions.length > 0) {
+    console.table(transactions);
   } else {
-    console.log("No transactions found.");
+    console.log(chalk.yellow("No transactions found."));
   }
 }
 

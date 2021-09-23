@@ -1,33 +1,15 @@
-import { config } from "dotenv";
-import { login, setHostname } from "@olenbetong/data-object/node";
-import { dsTransactions, procGenerate } from "../data/index.js";
-
-config({ path: process.cwd() + "/.env" });
-let { APPFRAME_LOGIN: username, APPFRAME_PWD: password } = process.env;
+import { Server } from "../lib/Server.js";
+import chalk from "chalk";
 
 async function generateAll() {
-  setHostname("dev.obet.no");
-  console.log(`Logging in ('dev.obet.no', user '${username}')...`);
-  await login(username, password);
-  console.log("Generating transactions...");
-  await procGenerate.execute();
-  console.log("Getting transactions...");
-  dsTransactions.setParameter(
-    "whereClause",
-    `(([Status] = 0 AND [IsLocal] = 1) OR [Status] = 1)`
-  );
-  await dsTransactions.refreshDataSource();
-  if (dsTransactions.getDataLength() > 0) {
-    console.table(
-      dsTransactions.map((r) => ({
-        Namespace: r.Namespace,
-        Name: r.Name,
-        CreatedBy: r.CreatedBy,
-        LocalCreatedBy: r.LocalCreatedBy,
-      }))
-    );
+  let server = new Server("dev.obet.no");
+  await server.login();
+  await server.generate();
+  let transactions = await server.list();
+  if (transactions.length > 0) {
+    console.table(transactions);
   } else {
-    console.log("No transactions found");
+    console.log(chalk.yellow("No transactions found"));
   }
 }
 

@@ -1,15 +1,7 @@
-import { config } from "dotenv";
-import { afFetch, login, setHostname } from "@olenbetong/data-object/node";
-import {
-  dsNamespaces,
-  procApply,
-  procDeploy,
-  procGenerate,
-} from "../data/index.js";
 import { Command } from "commander";
+import { importJson } from "../lib/importJson.js";
 
-config({ path: process.cwd() + "/.env" });
-let { APPFRAME_LOGIN: username, APPFRAME_PWD: password } = process.env;
+import { Server } from "../lib/Server.js";
 
 async function runStageOperations(
   namespace,
@@ -18,59 +10,30 @@ async function runStageOperations(
 ) {
   let lastSuccessfulStep = "none";
   try {
-    setHostname(hostname);
-    console.log(`Logging in (${hostname}, user '${username}')...`);
-    await login(username, password);
+    let server = new Server(hostname);
+    await server.login();
     lastSuccessfulStep = "login";
 
-    console.log("Getting namespace information...");
-    dsNamespaces.setParameter("whereClause", `[Name] = '${namespace}'`);
-    await dsNamespaces.refreshDataSource();
-
-    let record = dsNamespaces.getData(0);
-
+    let record = await server.getNamespace(namespace);
     lastSuccessfulStep = "getArticleInformation";
 
     if (operations.includes("download")) {
-      console.log("Downloading updates...");
-
-      let result = await afFetch(`/api/ob-deploy/download/1/${record.Name}`, {
-        method: "POST",
-      });
-
-      if (result.headers.get("Content-Type")?.includes("json")) {
-        let data = await result.json();
-
-        if (data?.error) {
-          throw Error(data.error);
-        }
-      }
-
-      if (!result.ok) {
-        throw Error(`${result.status} ${result.statusTest}`);
-      }
-
+      await server.download(record.Name);
       lastSuccessfulStep = "download";
     }
 
     if (operations.includes("generate")) {
-      console.log("Generating transactions...");
-      await procGenerate.execute({ Namespace_ID: record.ID });
-
+      await server.generate(record.ID);
       lastSuccessfulStep = "generate";
     }
 
     if (operations.includes("apply")) {
-      console.log("Applying update...");
-      await procApply.execute({ Namespaces: String(record.ID) });
-
+      await server.apply(record.ID);
       lastSuccessfulStep = "apply";
     }
 
     if (operations.includes("deploy")) {
-      console.log("Deploying...");
-      await procDeploy.execute({ Namespace_ID: record.ID });
-
+      await server.deploy(record.ID);
       lastSuccessfulStep = "deploy";
     }
   } catch (error) {
@@ -106,9 +69,11 @@ async function run(namespace) {
   }
 }
 
+const appPkg = await importJson("../package.json");
+
 const program = new Command();
 program
-  .version("1.0.0")
+  .version(appPkg.version)
   .argument("<namespace>", "namespace to push from dev to production")
   .action(run);
 
