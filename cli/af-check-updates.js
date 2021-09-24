@@ -4,7 +4,7 @@ import { Command } from "commander";
 import { Server } from "../lib/Server.js";
 import { importJson } from "../lib/importJson.js";
 
-async function downloadTransactions(namespace, options) {
+async function checkForUpdates(options) {
   try {
     let server = new Server(options.server);
     let result = await server.login();
@@ -13,8 +13,12 @@ async function downloadTransactions(namespace, options) {
       throw Error("Login failed!");
     }
 
-    await server.download(namespace);
-    server.logServerMessage("Done.");
+    let updates = await server.checkForUpdates();
+    if (updates.length === 0) {
+      console.log(chalk.yellow("No updates to download."));
+    } else {
+      console.table(updates);
+    }
   } catch (error) {
     console.error(chalk.red(error.message));
     process.exit(1);
@@ -27,10 +31,9 @@ program
   .version(appPkg.version)
   .option(
     "-s, --server <server>",
-    "server on which to download updates",
-    "test.obet.no"
+    "server on which to check for updates",
+    "dev.obet.no"
   )
-  .argument("[namespace]", "namespace to download updates for")
-  .action(downloadTransactions);
+  .action(checkForUpdates);
 
 await program.parseAsync(process.argv);

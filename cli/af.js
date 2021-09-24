@@ -30,6 +30,10 @@ program
   )
   .alias("apply-prod")
   .command("deploy", "Deploy transactions")
+  .command(
+    "check-updates",
+    "List how many updates are available to download in each namespace"
+  )
   .command("download", "Download transactions")
   .command(
     "generate-data-object",
