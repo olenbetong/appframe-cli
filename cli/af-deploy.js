@@ -34,7 +34,7 @@ async function deployTransactions(namespace, options) {
         }
       }
 
-      await server.apply(namespace);
+      await server.deploy(namespace);
       await server.logServerMessage("Done.");
     }
   } catch (error) {
