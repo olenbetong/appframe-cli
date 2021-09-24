@@ -4,12 +4,17 @@ import prompts from "prompts";
 
 import { Server } from "../lib/Server.js";
 import { importJson } from "../lib/importJson.js";
+import {
+  getServerFromOptions,
+  getServerOption,
+} from "../lib/serverSelection.js";
 
 const isInteractive = process.stdout.isTTY;
 
 async function deployTransactions(namespace, options) {
   try {
-    let server = new Server(options.server);
+    let hostname = await getServerFromOptions(options);
+    let server = new Server(hostname);
     let result = await server.login();
 
     if (result !== true) {
@@ -48,10 +53,6 @@ const program = new Command();
 program
   .version(appPkg.version)
   .argument("[namespace]", "optional namespace if you don't want to deploy all")
-  .option(
-    "-s, --server <server>",
-    "server on which to deploy updates",
-    "dev.obet.no"
-  )
+  .addOption(getServerOption("dev.obet.no"))
   .action(deployTransactions)
   .parseAsync(process.argv);

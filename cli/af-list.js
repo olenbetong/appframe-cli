@@ -3,11 +3,16 @@ import { Command, Option } from "commander";
 
 import { Server } from "../lib/Server.js";
 import { importJson } from "../lib/importJson.js";
+import {
+  getServerFromOptions,
+  getServerOption,
+} from "../lib/serverSelection.js";
 
 const appPkg = await importJson("../package.json");
 
 async function listTransactions(namespace, options) {
-  let server = new Server(options.server);
+  let hostname = await getServerFromOptions(options);
+  let server = new Server(hostname);
   await server.login();
   let transactions = await server.getTransactions(options.type, namespace);
 
@@ -22,11 +27,7 @@ let program = new Command();
 program
   .version(appPkg.version)
   .argument("[namespace]", "list only transactions from a namespace")
-  .option(
-    "-s, --server <hostname>",
-    "Hostname to list transactions from",
-    "dev.obet.no"
-  )
+  .addOption(getServerOption("dev.obet.no"))
   .addOption(
     new Option("-t, --type <type>", "Type of transactions to list")
       .choices(["apply", "deploy"])

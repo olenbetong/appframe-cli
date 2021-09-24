@@ -3,10 +3,15 @@ import { Command } from "commander";
 
 import { Server } from "../lib/Server.js";
 import { importJson } from "../lib/importJson.js";
+import {
+  getServerFromOptions,
+  getServerOption,
+} from "../lib/serverSelection.js";
 
 async function checkForUpdates(options) {
   try {
-    let server = new Server(options.server);
+    let hostname = await getServerFromOptions(options);
+    let server = new Server(hostname);
     let result = await server.login();
 
     if (result !== true) {
@@ -29,11 +34,7 @@ const appPkg = await importJson("../package.json");
 const program = new Command();
 program
   .version(appPkg.version)
-  .option(
-    "-s, --server <server>",
-    "server on which to check for updates",
-    "dev.obet.no"
-  )
+  .addOption(getServerOption("dev.obet.no"))
   .action(checkForUpdates);
 
 await program.parseAsync(process.argv);
