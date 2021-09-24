@@ -17,21 +17,20 @@ async function runStageOperations(
     await server.login();
     lastSuccessfulStep = "login";
 
-    let record = await server.getNamespace(namespace);
     lastSuccessfulStep = "getArticleInformation";
 
     if (operations.includes("download")) {
-      await server.download(record.Name);
+      await server.download(namespace);
       lastSuccessfulStep = "download";
     }
 
     if (operations.includes("generate")) {
-      await server.generate(record.ID);
+      await server.generate(namespace);
       lastSuccessfulStep = "generate";
     }
 
     if (operations.includes("verify-apply") && isInteractive) {
-      let transactions = await server.list("apply");
+      let transactions = await server.list("apply", namespace);
       if (transactions.length > 0) {
         console.table(transactions);
         let result = await prompts({
@@ -48,12 +47,12 @@ async function runStageOperations(
     }
 
     if (operations.includes("apply")) {
-      await server.apply(record.ID);
+      await server.apply(namespace);
       lastSuccessfulStep = "apply";
     }
 
     if (operations.includes("verify-deploy") && isInteractive) {
-      let transactions = await server.list("deploy");
+      let transactions = await server.list("deploy", namespace);
       if (transactions.length > 0) {
         console.table(transactions);
         let result = await prompts({
@@ -70,7 +69,7 @@ async function runStageOperations(
     }
 
     if (operations.includes("deploy")) {
-      await server.deploy(record.ID);
+      await server.deploy(namespace);
       lastSuccessfulStep = "deploy";
     }
   } catch (error) {
