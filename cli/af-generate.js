@@ -25,7 +25,6 @@ program
     "[namespace]",
     "limit generate updates to a single namespace by name"
   )
-
   .option("-s, --server", "server on which to apply updates", "dev.obet.no")
   .action(generate)
   .parseAsync(process.argv);

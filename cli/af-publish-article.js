@@ -18,7 +18,11 @@ async function runStageOperations(hostname, operations = ["download"]) {
     lastSuccessfulStep = "getArticleInformation";
 
     if (operations.includes("publish")) {
-      await server.publishArticle(pkg.appframe.hostname, pkg.appframe.article);
+      await server.publishArticle(
+        pkg.appframe.hostname,
+        pkg.appframe.article,
+        pkg.version
+      );
       lastSuccessfulStep = "publish";
     }
 
