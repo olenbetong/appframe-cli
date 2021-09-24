@@ -16,7 +16,7 @@ async function deployTransactions(namespace, options) {
       throw Error("Login failed!");
     }
 
-    let transactions = await server.list("deploy", namespace);
+    let transactions = await server.getTransactions("deploy", namespace);
     if (transactions.length === 0) {
       console.error(chalk.yellow("No transactions available to deploy."));
     } else {

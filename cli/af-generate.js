@@ -4,12 +4,12 @@ import { Command } from "commander";
 import { Server } from "../lib/Server.js";
 import { importJson } from "../lib/importJson.js";
 
-async function generateAll(namespace, options) {
+async function generate(namespace, options) {
   let server = new Server(options.server);
   await server.login();
 
   await server.generate(namespace);
-  let transactions = await server.list("deploy");
+  let transactions = await server.getTransactions("deploy", namespace);
   if (transactions.length > 0) {
     console.table(transactions);
   } else {
@@ -27,5 +27,5 @@ program
   )
 
   .option("-s, --server", "server on which to apply updates", "dev.obet.no")
-  .action(generateAll)
+  .action(generate)
   .parseAsync(process.argv);

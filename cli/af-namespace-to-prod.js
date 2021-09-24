@@ -30,7 +30,7 @@ async function runStageOperations(
     }
 
     if (operations.includes("verify-apply") && isInteractive) {
-      let transactions = await server.list("apply", namespace);
+      let transactions = await server.getTransactions("apply", namespace);
       if (transactions.length > 0) {
         console.table(transactions);
         let result = await prompts({
@@ -52,7 +52,7 @@ async function runStageOperations(
     }
 
     if (operations.includes("verify-deploy") && isInteractive) {
-      let transactions = await server.list("deploy", namespace);
+      let transactions = await server.getTransactions("deploy", namespace);
       if (transactions.length > 0) {
         console.table(transactions);
         let result = await prompts({

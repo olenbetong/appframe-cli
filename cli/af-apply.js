@@ -16,7 +16,7 @@ async function applyTransactions(namespace, options) {
       throw Error("Login failed!");
     }
 
-    let transactions = await server.list("apply", namespace);
+    let transactions = await server.getTransactions("apply", namespace);
     if (transactions.length === 0) {
       console.error(chalk.yellow("No transactions available to apply."));
     } else {

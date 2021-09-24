@@ -6,10 +6,10 @@ import { importJson } from "../lib/importJson.js";
 
 const appPkg = await importJson("../package.json");
 
-async function listTransactions(options) {
+async function listTransactions(namespace, options) {
   let server = new Server(options.server);
   await server.login();
-  let transactions = await server.list(options.type);
+  let transactions = await server.getTransactions(options.type, namespace);
 
   if (transactions.length > 0) {
     console.table(transactions);
@@ -21,6 +21,7 @@ async function listTransactions(options) {
 let program = new Command();
 program
   .version(appPkg.version)
+  .argument("[namespace]", "list only transactions from a namespace")
   .option(
     "-s, --server <hostname>",
     "Hostname to list transactions from",
