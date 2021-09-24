@@ -25,9 +25,10 @@ program
     "Packs the current project and uploads it to Appframe bundles"
   )
   .command(
-    "publish-to-prod",
+    "publish-article",
     "Publishes a deployed application, generates the transaction, and sends it to the production server (download only)"
   )
+  .alias("publish-to-prod")
   .command(
     "generate-data-object",
     "Generates a script to create a data API data object or procedure. (Tip: Pipe to clipboard)"
@@ -40,32 +41,30 @@ program
     "namespace-to-prod",
     "Generates, applies and deploys changes from dev to stage and then download them on prod."
   )
+  .command("generate", "Generates transactions, and lists them")
+  .alias("generate-all")
+  .command("list", "Lists transactions that will be applied or deployed")
+  .alias("list-transactions")
   .command(
-    "generate-all",
-    "Generates all transactions on dev server, and lists them"
-  )
-  .command(
-    "list-transactions",
-    "Lists transactions that will be applied or deployed"
-  )
-  .command(
-    "apply-prod",
+    "apply",
     "Applies all updates on production server. Will list transactions first, and, if in a TTY environment, prompt the user before applying."
-  );
+  )
+  .alias("apply-prod")
+  .command("deploy", "Deploy transactions");
 
 program.action(async () => {
-  let latest = (
-    await execShellCommand("npm view @olenbetong/appframe-cli version")
-  ).trim();
-
+  program.outputHelp();
+  let latest = await execShellCommand(
+    "npm view @olenbetong/appframe-cli version"
+  );
+  latest = latest.trim();
   if (semverCompare(latest, appPkg.version) > 0) {
-    console.error(
+    console.log(
       chalk.yellow(
-        `You are running \`@olenbetong/appframe-cli\` ${appPkg.version}, which is behind the latest release (${latest}).\n`
+        `\nYou are running \`@olenbetong/appframe-cli\` ${appPkg.version}, which is behind the latest release (${latest}).\n`
       )
     );
   }
-  program.help();
 });
 
 await program.parseAsync(process.argv);

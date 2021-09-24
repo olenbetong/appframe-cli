@@ -1,8 +1,8 @@
 import { Command } from "commander";
 import prompts from "prompts";
-import { importJson } from "../lib/importJson.js";
 
 import { Server } from "../lib/Server.js";
+import { importJson } from "../lib/importJson.js";
 
 const isInteractive = process.stdout.isTTY;
 

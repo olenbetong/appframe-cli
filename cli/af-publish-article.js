@@ -1,6 +1,5 @@
-import { importJson } from "../lib/importJson.js";
-
 import { Server } from "../lib/Server.js";
+import { importJson } from "../lib/importJson.js";
 
 const pkg = await importJson("./package.json", true);
 

@@ -1,5 +1,6 @@
-import { config } from "dotenv";
 import { Command } from "commander";
+import { config } from "dotenv";
+
 import { afFetch, login, setHostname } from "@olenbetong/data-object/node";
 
 config({ path: process.cwd() + "/.env" });
