@@ -1,21 +1,23 @@
+import { Command } from "../lib/Command.js";
+
 import chalk from "chalk";
-import { Command } from "commander";
 import prompts from "prompts";
 
 import { Server } from "../lib/Server.js";
 import { importJson } from "../lib/importJson.js";
 import {
+  getNamespaceArgument,
   getServerFromOptions,
-  getServerOption,
 } from "../lib/serverSelection.js";
 
 const isInteractive = process.stdout.isTTY;
 
-async function applyTransactions(namespace, options) {
+async function applyTransactions(namespaceArg, options) {
   try {
-    let hostname = await getServerFromOptions(options);
-    let server = new Server(hostname);
+    await getServerFromOptions(options);
+    let server = new Server(options.server);
     let result = await server.login();
+    let namespace = await getNamespaceArgument(namespaceArg, options);
 
     if (result !== true) {
       throw Error("Login failed!");
@@ -52,7 +54,7 @@ const appPkg = await importJson("../package.json");
 const program = new Command();
 program
   .version(appPkg.version)
-  .addOption(getServerOption("test.obet.no"))
+  .addServerOption()
   .argument("[namespace]", "optional namespace if you don't want to apply all")
   .action(applyTransactions);
 

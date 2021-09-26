@@ -1,17 +1,15 @@
+import { Command } from "../lib/Command.js";
+
 import chalk from "chalk";
-import { Command } from "commander";
 
 import { Server } from "../lib/Server.js";
 import { importJson } from "../lib/importJson.js";
-import {
-  getServerFromOptions,
-  getServerOption,
-} from "../lib/serverSelection.js";
+import { getServerFromOptions } from "../lib/serverSelection.js";
 
 async function downloadTransactions(namespace, options) {
   try {
-    let hostname = await getServerFromOptions(options);
-    let server = new Server(hostname);
+    await getServerFromOptions(options);
+    let server = new Server(options.server);
     let result = await server.login();
 
     if (result !== true) {
@@ -30,7 +28,7 @@ const appPkg = await importJson("../package.json");
 const program = new Command();
 program
   .version(appPkg.version)
-  .addOption(getServerOption("test.obet.no"))
+  .addServerOption()
   .argument("[namespace]", "namespace to download updates for")
   .action(downloadTransactions);
 

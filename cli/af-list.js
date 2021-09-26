@@ -1,12 +1,11 @@
+import { Command } from "../lib/Command.js";
+
 import chalk from "chalk";
-import { Command, Option } from "commander";
+import { Option } from "commander";
 
 import { Server } from "../lib/Server.js";
 import { importJson } from "../lib/importJson.js";
-import {
-  getServerFromOptions,
-  getServerOption,
-} from "../lib/serverSelection.js";
+import { getServerFromOptions } from "../lib/serverSelection.js";
 
 const appPkg = await importJson("../package.json");
 
@@ -27,7 +26,7 @@ let program = new Command();
 program
   .version(appPkg.version)
   .argument("[namespace]", "list only transactions from a namespace")
-  .addOption(getServerOption("dev.obet.no"))
+  .addServerOption()
   .addOption(
     new Option("-t, --type <type>", "Type of transactions to list")
       .choices(["apply", "deploy"])

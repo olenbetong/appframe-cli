@@ -1,21 +1,23 @@
+import { Command } from "../lib/Command.js";
+
 import chalk from "chalk";
-import { Command } from "commander";
 import prompts from "prompts";
 
 import { Server } from "../lib/Server.js";
 import { importJson } from "../lib/importJson.js";
 import {
+  getNamespaceArgument,
   getServerFromOptions,
-  getServerOption,
 } from "../lib/serverSelection.js";
 
 const isInteractive = process.stdout.isTTY;
 
-async function deployTransactions(namespace, options) {
+async function deployTransactions(namespaceArg, options) {
   try {
-    let hostname = await getServerFromOptions(options);
-    let server = new Server(hostname);
+    await getServerFromOptions(options);
+    let server = new Server(options.server);
     let result = await server.login();
+    let namespace = await getNamespaceArgument(namespaceArg, options);
 
     if (result !== true) {
       throw Error("Login failed!");
@@ -43,7 +45,7 @@ async function deployTransactions(namespace, options) {
       await server.logServerMessage("Done.");
     }
   } catch (error) {
-    console.error(chalk.red(error.message));
+    console.log(chalk.red(error.message));
     process.exit(1);
   }
 }
@@ -53,6 +55,6 @@ const program = new Command();
 program
   .version(appPkg.version)
   .argument("[namespace]", "optional namespace if you don't want to deploy all")
-  .addOption(getServerOption("dev.obet.no"))
+  .addServerOption()
   .action(deployTransactions)
   .parseAsync(process.argv);
