@@ -37,19 +37,19 @@ async function getType(options) {
 
     let result = await prompts(question);
 
-    return result.type;
+    options.type = result.type;
   }
 }
 
 async function listTransactions(namespaceArg, options) {
-  let hostname = await getServerFromOptions(options);
-  let type = await getType(options);
-  let server = new Server(hostname);
+  await getServerFromOptions(options);
+  await getType(options);
+  let server = new Server(options.server);
 
   await server.login();
 
   let namespace = await getNamespaceArgument(namespaceArg, options);
-  let transactions = await server.getTransactions(type, namespace);
+  let transactions = await server.getTransactions(options.type, namespace);
 
   if (transactions.length > 0) {
     console.table(transactions);
