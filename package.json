@@ -29,7 +29,6 @@
     "chalk": "^4.1.2",
     "commander": "^8.2.0",
     "dotenv": "^10.0.0",
-    "formdata-node": "^4.2.1",
     "ink": "^3.0.9",
     "prompts": "^2.4.1",
     "react": "^17.0.2"
