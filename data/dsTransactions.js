@@ -14,6 +14,7 @@ const dsTransactions = generateApiDataObject({
     "Type",
     "LocalCreatedBy",
     "CreatedBy",
+    "CreatedByName",
   ],
 });
 
