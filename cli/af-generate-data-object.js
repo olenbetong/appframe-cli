@@ -2,13 +2,15 @@ import { Command } from "commander";
 import { config } from "dotenv";
 
 import { afFetch, login, setHostname } from "@olenbetong/data-object/node";
+import { importJson } from "../lib/importJson.js";
 
 config({ path: process.cwd() + "/.env" });
 
 const { APPFRAME_LOGIN: username, APPFRAME_PWD: password } = process.env;
+const appPkg = await importJson("../package.json");
 
 const program = new Command();
-program.version("1.0.0");
+program.version(appPkg.version);
 program.option(
   "-r, --resource <resource>",
   "Name of the data API resource to generate a definition for"
