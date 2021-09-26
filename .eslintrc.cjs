@@ -10,6 +10,7 @@ module.exports = {
   parserOptions: {
     ecmaVersion: 2018,
     sourceType: "module",
+    requireConfigFile: false,
   },
   rules: {
     "react/prop-types": "off",

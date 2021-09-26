@@ -1,8 +1,9 @@
-import { Command } from "commander";
 import prompts from "prompts";
 
+import { Command } from "../lib/Command.js";
 import { Server } from "../lib/Server.js";
 import { importJson } from "../lib/importJson.js";
+import { getNamespaceArgument } from "../lib/serverSelection.js";
 
 const isInteractive = process.stdout.isTTY;
 
@@ -15,6 +16,7 @@ async function runStageOperations(
   try {
     let server = new Server(hostname);
     await server.login();
+
     lastSuccessfulStep = "login";
 
     lastSuccessfulStep = "getArticleInformation";
@@ -78,7 +80,15 @@ async function runStageOperations(
   }
 }
 
-async function publishFromDev(namespace) {
+async function getNamespace(namespaceArg) {
+  let server = new Server("dev.obet.no");
+  await server.login();
+  return await getNamespaceArgument(namespaceArg);
+}
+
+async function publishFromDev(namespaceArg) {
+  let namespace = await getNamespace(namespaceArg);
+
   await runStageOperations(namespace, "dev.obet.no", [
     "generate",
     "verify-deploy",
@@ -108,9 +118,6 @@ async function run(namespace) {
 const appPkg = await importJson("../package.json");
 
 const program = new Command();
-program
-  .version(appPkg.version)
-  .argument("<namespace>", "namespace to push from dev to production")
-  .action(run);
+program.version(appPkg.version).addNamespaceArgument(true).action(run);
 
 await program.parseAsync(process.argv);

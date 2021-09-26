@@ -54,7 +54,7 @@ const appPkg = await importJson("../package.json");
 const program = new Command();
 program
   .version(appPkg.version)
-  .argument("[namespace]", "optional namespace if you don't want to deploy all")
+  .addNamespaceArgument()
   .addServerOption()
   .action(deployTransactions)
   .parseAsync(process.argv);

@@ -3,10 +3,12 @@ import { Command } from "commander";
 
 import { Server } from "../lib/Server.js";
 import { importJson } from "../lib/importJson.js";
+import { getNamespaceArgument } from "../lib/serverSelection.js";
 
-async function generate(namespace, options) {
+async function generate(namespaceArg, options) {
   let server = new Server(options.server);
   await server.login();
+  let namespace = await getNamespaceArgument(namespaceArg, options);
 
   await server.generate(namespace);
   let transactions = await server.getTransactions("deploy", namespace);
@@ -21,10 +23,7 @@ const appPkg = await importJson("../package.json");
 const program = new Command();
 program
   .version(appPkg.version)
-  .argument(
-    "[namespace]",
-    "limit generate updates to a single namespace by name"
-  )
+  .addNamespaceArgument()
   .option("-s, --server", "server on which to apply updates", "dev.obet.no")
   .action(generate)
   .parseAsync(process.argv);

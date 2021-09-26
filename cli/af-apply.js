@@ -55,7 +55,7 @@ const program = new Command();
 program
   .version(appPkg.version)
   .addServerOption()
-  .argument("[namespace]", "optional namespace if you don't want to apply all")
+  .addNamespaceArgument()
   .action(applyTransactions);
 
 await program.parseAsync(process.argv);

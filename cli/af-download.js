@@ -4,13 +4,17 @@ import chalk from "chalk";
 
 import { Server } from "../lib/Server.js";
 import { importJson } from "../lib/importJson.js";
-import { getServerFromOptions } from "../lib/serverSelection.js";
+import {
+  getNamespaceArgument,
+  getServerFromOptions,
+} from "../lib/serverSelection.js";
 
-async function downloadTransactions(namespace, options) {
+async function downloadTransactions(namespaceArg, options) {
   try {
     await getServerFromOptions(options);
     let server = new Server(options.server);
     let result = await server.login();
+    let namespace = await getNamespaceArgument(namespaceArg, options);
 
     if (result !== true) {
       throw Error("Login failed!");
@@ -29,7 +33,7 @@ const program = new Command();
 program
   .version(appPkg.version)
   .addServerOption()
-  .argument("[namespace]", "namespace to download updates for")
+  .addNamespaceArgument()
   .action(downloadTransactions);
 
 await program.parseAsync(process.argv);

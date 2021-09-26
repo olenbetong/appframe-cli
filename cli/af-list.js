@@ -5,14 +5,18 @@ import { Option } from "commander";
 
 import { Server } from "../lib/Server.js";
 import { importJson } from "../lib/importJson.js";
-import { getServerFromOptions } from "../lib/serverSelection.js";
+import {
+  getNamespaceArgument,
+  getServerFromOptions,
+} from "../lib/serverSelection.js";
 
 const appPkg = await importJson("../package.json");
 
-async function listTransactions(namespace, options) {
+async function listTransactions(namespaceArg, options) {
   let hostname = await getServerFromOptions(options);
   let server = new Server(hostname);
   await server.login();
+  let namespace = await getNamespaceArgument(namespaceArg, options);
   let transactions = await server.getTransactions(options.type, namespace);
 
   if (transactions.length > 0) {
@@ -25,7 +29,7 @@ async function listTransactions(namespace, options) {
 let program = new Command();
 program
   .version(appPkg.version)
-  .argument("[namespace]", "list only transactions from a namespace")
+  .addNamespaceArgument()
   .addServerOption()
   .addOption(
     new Option("-t, --type <type>", "Type of transactions to list")
