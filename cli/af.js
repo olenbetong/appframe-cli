@@ -55,6 +55,10 @@ program
   .command(
     "publish-bundle",
     "Publishes an Appframe bundle and sends it to the production server (download only)"
+  )
+  .command(
+    "resources",
+    "Tools to work with data resources used by the Data API"
   );
 
 program.action(async () => {

@@ -1,15 +1,11 @@
-import { Command } from "../lib/Command.js";
-
 import chalk from "chalk";
 import { Option } from "commander";
-
-import { Server } from "../lib/Server.js";
-import { importJson } from "../lib/importJson.js";
-import {
-  getNamespaceArgument,
-  getServerFromOptions,
-} from "../lib/serverSelection.js";
 import prompts from "prompts";
+
+import { Command } from "../lib/Command.js";
+import { Server } from "../lib/Server.js";
+import { getServerFromOptions } from "../lib/getServerFromOptions.js";
+import { importJson } from "../lib/importJson.js";
 
 const appPkg = await importJson("../package.json");
 const isInteractive = process.stdin.isTTY;
@@ -48,7 +44,7 @@ async function listTransactions(namespaceArg, options) {
 
   await server.login();
 
-  let namespace = await getNamespaceArgument(namespaceArg, options);
+  let namespace = await server.getNamespaceArgument(namespaceArg, options);
   let transactions = await server.getTransactions(options.type, namespace);
 
   if (transactions.length > 0) {

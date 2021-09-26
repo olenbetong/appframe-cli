@@ -1,14 +1,10 @@
-import { Command } from "../lib/Command.js";
-
 import chalk from "chalk";
 import prompts from "prompts";
 
+import { Command } from "../lib/Command.js";
 import { Server } from "../lib/Server.js";
+import { getServerFromOptions } from "../lib/getServerFromOptions.js";
 import { importJson } from "../lib/importJson.js";
-import {
-  getNamespaceArgument,
-  getServerFromOptions,
-} from "../lib/serverSelection.js";
 
 const isInteractive = process.stdout.isTTY;
 
@@ -17,7 +13,7 @@ async function deployTransactions(namespaceArg, options) {
     await getServerFromOptions(options);
     let server = new Server(options.server);
     let result = await server.login();
-    let namespace = await getNamespaceArgument(namespaceArg, options);
+    let namespace = await server.getNamespaceArgument(namespaceArg, options);
 
     if (result !== true) {
       throw Error("Login failed!");

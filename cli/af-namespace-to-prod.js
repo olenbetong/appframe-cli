@@ -3,7 +3,6 @@ import prompts from "prompts";
 import { Command } from "../lib/Command.js";
 import { Server } from "../lib/Server.js";
 import { importJson } from "../lib/importJson.js";
-import { getNamespaceArgument } from "../lib/serverSelection.js";
 
 const isInteractive = process.stdout.isTTY;
 
@@ -83,7 +82,7 @@ async function runStageOperations(
 async function getNamespace(namespaceArg) {
   let server = new Server("dev.obet.no");
   await server.login();
-  return await getNamespaceArgument(namespaceArg);
+  return await server.getNamespaceArgument(namespaceArg);
 }
 
 async function publishFromDev(namespaceArg) {

@@ -1,20 +1,16 @@
-import { Command } from "../lib/Command.js";
-
 import chalk from "chalk";
 
+import { Command } from "../lib/Command.js";
 import { Server } from "../lib/Server.js";
+import { getServerFromOptions } from "../lib/getServerFromOptions.js";
 import { importJson } from "../lib/importJson.js";
-import {
-  getNamespaceArgument,
-  getServerFromOptions,
-} from "../lib/serverSelection.js";
 
 async function downloadTransactions(namespaceArg, options) {
   try {
     await getServerFromOptions(options);
     let server = new Server(options.server);
     let result = await server.login();
-    let namespace = await getNamespaceArgument(namespaceArg, options);
+    let namespace = await server.getNamespaceArgument(namespaceArg, options);
 
     if (result !== true) {
       throw Error("Login failed!");

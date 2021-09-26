@@ -1,6 +1,7 @@
 export { default as dsArticles } from "./dsArticles.js";
 export { default as dsArticlesVersions } from "./dsArticlesVersions.js";
 export { default as dsBundles } from "./dsBundles.js";
+export { default as dsDataResources } from "./dsDataResources.js";
 export { default as dsNamespaces } from "./dsNamespaces.js";
 export { default as dsTransactions } from "./dsTransactions.js";
 export { default as procApply } from "./procApply.js";
