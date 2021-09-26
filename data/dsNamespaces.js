@@ -1,8 +1,8 @@
 import { generateApiDataObject } from "@olenbetong/data-object/node";
 
 const dsNamespaces = generateApiDataObject({
-  resource: "stbv_Deploy_Namespaces",
-  id: "dsSomeDataObjectID",
+  resource: "sviw_Deploy_Namespaces",
+  id: "dsNamespaces",
   fields: [
     {
       name: "PrimKey",
