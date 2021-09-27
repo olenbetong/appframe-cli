@@ -63,7 +63,8 @@ program
   .command(
     "init-app",
     "Bootstraps a new application using create-react-app with @olenbetong/react-scripts"
-  );
+  )
+  .showSuggestionAfterError();
 
 program.action(async () => {
   program.outputHelp();
