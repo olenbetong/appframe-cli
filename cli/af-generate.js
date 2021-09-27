@@ -1,5 +1,5 @@
 import chalk from "chalk";
-import { Command } from "commander";
+import { Command } from "../lib/Command.js";
 
 import { Server } from "../lib/Server.js";
 import { importJson } from "../lib/importJson.js";
