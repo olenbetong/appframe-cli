@@ -59,6 +59,10 @@ program
   .command(
     "resources",
     "Tools to work with data resources used by the Data API"
+  )
+  .command(
+    "init-app",
+    "Bootstraps a new application using create-react-app with @olenbetong/react-scripts"
   );
 
 program.action(async () => {
