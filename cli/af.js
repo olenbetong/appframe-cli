@@ -23,7 +23,6 @@ program
   .alias("ntp")
   .command("generate", "Generates transactions, and lists them")
   .command("list", "Lists transactions that will be applied or deployed")
-  .alias("list-transactions")
   .command(
     "apply",
     "Applies all updates on production server. Will list transactions first, and, if in a TTY environment, prompt the user before applying."
