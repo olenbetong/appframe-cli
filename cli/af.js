@@ -20,6 +20,7 @@ program
     "namespace-to-prod",
     "Generates, applies and deploys changes from dev to stage and then download them on prod."
   )
+  .alias("ntp")
   .command("generate", "Generates transactions, and lists them")
   .alias("generate-all")
   .command("list", "Lists transactions that will be applied or deployed")
