@@ -92,50 +92,58 @@ function Deployer() {
       });
       setHasRemovedPrevious(true);
 
-      let styles = await fs.readdir(new URL(stylePath));
-      setStyleCount(styles.length);
-      for (let file of styles) {
-        let record = {
-          ArticleID: appframe.article,
-          HostName: appframe.hostname,
-          ID: file,
-          Exclude: shouldFileBeExcluded(file),
-          Style: await getFileContents(stylePath, file),
-        };
+      try {
+        let styles = await fs.readdir(new URL(stylePath));
+        setStyleCount(styles.length);
+        for (let file of styles) {
+          let record = {
+            ArticleID: appframe.article,
+            HostName: appframe.hostname,
+            ID: file,
+            Exclude: shouldFileBeExcluded(file),
+            Style: await getFileContents(stylePath, file),
+          };
 
-        dsArticlesStyles.setParameter(
-          "whereClause",
-          `[HostName] = '${appframe.hostname}' AND [ArticleID] = '${appframe.article}' AND [ID] = '${file}'`
-        );
-        await dsArticlesStyles.refreshDataSourceAsync();
-        dsArticlesStyles.setCurrentIndex(
-          dsArticlesStyles.getDataLength() > 0 ? 0 : -1
-        );
-        await dsArticlesStyles.saveAsync(record);
-        setStyleDone((d) => d + 1);
+          dsArticlesStyles.setParameter(
+            "whereClause",
+            `[HostName] = '${appframe.hostname}' AND [ArticleID] = '${appframe.article}' AND [ID] = '${file}'`
+          );
+          await dsArticlesStyles.refreshDataSourceAsync();
+          dsArticlesStyles.setCurrentIndex(
+            dsArticlesStyles.getDataLength() > 0 ? 0 : -1
+          );
+          await dsArticlesStyles.saveAsync(record);
+          setStyleDone((d) => d + 1);
+        }
+      } catch (error) {
+        // Ignore directory doesn't exist error
       }
 
-      let scripts = await fs.readdir(new URL(scriptPath));
-      setScriptCount(scripts.length);
-      for (let file of scripts) {
-        let record = {
-          ArticleID: appframe.article,
-          HostName: appframe.hostname,
-          ID: file,
-          Exclude: shouldFileBeExcluded(file),
-          Script: await getFileContents(scriptPath, file),
-        };
+      try {
+        let scripts = await fs.readdir(new URL(scriptPath));
+        setScriptCount(scripts.length);
+        for (let file of scripts) {
+          let record = {
+            ArticleID: appframe.article,
+            HostName: appframe.hostname,
+            ID: file,
+            Exclude: shouldFileBeExcluded(file),
+            Script: await getFileContents(scriptPath, file),
+          };
 
-        dsArticlesScripts.setParameter(
-          "whereClause",
-          `[HostName] = '${appframe.hostname}' AND [ArticleID] = '${appframe.article}' AND [ID] = '${file}'`
-        );
-        await dsArticlesScripts.refreshDataSourceAsync();
-        dsArticlesScripts.setCurrentIndex(
-          dsArticlesScripts.getDataLength() > 0 ? 0 : -1
-        );
-        await dsArticlesScripts.saveAsync(record);
-        setScriptDone((d) => d + 1);
+          dsArticlesScripts.setParameter(
+            "whereClause",
+            `[HostName] = '${appframe.hostname}' AND [ArticleID] = '${appframe.article}' AND [ID] = '${file}'`
+          );
+          await dsArticlesScripts.refreshDataSourceAsync();
+          dsArticlesScripts.setCurrentIndex(
+            dsArticlesScripts.getDataLength() > 0 ? 0 : -1
+          );
+          await dsArticlesScripts.saveAsync(record);
+          setScriptDone((d) => d + 1);
+        }
+      } catch (error) {
+        // Ignore directory doesn't exist error
       }
 
       exit(0);
