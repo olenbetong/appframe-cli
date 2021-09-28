@@ -22,14 +22,12 @@ program
   )
   .alias("ntp")
   .command("generate", "Generates transactions, and lists them")
-  .alias("generate-all")
   .command("list", "Lists transactions that will be applied or deployed")
   .alias("list-transactions")
   .command(
     "apply",
     "Applies all updates on production server. Will list transactions first, and, if in a TTY environment, prompt the user before applying."
   )
-  .alias("apply-prod")
   .command("deploy", "Deploy transactions")
   .command(
     "check-updates",
@@ -48,7 +46,6 @@ program
     "publish-article",
     "Publishes a deployed application, generates the transaction, and sends it to the production server (download only)"
   )
-  .alias("publish-to-prod")
   .command(
     "prepare-bundle",
     "Packs the current project and uploads it to Appframe bundles"
