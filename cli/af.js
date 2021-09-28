@@ -63,6 +63,10 @@ program
     "init-app <name>",
     "Bootstraps a new application using create-react-app with @olenbetong/react-scripts"
   )
+  .command(
+    "generate-types",
+    "Generates Typescript types for data objects in the Appframe article"
+  )
   .showSuggestionAfterError();
 
 program.action(async () => {
