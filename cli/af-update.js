@@ -3,12 +3,12 @@ import { importJson } from "../lib/importJson.js";
 
 try {
   let cliPkg = await importJson("../package.json");
-  let args = ["install", "@olenbetong/appframe-cli@latest"];
+  let args = ["install", "@olenbetong/appframe-cli@latest", "-g"];
 
   try {
     let pkg = await importJson("./package.json", true);
     if (pkg.dependencies[cliPkg.name] || pkg.devDependencies[cliPkg.name]) {
-      args.push("-g");
+      args.pop();
     }
   } catch (error) {} // eslint-disable-line
 
