@@ -1,14 +1,9 @@
 import { createTheme } from "@mui/material/styles";
-import React from "react";
 
-const div = document.createElement("div");
-div.style.color = "var(--brand-primary)";
-div.style.backgroundColor = "var(--brand-light)";
-div.style.borderTopColor = "var(--brand-tertiary)";
-div.style.borderRightColor = "var(--brand-dark)";
-document.body.append(div);
-
-const computed = getComputedStyle(div);
+const bodyStyles = getComputedStyle(document.body);
+function getThemeValue(name: string) {
+  return bodyStyles.getPropertyValue(`--${name}`).trim();
+}
 
 declare module "@mui/material/styles" {
   interface Theme {
@@ -21,11 +16,6 @@ declare module "@mui/material/styles" {
       drawerWidth: React.CSSProperties["width"];
     };
   }
-  interface DeprecatedThemeOptions {
-    config?: {
-      drawerWidth?: React.CSSProperties["width"];
-    };
-  }
 }
 
 export default createTheme({
@@ -33,8 +23,11 @@ export default createTheme({
     drawerWidth: "20rem",
   },
   palette: {
-    primary: { main: computed.color, dark: computed.borderRightColor },
-    secondary: { main: computed.backgroundColor },
+    primary: {
+      main: getThemeValue("brand-primary"),
+      dark: getThemeValue("brand-dark"),
+    },
+    secondary: { main: getThemeValue("brand-light") },
   },
   typography: {
     fontFamily: [
