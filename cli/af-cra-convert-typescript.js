@@ -33,7 +33,7 @@ async function convertToTypescript() {
   );
 
   console.log("Replacing jsconfig with tsconfig...");
-  if (await fileExists("./jsconfig.json")) {
+  if (await fileExists("./jsconfig.json", true)) {
     await rm(getProjectFile("./jsconfig.json"));
   }
   await copyFile(
