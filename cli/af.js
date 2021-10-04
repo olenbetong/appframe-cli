@@ -40,10 +40,6 @@ program
   )
   .command("download [namespace]", "Download transactions")
   .command(
-    "publish-article [url]",
-    "Publishes a deployed application, generates the transaction, and sends it to the production server (download only)"
-  )
-  .command(
     "prepare-bundle",
     "Packs the current project and uploads it to Appframe bundles"
   )

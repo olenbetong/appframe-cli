@@ -19,6 +19,10 @@ program
   .command(
     "project-setup",
     "Ensures the project has deploy/publish scripts set up"
+  )
+  .command(
+    "publish",
+    "Publish the article, and take the transaction from dev to prod (download only)"
   );
 
 await program.parseAsync(process.argv);
