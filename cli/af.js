@@ -52,10 +52,6 @@ program
     "Tools to work with data resources used by the Data API"
   )
   .command(
-    "init-app <name>",
-    "Bootstraps a new application using create-react-app with @olenbetong/react-scripts"
-  )
-  .command(
     "cra",
     "Commands to use when working with a create-react-app application using @olenbetong/react-scripts"
   )

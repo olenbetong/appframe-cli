@@ -23,6 +23,10 @@ program
   .command(
     "publish",
     "Publish the article, and take the transaction from dev to prod (download only)"
+  )
+  .command(
+    "init <name>",
+    "Bootstraps a new application using create-react-app with @olenbetong/react-scripts"
   );
 
 await program.parseAsync(process.argv);
