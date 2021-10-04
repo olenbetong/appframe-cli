@@ -30,7 +30,7 @@ async function updateProjectSetup() {
   console.log("Configuring package.json...");
 
   const pkg = await importJson("./package.json", true);
-  pkg.scripts.start = "af generate-types && react-scripts start";
+  pkg.scripts.start = "af cra generate-types && react-scripts start";
   pkg.scripts.deploy = "af cra deploy";
   pkg.scripts["publish-to-prod"] = "af cra publish";
   pkg.scripts["generate-types"] = "af cra generate-types";
