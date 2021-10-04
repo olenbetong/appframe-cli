@@ -92,6 +92,16 @@ async function updateProjectSetup() {
       getProjectFile("./.github/publish-and-deploy.yaml")
     );
   }
+
+  console.log("Updating VS Code workspace settings...");
+  if (!(await fileExists("./.vscode", true))) {
+    await mkdir(getProjectFile("./.vscode"));
+  }
+
+  await copyFile(
+    getCLIFile("../templates/vscode-settings.json.tpl"),
+    getProjectFile("./.vscode/settings.json")
+  );
 }
 
 updateProjectSetup().catch((error) => {
