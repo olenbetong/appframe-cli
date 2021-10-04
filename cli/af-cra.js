@@ -17,7 +17,7 @@ program
     "Generate Typescript definitions for data objects and procedures in the article in package.json"
   )
   .command(
-    "project-setup",
+    "update-setup",
     "Ensures the project has deploy/publish scripts set up"
   )
   .command(
@@ -27,6 +27,7 @@ program
   .command(
     "init <name>",
     "Bootstraps a new application using create-react-app with @olenbetong/react-scripts"
-  );
+  )
+  .command("convert-typescript", "Prepares the project to use typescript");
 
 await program.parseAsync(process.argv);

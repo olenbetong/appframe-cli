@@ -1,0 +1,1 @@
+// Types in this file can be used in the types.json file with a "Custom." prefix.
