@@ -66,8 +66,9 @@ async function convertToTypescript() {
   );
 
   console.log("Renaming files...");
-  await execShellCommand('rename "s/js$/tsx/" ./src/**/*.js');
-  await execShellCommand('rename "s/js$/tsx/" ./src/*.js');
+  await execShellCommand(
+    "find ./src -name \"*.js\" -exec rename 's/.js$/.tsx/' '{}' +"
+  );
 }
 
 convertToTypescript().catch((error) => {
