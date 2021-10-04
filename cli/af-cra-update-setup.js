@@ -73,23 +73,25 @@ async function updateProjectSetup() {
   console.log("Installing latest @olenbetong/data-object...");
   await execShellCommand("npm i @olenbetong/data-object@latest");
 
-  if (!(await fileExists("./.github", true))) {
-    await mkdir(getProjectFile("./.github"));
+  if (!(await fileExists("./.github/workflows", true))) {
+    await mkdir(getProjectFile("./.github/workflows"), { recursive: true });
   }
 
-  if (!(await fileExists("./.github/build-and-deploy.yaml", true))) {
+  if (!(await fileExists("./.github/workflows/build-and-deploy.yaml", true))) {
     console.log("Adding build and deploy action...");
     await copyFile(
-      getCLIFile("../templates/github-build-and-deploy.yaml.tpl"),
-      getProjectFile("./.github/build-and-deploy.yaml")
+      getCLIFile("../templates/github-workflows-build-and-deploy.yaml.tpl"),
+      getProjectFile("./.github/workflows/build-and-deploy.yaml")
     );
   }
 
-  if (!(await fileExists("./.github/publish-and-deploy.yaml", true))) {
+  if (
+    !(await fileExists("./.github/workflows/publish-and-deploy.yaml", true))
+  ) {
     console.log("Adding publish and deploy action...");
     await copyFile(
-      getCLIFile("../templates/github-publish-and-deploy.yaml.tpl"),
-      getProjectFile("./.github/publish-and-deploy.yaml")
+      getCLIFile("../templates/github-workflows-publish-and-deploy.yaml.tpl"),
+      getProjectFile("./.github/workflows/publish-and-deploy.yaml")
     );
   }
 
