@@ -36,7 +36,7 @@ async function runStageOperations(hostname, operations = ["download"]) {
     }
 
     if (operations.includes("generate")) {
-      await server.generate(namespace.Namespace_ID);
+      await server.generate(namespace.ID);
       lastSuccessfulStep = "generate";
     }
 
@@ -45,7 +45,7 @@ async function runStageOperations(hostname, operations = ["download"]) {
         `[Namespace_ID] = ${Namespace_ID} AND [Status] IN (0, 2, 4) AND [IsLocal] = 0`,
         pkg.name
       );
-      await server.apply(namespace.Namespace_ID);
+      await server.apply(namespace.ID);
       lastSuccessfulStep = "apply";
     }
 
@@ -54,7 +54,7 @@ async function runStageOperations(hostname, operations = ["download"]) {
         `[Namespace_ID] = ${Namespace_ID} AND (([Status] = 0 AND [IsLocal] = 1) OR [Status] = 1)`,
         pkg.name
       );
-      await server.deploy(namespace.Namespace_ID);
+      await server.deploy(namespace.ID);
       lastSuccessfulStep = "deploy";
     }
   } catch (error) {
