@@ -1,7 +1,4 @@
 import { ProcedureAPI } from "@olenbetong/data-object/node";
 
-const procPublish = new ProcedureAPI({
-  procedureId: "sstp_WebSiteCMS_CopyArticle",
-});
-
-export default procPublish;
+export default (client) =>
+  new ProcedureAPI({ client, procedureId: "sstp_WebSiteCMS_CopyArticle" });

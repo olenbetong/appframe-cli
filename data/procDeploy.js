@@ -1,8 +1,8 @@
 import { Procedure } from "@olenbetong/data-object/node";
 
-const procDeploy = new Procedure({
-  articleId: "af-updater",
-  procedureId: "procDeploy",
-});
-
-export default procDeploy;
+export default (client) =>
+  new Procedure({
+    client,
+    articleId: "af-updater",
+    procedureId: "procDeploy",
+  });

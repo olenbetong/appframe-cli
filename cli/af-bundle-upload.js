@@ -1,17 +1,12 @@
 import chalk from "chalk";
+import { Command } from "commander";
 import { config } from "dotenv";
 
-import dsBundles from "../data/dsBundles.js";
 import { Server } from "../lib/Server.js";
 import { execShellCommand } from "../lib/execShellCommand.js";
 import { importJson } from "../lib/importJson.js";
-import { Command } from "commander";
 
 config({ path: process.cwd() + "/.env" });
-
-dsBundles.errorHandler = (error) => {
-  throw Error(error);
-};
 
 async function prepareBundle(pkgName) {
   try {
