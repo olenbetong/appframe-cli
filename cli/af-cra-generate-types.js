@@ -3,7 +3,12 @@ import chalk from "chalk";
 import vm from "node:vm";
 import fs from "node:fs/promises";
 
-import { DataObject, Procedure } from "@olenbetong/data-object";
+import {
+  DataObject,
+  Procedure,
+  Client,
+  setDefaultClient,
+} from "@olenbetong/data-object/node";
 
 import { Command } from "../lib/Command.js";
 import { Server } from "../lib/Server.js";
@@ -12,6 +17,8 @@ import { importJson } from "../lib/importJson.js";
 
 const appPkg = await importJson("./package.json", true);
 const cliPkg = await importJson("../package.json");
+
+setDefaultClient(new Client("dev.obet.no"));
 
 globalThis.af = {
   common: {

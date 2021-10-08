@@ -25,7 +25,7 @@
     "prettier": "^2.1.2"
   },
   "dependencies": {
-    "@olenbetong/data-object": "^1.0.0-alpha.32",
+    "@olenbetong/data-object": "^1.0.0-alpha.33",
     "chalk": "^4.1.2",
     "commander": "^8.2.0",
     "dotenv": "^10.0.0",
