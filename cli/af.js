@@ -40,20 +40,16 @@ program
   )
   .command("download [namespace]", "Download transactions")
   .command(
-    "prepare-bundle",
-    "Packs the current project and uploads it to Appframe bundles"
-  )
-  .command(
-    "publish-bundle",
-    "Publishes an Appframe bundle and sends it to the production server (download only)"
-  )
-  .command(
     "resources [command]",
     "Tools to work with data resources used by the Data API"
   )
   .command(
     "cra",
     "Commands to use when working with a create-react-app application using @olenbetong/react-scripts"
+  )
+  .command(
+    "bundle",
+    "Commands to create, upload and publish af bundles from npm packages"
   )
   .showSuggestionAfterError();
 
