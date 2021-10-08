@@ -6,13 +6,17 @@ import { Fragment, createElement as h, useEffect, useState } from "react";
 import * as af from "@olenbetong/data-object/node";
 
 import { importJson } from "../lib/importJson.js";
+import { Client, setDefaultClient } from "@olenbetong/data-object/node";
 
 dotenv.config();
 
 const appPackageJson = await importJson("./package.json", true);
-
 const { appframe } = appPackageJson;
 const { APPFRAME_LOGIN: username, APPFRAME_PWD: password } = process.env;
+const client = new Client(appframe.devHostname);
+
+await client.login(username, password);
+setDefaultClient(client);
 
 const dsArticlesScripts = af.generateApiDataObject({
   id: "dsArticlesScripts",
@@ -193,9 +197,6 @@ function Deployer() {
 }
 
 async function deploy() {
-  af.setHostname(appframe.devHostname);
-  await af.login(username, password);
-
   render(h(Deployer));
 }
 
