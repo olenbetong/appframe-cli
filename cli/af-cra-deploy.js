@@ -3,10 +3,10 @@ import { Text, render, useApp } from "ink";
 import fs from "node:fs/promises";
 import { Fragment, createElement as h, useEffect, useState } from "react";
 
-import * as af from "@olenbetong/data-object/node";
+import * as af from "@olenbetong/data-object";
 
 import { importJson } from "../lib/importJson.js";
-import { Client, setDefaultClient } from "@olenbetong/data-object/node";
+import { Client, setDefaultClient } from "@olenbetong/data-object";
 
 dotenv.config();
 

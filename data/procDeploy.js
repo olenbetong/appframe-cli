@@ -1,4 +1,4 @@
-import { Procedure } from "@olenbetong/data-object/node";
+import { Procedure } from "@olenbetong/data-object";
 
 export default (client) =>
   new Procedure({

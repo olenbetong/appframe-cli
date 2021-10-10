@@ -1,4 +1,4 @@
-import { generateApiDataObject } from "@olenbetong/data-object/node";
+import { generateApiDataObject } from "@olenbetong/data-object";
 
 export default (client) =>
   generateApiDataObject({

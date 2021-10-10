@@ -8,7 +8,7 @@ import {
   Procedure,
   Client,
   setDefaultClient,
-} from "@olenbetong/data-object/node";
+} from "@olenbetong/data-object";
 
 import { Command } from "../lib/Command.js";
 import { Server } from "../lib/Server.js";
