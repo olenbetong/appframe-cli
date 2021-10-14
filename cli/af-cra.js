@@ -28,6 +28,7 @@ program
     "init <name>",
     "Bootstraps a new application using create-react-app with @olenbetong/react-scripts"
   )
+  .command("appdesigner", "Opens the appdesigner for the current project")
   .command("convert-typescript", "Prepares the project to use typescript");
 
 await program.parseAsync(process.argv);
