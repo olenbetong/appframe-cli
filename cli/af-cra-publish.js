@@ -36,8 +36,9 @@ async function runStageOperations(
 
     if (operations.includes("apply")) {
       await server.assertOnlyOneTransaction(
-        `[Namespace_ID] = ${article.Namespace_ID} AND [Status] IN (0, 2, 4) AND [IsLocal] = 0`,
-        transactionName
+        "apply",
+        transactionName,
+        article.Namespace
       );
       await server.apply(article.Namespace_ID);
       lastSuccessfulStep = "apply";
@@ -45,8 +46,9 @@ async function runStageOperations(
 
     if (operations.includes("deploy")) {
       await server.assertOnlyOneTransaction(
-        `[Namespace_ID] = ${article.Namespace_ID} AND (([Status] = 0 AND [IsLocal] = 1) OR [Status] = 1)`,
-        transactionName
+        "deploy",
+        transactionName,
+        article.Namespace
       );
       await server.deploy(article.Namespace_ID);
       lastSuccessfulStep = "deploy";
