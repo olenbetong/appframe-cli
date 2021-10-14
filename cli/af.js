@@ -19,6 +19,7 @@ program
     "update",
     "Installs latest version of @olenbetong/appframe-cli globally."
   )
+  .command("launch", "Opens the updater web application")
   .command(
     "namespace-to-prod [namespace]",
     "Generates, applies and deploys changes from dev to stage and then download them on prod."
