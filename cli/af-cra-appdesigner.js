@@ -21,7 +21,10 @@ async function launchAppdesigner(options) {
       args = { app: { name: options.browser } };
     }
 
-    open(`https://${hostname}`, args);
+    open(
+      `https://${hostname}/appdesigner?${appframe.hostname}/${appframe.article}`,
+      args
+    );
   } catch (error) {
     console.log(chalk.red(error.message));
     process.exit(1);
