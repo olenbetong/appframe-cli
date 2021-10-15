@@ -19,7 +19,7 @@ jobs:
         env:
           APPFRAME_LOGIN: ${{ secrets.APPFRAME_LOGIN }}
           APPFRAME_PWD: ${{ secrets.APPFRAME_PWD }}
-      - run: af cra publish
+      - run: npx af cra publish
         env:
           APPFRAME_LOGIN: ${{ secrets.APPFRAME_LOGIN }}
           APPFRAME_PWD: ${{ secrets.APPFRAME_PWD }}

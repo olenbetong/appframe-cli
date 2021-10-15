@@ -77,23 +77,17 @@ async function updateProjectSetup() {
     await mkdir(getProjectFile("./.github/workflows"), { recursive: true });
   }
 
-  if (!(await fileExists("./.github/workflows/build-and-deploy.yaml", true))) {
-    console.log("Adding build and deploy action...");
-    await copyFile(
-      getCLIFile("../templates/github-workflows-build-and-deploy.yaml.tpl"),
-      getProjectFile("./.github/workflows/build-and-deploy.yaml")
-    );
-  }
+  console.log("Updating build and deploy action...");
+  await copyFile(
+    getCLIFile("../templates/github-workflows-build-and-deploy.yaml.tpl"),
+    getProjectFile("./.github/workflows/build-and-deploy.yaml")
+  );
 
-  if (
-    !(await fileExists("./.github/workflows/publish-and-deploy.yaml", true))
-  ) {
-    console.log("Adding publish and deploy action...");
-    await copyFile(
-      getCLIFile("../templates/github-workflows-publish-and-deploy.yaml.tpl"),
-      getProjectFile("./.github/workflows/publish-and-deploy.yaml")
-    );
-  }
+  console.log("Updating publish and deploy action...");
+  await copyFile(
+    getCLIFile("../templates/github-workflows-publish-and-deploy.yaml.tpl"),
+    getProjectFile("./.github/workflows/publish-and-deploy.yaml")
+  );
 
   console.log("Updating VS Code workspace settings...");
   if (!(await fileExists("./.vscode", true))) {
