@@ -1,8 +1,8 @@
 import { Server } from "../lib/Server.js";
 import { importJson } from "../lib/importJson.js";
 import { Command } from "commander";
-
-const pkg = await importJson("./package.json", true);
+import chalk from "chalk";
+import prompts from "prompts";
 
 async function runStageOperations(
   devHost,
@@ -60,7 +60,7 @@ async function runStageOperations(
 }
 
 async function publishFromDev(articleWithHost, version) {
-  let config = { ...pkg.appframe, version: "v" + pkg.version };
+  let config;
   if (articleWithHost) {
     let [hostname, article] = articleWithHost.split("/");
     config = {
@@ -68,6 +68,30 @@ async function publishFromDev(articleWithHost, version) {
       article,
       version,
     };
+
+    if (!config.version) {
+      let question = {
+        type: "text",
+        name: "version",
+        message: "Enter a release description",
+      };
+
+      let answer = await prompts(question);
+      config.version = answer.version;
+    }
+  } else {
+    try {
+      const pkg = await importJson("./package.json", true);
+      config = { ...pkg.appframe, version: "v" + pkg.version };
+    } catch (error) {
+      console.log(
+        chalk.red(
+          "Failed to load article config. Either run the command from a folder with a CRA application with appframe config in package.json, or provide an argument with hostname and article ID."
+        )
+      );
+
+      process.exit(0);
+    }
   }
 
   await runStageOperations(
