@@ -5,6 +5,9 @@ export default (client) =>
     client,
     resource: "sviw_Deploy_Transactions",
     id: "dsTransactions",
+    parameters: {
+      maxRecords: -1,
+    },
     fields: [
       "ID",
       "Name",
