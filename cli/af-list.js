@@ -6,6 +6,7 @@ import { Command } from "../lib/Command.js";
 import { Server } from "../lib/Server.js";
 import { getServerFromOptions } from "../lib/getServerFromOptions.js";
 import { importJson } from "../lib/importJson.js";
+import { rollups } from "d3";
 
 const appPkg = await importJson("../package.json");
 const isInteractive = process.stdin.isTTY;
@@ -47,10 +48,20 @@ async function listTransactions(namespaceArg, options) {
   let namespace = await server.getNamespaceArgument(namespaceArg, options);
   let transactions = await server.getTransactions(options.type, namespace);
 
-  if (transactions.length > 0) {
-    console.table(transactions);
-  } else {
+  if (transactions.length === 0) {
     console.log(chalk.yellow("No transactions found."));
+  } else if (options.group) {
+    let byNamespace = rollups(
+      transactions,
+      (t) => t.length,
+      (t) => t.Namespace
+    )
+      .map((t) => ({ Namespace: t[0], "Transaction count": t[1] }))
+      .sort((a, z) => z["Transaction count"] - a["Transaction count"]);
+
+    console.table(byNamespace);
+  } else {
+    console.table(transactions);
   }
 }
 
@@ -69,6 +80,7 @@ program
   .addNamespaceArgument()
   .addServerOption()
   .addOption(typeOption)
+  .option("-g, --group", "List only number of transactions per namespace")
   .action(listTransactions);
 
 await program.parseAsync(process.argv);
