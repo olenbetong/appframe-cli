@@ -2,7 +2,7 @@ import { createTheme } from "@mui/material/styles";
 
 const bodyStyles = getComputedStyle(document.body);
 function getThemeValue(name: string) {
-  return bodyStyles.getPropertyValue(`--${name}`).trim();
+  return bodyStyles.getPropertyValue(`--${name}`)?.trim() ?? "";
 }
 
 declare module "@mui/material/styles" {
@@ -20,7 +20,7 @@ declare module "@mui/material/styles" {
 
 export default createTheme({
   config: {
-    drawerWidth: "20rem",
+    drawerWidth: "25rem",
   },
   palette: {
     primary: {
@@ -61,11 +61,14 @@ export default createTheme({
         },
       },
     },
-    MuiPaper: {
+    MuiDialogTitle: {
       styleOverrides: {
-        // rounded: {
-        //   borderRadius: 2,
-        // },
+        root: {
+          fontSize: "1.2rem",
+          fontWeight: 500,
+          paddingLeft: 16,
+          paddingRight: 16,
+        },
       },
     },
     MuiFormLabel: {

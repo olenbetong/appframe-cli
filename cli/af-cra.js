@@ -20,6 +20,7 @@ program
     "update-setup",
     "Ensures the project has deploy/publish scripts set up"
   )
+  .command("update", "Updates individual project files")
   .command(
     "publish",
     "Publish the article, and take the transaction from dev to prod (download only)"
