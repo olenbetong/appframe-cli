@@ -7,8 +7,18 @@
 		},
 		"html-synergi": {
 			"title": "index.html for SynergiWeb applications",
-			"source": "../templates/index.html.tpl",
+			"source": "../templates/synergiweb.html.tpl",
 			"target": "./public/index.html"
+		},
+		"types-config": {
+			"title": "types.json to customize data object/procedure types",
+			"source": "../templates/types.json.tpl",
+			"target": "./types.json"
+		},
+		"global-types": {
+			"title": "Global Appframe Types",
+			"source": "../templates/global.d.ts.tpl",
+			"target": "./src/global.d.ts"
 		}
 	}
 }
