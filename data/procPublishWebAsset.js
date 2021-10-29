@@ -31,5 +31,5 @@ export default (client) =>
         required: false,
       },
     ],
-    timeout: 30,
+    timeout: 30000,
   });

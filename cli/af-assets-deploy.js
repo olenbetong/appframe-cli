@@ -12,7 +12,7 @@ async function getProjectFileContents(file) {
   return await readFile(filePath, "utf-8");
 }
 
-const server = new Server("stage.obet.no");
+const server = new Server("dev.obet.no");
 const result = await server.login();
 
 if (result !== true) {
@@ -21,24 +21,24 @@ if (result !== true) {
 
 if (assets.scripts) {
   for (let scriptName of Object.keys(assets.scripts)) {
-    console.log(scriptName, assets.scripts[scriptName]);
     let script = assets.scripts[scriptName];
     let hostname = script.hostname ?? assets.hostname ?? appframe.hostname;
+    let content;
+    let contentTest;
 
     if (typeof script === "string") {
-      let content = await getProjectFileContents(script);
-      await server.uploadSiteScript(hostname, scriptName, "test", content);
-      await server.uploadSiteScript(hostname, scriptName, "prod", content);
+      content = await getProjectFileContents(script);
+      contentTest = content;
     } else {
       if (script.test) {
-        let content = await getProjectFileContents(script.test);
-        await server.uploadSiteScript(hostname, scriptName, "test", content);
+        contentTest = await getProjectFileContents(script.test);
       }
       if (script.prod) {
-        let content = await getProjectFileContents(script.prod);
-        await server.uploadSiteScript(hostname, scriptName, "prod", content);
+        content = await getProjectFileContents(script.prod);
       }
     }
+
+    await server.uploadSiteScript(hostname, scriptName, content, contentTest);
   }
 }
 
@@ -46,21 +46,22 @@ if (assets.styles) {
   for (let styleName of Object.keys(assets.styles)) {
     let style = assets.styles[styleName];
     let hostname = style.hostname ?? assets.hostname ?? appframe.hostname;
+    let content;
+    let contentTest;
 
     if (typeof style === "string") {
-      let content = await getProjectFileContents(style);
-      await server.uploadTemplate(hostname, styleName, "test", content);
-      await server.uploadSiteStyle(hostname, styleName, "prod", content);
+      content = await getProjectFileContents(style);
+      contentTest = content;
     } else {
       if (style.test) {
-        let content = await getProjectFileContents(style.test);
-        await server.uploadSiteStyle(hostname, styleName, "test", content);
+        contentTest = await getProjectFileContents(style.test);
       }
       if (style.prod) {
-        let content = await getProjectFileContents(style.prod);
-        await server.uploadSiteStyle(hostname, styleName, "prod", content);
+        content = await getProjectFileContents(style.prod);
       }
     }
+
+    await server.uploadSiteStyle(hostname, styleName, content, contentTest);
   }
 }
 
@@ -68,20 +69,26 @@ if (assets.templates) {
   for (let templateName of Object.keys(assets.templates)) {
     let template = assets.templates[templateName];
     let hostname = template.hostname ?? assets.hostname ?? appframe.hostname;
+    let content;
+    let contentTest;
 
     if (typeof template === "string") {
-      let content = await getProjectFileContents(template);
-      await server.uploadTemplate(hostname, templateName, "test", content);
-      await server.uploadTemplate(hostname, templateName, "prod", content);
+      content = await getProjectFileContents(template);
+      contentTest = content;
     } else {
       if (template.test) {
-        let content = await getProjectFileContents(template.test);
-        await server.uploadTemplate(hostname, templateName, "test", content);
+        contentTest = await getProjectFileContents(template.test);
       }
       if (template.prod) {
-        let content = await getProjectFileContents(template.prod);
-        await server.uploadTemplate(hostname, templateName, "prod", content);
+        content = await getProjectFileContents(template.prod);
       }
     }
+
+    await server.uploadSiteTemplate(
+      hostname,
+      templateName,
+      content,
+      contentTest
+    );
   }
 }
