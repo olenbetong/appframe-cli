@@ -5,6 +5,8 @@ export default (client) =>
     client,
     resource: "stbv_WebSiteCMS_Templates",
     id: "dsSomeDataObjectID",
+    allowInsert: true,
+    allowUpdate: true,
     fields: [
       {
         name: "PrimKey",

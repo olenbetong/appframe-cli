@@ -52,6 +52,10 @@ program
     "bundle",
     "Commands to create, upload and publish af bundles from npm packages"
   )
+  .command(
+    "assets",
+    "Tools to upload and publish website assets (site scripts/styles/templates)"
+  )
   .showSuggestionAfterError();
 
 program.action(async () => {
