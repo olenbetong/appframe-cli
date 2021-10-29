@@ -1,3 +1,4 @@
+import chalk from "chalk";
 import prompts from "prompts";
 
 import { Command } from "../lib/Command.js";
@@ -85,25 +86,30 @@ async function getNamespace(namespaceArg) {
   return await server.getNamespaceArgument(namespaceArg);
 }
 
-async function publishFromDev(namespaceArg) {
+async function publishFromDev(namespaceArg, options) {
   let namespace = await getNamespace(namespaceArg);
+  let devSteps = options.skipGenerate
+    ? ["verify-deploy", "deploy"]
+    : ["generate", "verify-deploy", "deploy"];
 
-  await runStageOperations(namespace, "dev.obet.no", [
-    "generate",
-    "verify-deploy",
-    "deploy",
-  ]);
+  await runStageOperations(namespace, "dev.obet.no", devSteps);
   await runStageOperations(namespace, "stage.obet.no", [
     "download",
     "apply",
     "deploy",
   ]);
   await runStageOperations(namespace, "test.obet.no", ["download"]);
+
+  console.log("");
+  console.log(`Transactions downloaded on ${chalk.green("test.obet.no")}`);
+  console.log(
+    `Run ${chalk.blue(`af cra apply ${namespace}`)} to apply updates.`
+  );
 }
 
-async function run(namespace) {
+async function run(namespace, options) {
   try {
-    await publishFromDev(namespace);
+    await publishFromDev(namespace, options);
   } catch (error) {
     console.error(
       error.message,
@@ -117,6 +123,10 @@ async function run(namespace) {
 const appPkg = await importJson("../package.json");
 
 const program = new Command();
-program.version(appPkg.version).addNamespaceArgument(true).action(run);
+program
+  .version(appPkg.version)
+  .addNamespaceArgument(true)
+  .option("--skip-generate", "Skip the generate step")
+  .action(run);
 
 await program.parseAsync(process.argv);
