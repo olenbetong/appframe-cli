@@ -3,6 +3,9 @@ export { default as getArticlesVersionsDataObject } from "./dsArticlesVersions.j
 export { default as getBundlesDataObject } from "./dsBundles.js";
 export { default as getDataResourcesDataObject } from "./dsDataResources.js";
 export { default as getNamespacesDataObject } from "./dsNamespaces.js";
+export { default as getSiteScriptsDataObject } from "./dsSiteScripts.js";
+export { default as getSiteStylesDataObject } from "./dsSiteStyles.js";
+export { default as getTemplatesDataObject } from "./dsTemplates.js";
 export { default as getTransactionsDataObject } from "./dsTransactions.js";
 export { default as getApplyProcedure } from "./procApply.js";
 export { default as getCheckoutArticleProcedure } from "./procCheckoutArticle.js";
@@ -10,3 +13,4 @@ export { default as getDeployProcedure } from "./procDeploy.js";
 export { default as getGenerateProcedure } from "./procGenerate.js";
 export { default as getPublishArticleProcedure } from "./procPublishArticle.js";
 export { default as getPublishBundleProcedure } from "./procPublishBundle.js";
+export { default as getPublishWebAssetProcedure } from "./procPublishWebAsset.js";
