@@ -102,9 +102,7 @@ async function publishFromDev(namespaceArg, options) {
 
   console.log("");
   console.log(`Transactions downloaded on ${chalk.green("test.obet.no")}`);
-  console.log(
-    `Run ${chalk.blue(`af cra apply ${namespace}`)} to apply updates.`
-  );
+  console.log(`Run ${chalk.blue(`af apply ${namespace}`)} to apply updates.`);
 }
 
 async function run(namespace, options) {
