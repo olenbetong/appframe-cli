@@ -15,9 +15,11 @@ function getCLIFile(file) {
 const { templates } = await importJson("../data/templates.json");
 
 async function updateTemplate(template) {
+  let templateList;
+
   if (!template) {
     let question = {
-      type: "select",
+      type: "multiselect",
       name: "template",
       message: "Which template file would you like to update?",
       choices: Object.keys(templates).map((template) => ({
@@ -34,14 +36,18 @@ async function updateTemplate(template) {
     };
     let result = await prompts(question);
 
-    template = result.template;
+    templateList = result.template;
+  } else {
+    templateList = [template];
   }
 
-  console.log("Updating file...");
-  await copyFile(
-    getCLIFile(templates[template].source),
-    getProjectFile(templates[template].target)
-  );
+  for (let template of templateList) {
+    console.log(`Updating file (${template})...`);
+    await copyFile(
+      getCLIFile(templates[template].source),
+      getProjectFile(templates[template].target)
+    );
+  }
 }
 
 const appPkg = await importJson("../package.json");
