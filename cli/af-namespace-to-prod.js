@@ -19,8 +19,6 @@ async function runStageOperations(
 
     lastSuccessfulStep = "login";
 
-    lastSuccessfulStep = "getArticleInformation";
-
     if (operations.includes("download")) {
       await server.download(namespace);
       lastSuccessfulStep = "download";
