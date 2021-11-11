@@ -54,6 +54,16 @@ export default createTheme({
         h6: { fontSize: "1rem" },
       },
     },
+    MuiAppBar: {
+      styleOverrides: {
+        root: {
+          "& .MuiTypography-h1": {
+            fontSize: "1.25rem",
+            fontWeight: "500",
+          },
+        },
+      },
+    },
     MuiButton: {
       styleOverrides: {
         root: {
