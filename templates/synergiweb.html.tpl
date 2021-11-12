@@ -21,7 +21,7 @@
       globalThis.af = globalThis.af ?? {};
       globalThis.af.userSession = userSession;
     </script>
-    <script src="/lib/@olenbetong/common/0.8.6/dist/iife/common.localization.min.js"></script>
+    <script src="/lib/@olenbetong/common/1.0.0-beta.1/dist/iife/common.localization.min.js"></script>
     <script src="/lib/@olenbetong/data-object/1.0.0-alpha.41/dist/iife/af.DataObject.js"></script>
     <script type="text/javascript" src="/file/article/static-script/%ARTICLE_ID%.js"></script>
     <div id="root"></div>
