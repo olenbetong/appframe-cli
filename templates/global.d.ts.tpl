@@ -3,6 +3,7 @@ import {
   DataObject,
   DataObjectOptions,
   Procedure,
+  generateApiDataObject,
 } from "@olenbetong/data-object";
 
 type AppframeCore = {
@@ -27,6 +28,7 @@ type AppframeCore = {
   };
   data: {
     [index: string]: DataHandlerFactory;
+    generateApiDataObject: typeof generateApiDataObject;
   } & { version?: string };
   DataObject: { new <T>(options: DataObjectOptions<T>): DataObject<T> };
   Procedure: { new <T, V>(options: any): Procedure<T, V> };
@@ -36,6 +38,8 @@ type AppframeCore = {
     expired: (callback: () => void) => void;
     isDeveloper: boolean;
     login: string;
+    monthNames: string[];
+    monthNamesShort: string[];
     uiculture: string;
   };
 };
