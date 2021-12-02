@@ -1,6 +1,7 @@
 export { default as getArticlesDataObject } from "./dsArticles.js";
 export { default as getArticlesVersionsDataObject } from "./dsArticlesVersions.js";
 export { default as getBundlesDataObject } from "./dsBundles.js";
+export { default as getBundlesProjectsDataObject } from "./dsBundlesProjects.js";
 export { default as getDataResourcesDataObject } from "./dsDataResources.js";
 export { default as getNamespacesDataObject } from "./dsNamespaces.js";
 export { default as getSiteScriptsDataObject } from "./dsSiteScripts.js";

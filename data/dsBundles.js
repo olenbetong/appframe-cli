@@ -5,6 +5,7 @@ export default (client) =>
     client,
     resource: "sviw_Bundle_ProjectsVersions",
     id: "dsBundles",
+    allowInsert: true,
     fields: [
       {
         name: "ID",
