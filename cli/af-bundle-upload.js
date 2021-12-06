@@ -5,6 +5,7 @@ import { config } from "dotenv";
 import { Server } from "../lib/Server.js";
 import { execShellCommand } from "../lib/execShellCommand.js";
 import { importJson } from "../lib/importJson.js";
+import prompts from "prompts";
 
 config({ path: process.cwd() + "/.env" });
 
@@ -32,6 +33,60 @@ async function prepareBundle(pkgName) {
     await server.login();
 
     let bundle = await server.getBundle(name);
+
+    if (!bundle) {
+      server.dsNamespaces.setParameter("maxRecords", -1);
+      server.dsNamespaces.setParameter("sortOrder", [
+        { GroupTitle: "Asc" },
+        { Name: "Asc" },
+      ]);
+
+      console.log("Bundle not found. Select a name to create it.");
+
+      await server.dsNamespaces.refreshDataSource();
+
+      let question = [
+        {
+          type: "text",
+          name: "bundleName",
+          message: "What is the name of the bundle?",
+          initial: name,
+          onState: (state) => {
+            if (state.aborted) {
+              process.nextTick(() => {
+                process.exit(0);
+              });
+            }
+          },
+        },
+        {
+          type: "autocomplete",
+          name: "namespace",
+          message: "Select namespace",
+          choices: server.dsNamespaces.getData().map((r) => ({
+            title: r.GroupTitle ? `${r.Name} (${r.GroupTitle})` : r.Name,
+            value: r.ID,
+          })),
+          onState: (state) => {
+            if (state.aborted) {
+              process.nextTick(() => {
+                process.exit(0);
+              });
+            }
+          },
+        },
+      ];
+
+      let result = await prompts(question);
+      if (result.bundleName) {
+        await server.createBundle(result.bundleName, result.namespace);
+        bundle = await server.getBundle(name);
+        console.log(bundle);
+      } else {
+        process.exit(0);
+      }
+    }
+
     let { ID: id, Project_ID } = bundle;
     if (id) {
       server.logServerMessage(
