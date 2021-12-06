@@ -29,6 +29,11 @@ async function publishAssets(options) {
         let script = site.scripts[scriptName];
         let hostname =
           script.hostname ?? site.hostname ?? pkg.appframe.hostname;
+
+        if (options.hostname && options.hostname !== hostname) {
+          continue;
+        }
+
         await server.publishSiteScript(hostname, scriptName, description);
       }
     }
@@ -37,6 +42,11 @@ async function publishAssets(options) {
       for (let styleName of Object.keys(site.styles)) {
         let style = site.styles[styleName];
         let hostname = style.hostname ?? site.hostname ?? pkg.appframe.hostname;
+
+        if (options.hostname && options.hostname !== hostname) {
+          continue;
+        }
+
         await server.publishSiteStyle(hostname, styleName, description);
       }
     }
@@ -46,6 +56,11 @@ async function publishAssets(options) {
         let template = site.templates[templateName];
         let hostname =
           template.hostname ?? site.hostname ?? pkg.appframe.hostname;
+
+        if (options.hostname && options.hostname !== hostname) {
+          continue;
+        }
+
         await server.publishSiteTemplate(hostname, templateName, description);
       }
     }
@@ -57,5 +72,6 @@ const program = new Command();
 program
   .version(appPkg.version)
   .option("-s, --server <server>", "Server to publish assets on", "dev.obet.no")
+  .option("-h, --hostname <hostname>", "Only deploy assets for this hostname")
   .action(publishAssets)
   .parseAsync(process.argv);

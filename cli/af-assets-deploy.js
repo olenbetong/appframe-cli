@@ -24,6 +24,8 @@ async function deployAssets(options) {
     throw Error("Login failed!");
   }
 
+  console.log(JSON.stringify(options, null, 2));
+
   for (let site of sites) {
     if (site.scripts) {
       for (let scriptName of Object.keys(site.scripts)) {
@@ -31,6 +33,10 @@ async function deployAssets(options) {
         let hostname = script.hostname ?? site.hostname ?? appframe.hostname;
         let content;
         let contentTest;
+
+        if (options.hostname && options.hostname !== hostname) {
+          continue;
+        }
 
         if (typeof script === "string") {
           content = await getProjectFileContents(script);
@@ -47,8 +53,8 @@ async function deployAssets(options) {
         await server.uploadSiteScript(
           hostname,
           scriptName,
-          content,
-          contentTest
+          options.production ? content : undefined,
+          options.test ? contentTest : undefined
         );
       }
     }
@@ -59,6 +65,10 @@ async function deployAssets(options) {
         let hostname = style.hostname ?? site.hostname ?? appframe.hostname;
         let content;
         let contentTest;
+
+        if (options.hostname && options.hostname !== hostname) {
+          continue;
+        }
 
         if (typeof style === "string") {
           content = await getProjectFileContents(style);
@@ -72,7 +82,12 @@ async function deployAssets(options) {
           }
         }
 
-        await server.uploadSiteStyle(hostname, styleName, content, contentTest);
+        await server.uploadSiteStyle(
+          hostname,
+          styleName,
+          options.production ? content : undefined,
+          options.test ? contentTest : undefined
+        );
       }
     }
 
@@ -82,6 +97,10 @@ async function deployAssets(options) {
         let hostname = template.hostname ?? site.hostname ?? appframe.hostname;
         let content;
         let contentTest;
+
+        if (options.hostname && options.hostname !== hostname) {
+          continue;
+        }
 
         if (typeof template === "string") {
           content = await getProjectFileContents(template);
@@ -98,8 +117,8 @@ async function deployAssets(options) {
         await server.uploadSiteTemplate(
           hostname,
           templateName,
-          content,
-          contentTest
+          options.production ? content : undefined,
+          options.test ? contentTest : undefined
         );
       }
     }
@@ -111,5 +130,8 @@ const program = new Command();
 program
   .version(appPkg.version)
   .option("-s, --server <server>", "Server to deploy assets to", "dev.obet.no")
+  .option("-T, --no-test", "Do not deploy assets to test mode", false)
+  .option("-p, --production", "Deploy assets to production mode", false)
+  .option("-h, --hostname <hostname>", "Only deploy assets for this hostname")
   .action(deployAssets)
   .parseAsync(process.argv);
