@@ -24,8 +24,6 @@ async function deployAssets(options) {
     throw Error("Login failed!");
   }
 
-  console.log(JSON.stringify(options, null, 2));
-
   for (let site of sites) {
     if (site.scripts) {
       for (let scriptName of Object.keys(site.scripts)) {
