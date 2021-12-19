@@ -21,6 +21,7 @@ const cliPkg = await importJson("../package.json");
 setDefaultClient(new Client("dev.obet.no"));
 
 globalThis.af = {
+  controls: {},
   common: {
     expose,
     localStorage: {
@@ -32,6 +33,10 @@ globalThis.af = {
   DataObject,
   Procedure,
 };
+
+globalThis.af.controls = new Proxy(globalThis.af.controls, {
+  get: () => class {},
+});
 
 function expose(path, value) {
   let properties = path.split(".");
