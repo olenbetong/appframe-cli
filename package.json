@@ -5,7 +5,7 @@
     "af": "./cli/af.js"
   },
   "type": "module",
-  "version": "3.24.4",
+  "version": "3.24.5",
   "license": "MIT",
   "scripts": {
     "test": "node ./node_modules/jest/bin/jest.js"
