@@ -19,6 +19,17 @@
       "skipFiles": ["<node_internals>/**/*.js"]
     },
     {
+      "type": "node",
+      "request": "launch",
+      "name": "Launch generate types",
+      "runtimeArgs": [
+        "--inspect-brk",
+        "${workspaceFolder}/cli/af-cra-generate-types.js"
+      ],
+      "args": [],
+      "skipFiles": ["<node_internals>/**/*.js"]
+    },
+    {
       "name": "Debug Jest Tests",
       "type": "node",
       "request": "launch",
