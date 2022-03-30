@@ -38,7 +38,7 @@ async function applyTransactions(namespaceArg, options) {
       }
 
       await server.apply(namespace);
-      await server.logServerMessage("Done.");
+      server.logServerMessage("Done.");
     }
   } catch (error) {
     console.error(chalk.red(error.message));
