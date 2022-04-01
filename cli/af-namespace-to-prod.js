@@ -24,7 +24,7 @@ async function runStageOperations(
       let retry = true;
       while (retry) {
         try {
-          await server.downloadTransactions(namespace);
+          await server.download(namespace);
           retry = false;
         } catch (error) {
           if (attempt >= 3) {
