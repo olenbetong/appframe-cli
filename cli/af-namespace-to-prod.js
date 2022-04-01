@@ -37,7 +37,6 @@ async function runStageOperations(
           await new Promise((resolve) => setTimeout(resolve, 1000));
         }
       }
-      await server.download(namespace);
       lastSuccessfulStep = "download";
     }
 
