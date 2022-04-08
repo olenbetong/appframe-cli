@@ -8,7 +8,8 @@ async function runStageOperations(
   packageName,
   version,
   hostname,
-  operations = ["download"]
+  operations = ["download"],
+  state = {}
 ) {
   let lastSuccessfulStep = "none";
   try {
@@ -16,20 +17,25 @@ async function runStageOperations(
     await server.login();
     lastSuccessfulStep = "login";
 
-    let bundle = await server.getBundle(packageName);
+    let bundle = state.bundle ?? (await server.getBundle(packageName));
     if (!bundle || !bundle.ID)
       throw Error(`Bundle with name '${packageName}' not found.`);
+
+    state.bundle = bundle;
 
     let { ID: id, Project_ID, Name, Namespace_ID } = bundle;
     if (!Namespace_ID) {
       throw Error(`Bundle '${packageName}' is not assigned to a namespace`);
     }
 
-    let namespace = await server.getNamespace(Namespace_ID);
+    let namespace =
+      state.namespace ?? (await server.getNamespace(Namespace_ID));
     server.logServerMessage(
       `Found bundle '${Name}' with Namespace/Project/Version: ${namespace.Name}/${id}/${Project_ID}`
     );
     lastSuccessfulStep = "getBundleInformation";
+
+    state.namespace = namespace;
 
     if (operations.includes("publish")) {
       await server.publishBundle(Project_ID, id, `${packageName}@${version}`);
@@ -84,17 +90,29 @@ async function publishFromDev(packageName) {
       version = "latest";
     }
 
-    await runStageOperations(name, version, "dev.obet.no", [
-      "publish",
-      "generate",
-      "deploy",
-    ]);
-    await runStageOperations(name, version, "stage.obet.no", [
-      "download",
-      "apply",
-      "deploy",
-    ]);
-    await runStageOperations(name, version, "test.obet.no", ["download"]);
+    let crossServerState = {};
+
+    await runStageOperations(
+      name,
+      version,
+      "dev.obet.no",
+      ["publish", "generate", "deploy"],
+      crossServerState
+    );
+    await runStageOperations(
+      name,
+      version,
+      "stage.obet.no",
+      ["download", "apply", "deploy"],
+      crossServerState
+    );
+    await runStageOperations(
+      name,
+      version,
+      "test.obet.no",
+      ["download"],
+      crossServerState
+    );
   } catch (error) {
     console.log(
       chalk.red(error.message),

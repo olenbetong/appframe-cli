@@ -10,6 +10,7 @@ export { default as getTemplatesDataObject } from "./dsTemplates.js";
 export { default as getTransactionsDataObject } from "./dsTransactions.js";
 export { default as getApplyProcedure } from "./procApply.js";
 export { default as getCheckoutArticleProcedure } from "./procCheckoutArticle.js";
+export { default as getCreateFirstBundleVersionProcedure } from "./procCreateFirstBundleVersion.js";
 export { default as getDeployProcedure } from "./procDeploy.js";
 export { default as getGenerateProcedure } from "./procGenerate.js";
 export { default as getPublishArticleProcedure } from "./procPublishArticle.js";

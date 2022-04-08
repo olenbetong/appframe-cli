@@ -80,7 +80,7 @@ async function prepareBundle(pkgName) {
       let result = await prompts(question);
       if (result.bundleName) {
         await server.createBundle(result.bundleName, result.namespace);
-        bundle = await server.getBundle(name);
+        bundle = await server.getBundle(result.bundleName);
         console.log(bundle);
       } else {
         process.exit(0);

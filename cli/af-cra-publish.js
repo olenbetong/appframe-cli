@@ -7,7 +7,8 @@ import prompts from "prompts";
 async function runStageOperations(
   devHost,
   operations = ["download"],
-  { hostname, article: articleProp, version }
+  { hostname, article: articleProp, version },
+  state = {}
 ) {
   let lastSuccessfulStep = "none";
   try {
@@ -16,8 +17,11 @@ async function runStageOperations(
     lastSuccessfulStep = "login";
 
     let transactionName = `${hostname}/${articleProp}`;
-    let article = await server.getArticle(hostname, articleProp);
+    let article =
+      state.article ?? (await server.getArticle(hostname, articleProp));
     lastSuccessfulStep = "getArticleInformation";
+
+    state.article = article;
 
     if (operations.includes("publish")) {
       await server.publishArticle(hostname, articleProp, version);
@@ -94,17 +98,26 @@ async function publishFromDev(articleWithHost, version) {
     }
   }
 
+  let crossServerState = {};
+
   await runStageOperations(
     "dev.obet.no",
     ["publish", "generate", "deploy"],
-    config
+    config,
+    crossServerState
   );
   await runStageOperations(
     "stage.obet.no",
     ["download", "apply", "deploy"],
-    config
+    config,
+    crossServerState
   );
-  await runStageOperations("test.obet.no", ["download"], config);
+  await runStageOperations(
+    "test.obet.no",
+    ["download"],
+    config,
+    crossServerState
+  );
 }
 
 const appPkg = await importJson("../package.json");
