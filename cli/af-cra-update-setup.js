@@ -52,6 +52,7 @@ async function updateProjectSetup() {
   pkg.appframe.devHostname = pkg.appframe.devHostname ?? "dev.obet.no";
   pkg.appframe.disableExternals = pkg.appframe.disableExternals ?? false;
   pkg.appframe.hostname = pkg.appframe.hostname ?? "synergi.olenbetong.no";
+  pkg.appframe.proxyHostname = pkg.appframe.proxyHostname ?? "stage.obet.no";
   pkg.appframe.proxyRoutes = pkg.appframe.proxyRoutes ?? [];
   pkg.appframe.usePreact = pkg.appframe.usePreact ?? false;
 
