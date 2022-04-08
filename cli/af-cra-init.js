@@ -44,7 +44,7 @@ function runCreateReactApp(name) {
 async function initApp(name) {
   await runCreateReactApp(name);
 
-  let server = new Server("stage.obet.no");
+  let server = new Server("dev.obet.no");
   await server.login();
   await server.dsNamespaces.refreshDataSource();
 
