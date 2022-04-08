@@ -155,6 +155,13 @@ async function initApp(name) {
     getProjectFile(`./${name}/package.json`),
     JSON.stringify(pkg, null, 2)
   );
+
+  try {
+    await writeFile(
+      getProjectFile(`./${name}/src/config.ts`),
+      `export const ARTICLE_ID = "${result.articleId}";`
+    );
+  } catch (error) {}
 }
 
 const appPkg = await importJson("../package.json");
