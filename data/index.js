@@ -16,3 +16,4 @@ export { default as getGenerateProcedure } from "./procGenerate.js";
 export { default as getPublishArticleProcedure } from "./procPublishArticle.js";
 export { default as getPublishBundleProcedure } from "./procPublishBundle.js";
 export { default as getPublishWebAssetProcedure } from "./procPublishWebAsset.js";
+export { default as getCreateArticleProcedure } from "./procCreateArticle.js";
