@@ -14,16 +14,16 @@
     <link rel="stylesheet" href="/file/site/style/ob.theme.ribe.less" />
     <link rel="stylesheet" href="/file/site/style/ob.theme.sjb.less" />
     <link rel="stylesheet" href="/file/site/style/ob.es.application.min.css" />
-  </head>
-  <body class="theme-ob">
     <script type="module">
       import userSession from "/api/system/usersession" assert { type: "json" };
       globalThis.af = globalThis.af ?? {};
       globalThis.af.userSession = userSession;
     </script>
     <script src="/lib/@olenbetong/common/1.0.0-beta.1/dist/iife/common.localization.min.js"></script>
-    <script src="/lib/@olenbetong/data-object/1.0.0-alpha.41/dist/iife/af.DataObject.js"></script>
+    <script src="/lib/@olenbetong/data-object/1.0.0-alpha.58/dist/iife/af.DataObject.js"></script>
     <script type="text/javascript" src="/file/article/static-script/%ARTICLE_ID%.js"></script>
+  </head>
+  <body class="theme-ob">
     <div id="root"></div>
   </body>
 </html>

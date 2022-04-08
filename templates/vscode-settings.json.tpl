@@ -17,8 +17,5 @@
   "[json]": {
     "editor.formatOnSave": true
   },
-  "emmet.includeLanguages": {
-    "typescriptreact": "javascriptreact"
-  },
   "typescript.tsdk": "node_modules/typescript/lib"
 }
