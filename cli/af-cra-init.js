@@ -135,6 +135,14 @@ async function initApp(name) {
       htmlContent:
         '@Render("Template", ID: "ob.scripts.light")\n<div id="root"></div>',
       title: result.articleTitle,
+      template: "ob.es.noscript",
+    });
+
+    // Add admin role to permissions
+    await server.addArticlePermission({
+      hostname: result.hostname,
+      articleId: result.articleId,
+      roleId: 1,
     });
   }
 
