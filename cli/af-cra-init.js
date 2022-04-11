@@ -159,7 +159,8 @@ async function initApp(name) {
   try {
     await writeFile(
       getProjectFile(`./${name}/src/config.ts`),
-      `export const ARTICLE_ID = "${result.articleId}";`
+      `export const ARTICLE_ID = "${result.articleId}";
+export const ARTICLE_TITLE = "${result.articleTitle}";`
     );
   } catch (error) {}
 }
