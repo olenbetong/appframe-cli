@@ -28,6 +28,7 @@ type AppframeCore = {
   };
   data: {
     [index: string]: DataHandlerFactory;
+    uid: symbol;
     generateApiDataObject: typeof generateApiDataObject;
   } & { version?: string };
   DataObject: { new <T>(options: DataObjectOptions<T>): DataObject<T> };
