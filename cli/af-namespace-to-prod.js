@@ -20,23 +20,7 @@ async function runStageOperations(
     lastSuccessfulStep = "login";
 
     if (operations.includes("download")) {
-      let attempt = 1;
-      let retry = true;
-      while (retry) {
-        try {
-          await server.download(namespace);
-          retry = false;
-        } catch (error) {
-          if (attempt >= 3) {
-            throw error;
-          }
-          server.logServerMessage(
-            `Failed to download transactions from ${hostname} (${error.message}). Retrying in 1 second...`
-          );
-          attempt++;
-          await new Promise((resolve) => setTimeout(resolve, 1000));
-        }
-      }
+      await server.download(namespace);
       lastSuccessfulStep = "download";
     }
 
