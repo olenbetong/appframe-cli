@@ -23,10 +23,10 @@
     "prettier": "^2.6.2"
   },
   "dependencies": {
-    "@olenbetong/data-object": "^1.0.0-alpha.59",
+    "@olenbetong/data-object": "^1.0.0-alpha.62",
     "chalk": "^5.0.1",
-    "commander": "^9.1.0",
-    "d3": "^7.4.3",
+    "commander": "^9.2.0",
+    "d3": "^7.4.4",
     "dotenv": "^16.0.0",
     "eslint": "^8.12.0",
     "ink": "^3.0.9",
