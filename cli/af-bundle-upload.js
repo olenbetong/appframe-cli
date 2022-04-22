@@ -9,16 +9,20 @@ import prompts from "prompts";
 
 config({ path: process.cwd() + "/.env" });
 
+/**
+ * @param {string} pkgName
+ * @param {{ bundle?: string | null }} options
+ */
 async function prepareBundle(pkgName, options) {
   try {
     let name;
     let version;
 
     if (pkgName) {
-      if (pkgName.includes("@")) {
-        let [pkgNameWithoutVersion, pkgVersion] = pkgName.split("@");
-        name = pkgNameWithoutVersion;
-        version = pkgVersion;
+      let lastAtSign = pkgName.lastIndexOf("@");
+      if (lastAtSign > 0) {
+        name = pkgName.substring(0, lastAtSign);
+        version = pkgName.substring(lastAtSign + 1);
       } else {
         name = pkgName;
         version = await execShellCommand(`npm view ${pkgName} version`);
@@ -29,8 +33,6 @@ async function prepareBundle(pkgName, options) {
       name = packageConfig.name;
       version = packageConfig.version;
     }
-
-    console.log(name, version);
 
     let safePackageName = name.replace("@", "").replace("/", "-");
     let rootOutputFolder = name.split("/")[0];
