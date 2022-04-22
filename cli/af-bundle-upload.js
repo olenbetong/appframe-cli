@@ -15,14 +15,22 @@ async function prepareBundle(pkgName) {
     let version;
 
     if (pkgName) {
-      name = pkgName;
-      version = await execShellCommand(`npm view ${pkgName} version`);
-      version = version.trim();
+      if (pkgName.includes("@")) {
+        let [pkgNameWithoutVersion, pkgVersion] = pkgName.split("@");
+        name = pkgNameWithoutVersion;
+        version = pkgVersion;
+      } else {
+        name = pkgName;
+        version = await execShellCommand(`npm view ${pkgName} version`);
+        version = version.trim();
+      }
     } else {
       let packageConfig = await importJson("./package.json", true);
       name = packageConfig.name;
       version = packageConfig.version;
     }
+
+    console.log(name, version);
 
     let safePackageName = name.replace("@", "").replace("/", "-");
     let rootOutputFolder = name.split("/")[0];
