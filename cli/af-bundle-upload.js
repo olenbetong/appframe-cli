@@ -9,7 +9,7 @@ import prompts from "prompts";
 
 config({ path: process.cwd() + "/.env" });
 
-async function prepareBundle(pkgName) {
+async function prepareBundle(pkgName, options) {
   try {
     let name;
     let version;
@@ -40,7 +40,7 @@ async function prepareBundle(pkgName) {
     let server = new Server(hostname);
     await server.login();
 
-    let bundle = await server.getBundle(name);
+    let bundle = await server.getBundle(options.bundle ?? name);
 
     if (!bundle) {
       server.dsNamespaces.setParameter("maxRecords", -1);
@@ -55,7 +55,7 @@ async function prepareBundle(pkgName) {
 
       let question = [
         {
-          type: "text",
+          type: options.bundle ? false : "text",
           name: "bundleName",
           message: "What is the name of the bundle?",
           initial: name,
@@ -86,6 +86,8 @@ async function prepareBundle(pkgName) {
       ];
 
       let result = await prompts(question);
+      result.bundleName = options.bundle || result.bundleName;
+
       if (result.bundleName) {
         await server.createBundle(result.bundleName, result.namespace);
         bundle = await server.getBundle(result.bundleName);
@@ -144,6 +146,7 @@ program
     "[package]",
     "Optional package name. If provided packs the npm package with name [package]"
   )
+  .option("-b, --bundle <bundleName>", "Override bundle name from package.json")
   .action(prepareBundle);
 
 await program.parseAsync();
