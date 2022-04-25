@@ -4,7 +4,13 @@ import { Server } from "../lib/Server.js";
 
 const appPkg = await importJson("../package.json");
 
-function afTypeToTsType(type, isProc = false) {
+/**
+ * Convert Appframe (SQL) data types to typescript/field definition types
+ * @param {string} type
+ * @param {"ts" | "ts-proc" | "field"} dateStyle
+ * @returns
+ */
+function afTypeToTsType(type, dateStyle = false) {
   switch (type) {
     case "int":
     case "decimal":
@@ -14,7 +20,13 @@ function afTypeToTsType(type, isProc = false) {
     case "datetime2":
     case "datetime":
     case "date":
-      return isProc ? "string | Date" : "Date";
+      if (dateStyle === "ts") {
+        return "Date";
+      } else if (dateStyle === "ts-proc") {
+        return "string | Date";
+      } else {
+        return type === "date" ? "date" : "datetime";
+      }
     default:
       return "string";
   }
@@ -25,13 +37,15 @@ function getProcedureDefinition(name, procDefinition, options) {
   for (let parameter of procDefinition.Parameters) {
     parameters.push({
       name: parameter.ParamName,
-      type: afTypeToTsType(parameter.DataType, true),
+      type: afTypeToTsType(parameter.DataType, "ts-proc"),
       hasDefault: parameter.has_default_value,
       required: !parameter.has_default_value && !parameter.is_nullable,
     });
   }
 
   return `
+import { ProcedureAPI } from "@olenbetong/data-object";
+
 new ProcedureAPI({
   procedureId: "${name}",
   parameters: ${JSON.stringify(parameters, null, 2)},
@@ -51,7 +65,7 @@ function getDataObjectDefinition(name, viewDefinition, options) {
 
     let fieldDefinition = {
       name: field.Name,
-      type: afTypeToTsType(field.DataType, false),
+      type: field.DataType,
       nullable: field.Nullable,
       hasDefault: field.HasDefault,
     };
@@ -72,7 +86,7 @@ function getDataObjectDefinition(name, viewDefinition, options) {
   // By convention data object name starts with ds, but their type
   // definitions should not.
   if (typeName.startsWith("ds")) {
-    typeName = typeName.substr(2);
+    typeName = typeName.substring(2);
   }
 
   if (options.types) {
@@ -80,7 +94,7 @@ function getDataObjectDefinition(name, viewDefinition, options) {
 
     let fieldTypes = "";
     for (let field of fields) {
-      fieldTypes += `  ${field.name}: ${field.type}${
+      fieldTypes += `  ${field.name}: ${afTypeToTsType(field.type, "ts")}${
         field.nullable ? " | null" : ""
       };\n`;
     }
@@ -109,7 +123,16 @@ ${fieldTypes}}`;
   allowUpdate: false,
   allowInsert: false,
   allowDelete: false,
-  fields: ${JSON.stringify(fields, null, 2).split("\n").join("\n  ")},
+  fields: ${JSON.stringify(
+    fields.map((f) => {
+      f.type = afTypeToTsType(f.type, "field");
+      return f;
+    }),
+    null,
+    2
+  )
+    .split("\n")
+    .join("\n  ")},
   parameters: {
     maxRecords: 50,
   }
