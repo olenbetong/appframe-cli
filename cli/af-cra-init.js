@@ -88,7 +88,7 @@ async function initApp(name) {
       name: "namespace",
       message: "Namespace to create article in?",
       choices: server.dsNamespaces.getData().map((r) => ({
-        title: r.GroupTitle ? `${r.Name} (${r.GroupTitle})` : r.Name,
+        title: r.GroupName ? `${r.Name} (${r.GroupName})` : r.Name,
         value: r.ID,
       })),
       onState: (state) => {

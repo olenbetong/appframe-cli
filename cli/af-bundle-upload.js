@@ -47,7 +47,7 @@ async function prepareBundle(pkgName, options) {
     if (!bundle) {
       server.dsNamespaces.setParameter("maxRecords", -1);
       server.dsNamespaces.setParameter("sortOrder", [
-        { GroupTitle: "Asc" },
+        { GroupName: "Asc" },
         { Name: "Asc" },
       ]);
 
@@ -74,7 +74,7 @@ async function prepareBundle(pkgName, options) {
           name: "namespace",
           message: "Select namespace",
           choices: server.dsNamespaces.getData().map((r) => ({
-            title: r.GroupTitle ? `${r.Name} (${r.GroupTitle})` : r.Name,
+            title: r.GroupName ? `${r.Name} (${r.GroupName})` : r.Name,
             value: r.ID,
           })),
           onState: (state) => {
