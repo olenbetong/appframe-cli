@@ -19,20 +19,19 @@
     "@babel/eslint-parser": "^7.15.7",
     "eslint-config-prettier": "^8.1.0",
     "eslint-plugin-prettier": "^4.0.0",
-    "jest": "^27.0.3",
     "prettier": "^2.6.2"
   },
   "dependencies": {
-    "@olenbetong/data-object": "^1.0.0-alpha.62",
+    "@olenbetong/data-object": "^1.0.0-alpha.63",
     "chalk": "^5.0.1",
     "commander": "^9.2.0",
     "d3": "^7.4.4",
     "dotenv": "^16.0.0",
-    "eslint": "^8.12.0",
+    "eslint": "^8.14.0",
     "ink": "^3.0.9",
     "open": "^8.3.0",
     "prompts": "^2.4.1",
-    "react": "^17.0.2"
+    "react": "^18.1.0"
   },
   "repository": "https://github.com/olenbetong/appframe-cli.git"
 }
