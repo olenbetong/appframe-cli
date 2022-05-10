@@ -128,7 +128,7 @@ const program = new Command();
 program
   .version(appPkg.version)
   .option("-s, --server <server>", "Server to deploy assets to", "dev.obet.no")
-  .option("-T, --no-test", "Do not deploy assets to test mode", false)
+  .option("-T, --no-test", "Do not deploy assets to test mode")
   .option("-p, --production", "Deploy assets to production mode", false)
   .option("-h, --hostname <hostname>", "Only deploy assets for this hostname")
   .action(deployAssets)
