@@ -86,7 +86,11 @@ async function publishFromDev(articleWithHost, version) {
   } else {
     try {
       const pkg = await importJson("./package.json", true);
-      config = { ...pkg.appframe, version: "v" + pkg.version };
+      config = {
+        article: pkg.appframe.article?.id ?? pkg.appframe.artcle,
+        hostname: pkg.appframe.article?.hostname ?? pkg.appframe.hostname,
+        version: "v" + pkg.version,
+      };
     } catch (error) {
       console.log(
         chalk.red(
