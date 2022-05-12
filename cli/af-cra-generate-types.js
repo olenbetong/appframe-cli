@@ -64,10 +64,17 @@ async function projectFileExists(file) {
 }
 
 async function generateTypescriptTypes(options) {
-  let articleUrl = `${appPkg.appframe.hostname}/${appPkg.appframe.article}`;
+  let articleHost =
+    appPkg.appframe.article?.hostname ?? appPkg.appframe.hostname;
+  let articleId = appPkg.appframe.article?.id ?? appPkg.appframe.article;
+  let articleUrl = `${articleHost}/${articleId}`;
 
   let server = new Server(
-    options.server ?? appPkg.appframe.devHostname ?? "dev.obet.no"
+    options.server ??
+      appPkg.appframe.proxy?.hostname ??
+      appPkg.appframe.deploy?.hostname ??
+      appPkg.appframe.devHostname ??
+      "dev.obet.no"
   );
   await server.login();
   server.logServerMessage(
@@ -75,7 +82,7 @@ async function generateTypescriptTypes(options) {
   );
 
   let result = await server.fetch(
-    `/file/article/static-script/${appPkg.appframe.article}.js`
+    `/file/article/static-script/${articleId}.js`
   );
   let scriptText = await result.text();
 

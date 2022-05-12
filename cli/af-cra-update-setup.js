@@ -49,12 +49,29 @@ async function updateProjectSetup() {
 
   pkg.appframe = pkg.appframe ?? {};
   pkg.appframe.article = pkg.appframe.article ?? pkg.name;
-  pkg.appframe.devHostname = pkg.appframe.devHostname ?? "dev.obet.no";
-  pkg.appframe.disableExternals = pkg.appframe.disableExternals ?? false;
-  pkg.appframe.hostname = pkg.appframe.hostname ?? "synergi.olenbetong.no";
-  pkg.appframe.proxyHostname = pkg.appframe.proxyHostname ?? "stage.obet.no";
-  pkg.appframe.proxyRoutes = pkg.appframe.proxyRoutes ?? [];
-  pkg.appframe.usePreact = pkg.appframe.usePreact ?? false;
+  if (typeof pkg.appframe.article === "string") {
+    pkg.appframe.article = {
+      id: pkg.name,
+      hostname: pkg.appframe.hostname ?? "synergi.olenbetong.no",
+    };
+  }
+  pkg.appframe.deploy = pkg.appframe.deploy ?? {
+    hostname: pkg.appframe.devHostname ?? "dev.obet.no",
+  };
+  delete pkg.appframe.devHostname;
+  pkg.appframe.build = pkg.appframe.build ?? {
+    externals: pkg.appframe.disableExternals ? false : true,
+  };
+  delete pkg.appframe.disableExternals;
+  delete pkg.appframe.hostname;
+  pkg.appframe.proxy = pkg.appframe.proxy ?? {
+    hostname:
+      pkg.appframe.proxyHostname ?? pkg.appframe.devHostname ?? "dev.obet.no",
+    routes: pkg.appframe.proxyRoutes ?? [],
+  };
+  delete pkg.appframe.proxyHostname;
+  delete pkg.appframe.proxyRoutes;
+  delete pkg.appframe.usePreact;
 
   await writeFile(
     getProjectFile("./package.json"),

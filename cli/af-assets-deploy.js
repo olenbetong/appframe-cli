@@ -28,7 +28,11 @@ async function deployAssets(options) {
     if (site.scripts) {
       for (let scriptName of Object.keys(site.scripts)) {
         let script = site.scripts[scriptName];
-        let hostname = script.hostname ?? site.hostname ?? appframe.hostname;
+        let hostname =
+          script.hostname ??
+          site.hostname ??
+          appframe.deploy?.hostname ??
+          appframe.hostname;
         let content;
         let contentTest;
 
@@ -60,7 +64,11 @@ async function deployAssets(options) {
     if (site.styles) {
       for (let styleName of Object.keys(site.styles)) {
         let style = site.styles[styleName];
-        let hostname = style.hostname ?? site.hostname ?? appframe.hostname;
+        let hostname =
+          style.hostname ??
+          site.hostname ??
+          appframe.deploy?.hostname ??
+          appframe.hostname;
         let content;
         let contentTest;
 

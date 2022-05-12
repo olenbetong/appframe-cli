@@ -148,8 +148,10 @@ async function initApp(name) {
 
   let pkg = await importJson(`./${name}/package.json`, true);
   pkg.appframe = pkg.appframe ?? {};
-  pkg.appframe.article = result.articleId;
-  pkg.appframe.hostname = result.hostname;
+  pkg.appframe.article = {
+    id: result.articleId,
+    hostname: result.hostname,
+  };
 
   await writeFile(
     getProjectFile(`./${name}/package.json`),
@@ -162,7 +164,9 @@ async function initApp(name) {
       `export const ARTICLE_ID = "${result.articleId}";
 export const ARTICLE_TITLE = "${result.articleTitle}";`
     );
-  } catch (error) {}
+  } catch (error) {
+    // well that sucks
+  }
 }
 
 const appPkg = await importJson("../package.json");

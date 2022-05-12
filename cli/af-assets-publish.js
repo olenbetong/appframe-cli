@@ -41,7 +41,11 @@ async function publishAssets(options) {
     if (site.styles) {
       for (let styleName of Object.keys(site.styles)) {
         let style = site.styles[styleName];
-        let hostname = style.hostname ?? site.hostname ?? pkg.appframe.hostname;
+        let hostname =
+          style.hostname ??
+          site.hostname ??
+          pkg.appframe.deploy?.hostname ??
+          pkg.appframe.hostname;
 
         if (options.hostname && options.hostname !== hostname) {
           continue;
@@ -55,7 +59,10 @@ async function publishAssets(options) {
       for (let templateName of Object.keys(site.templates)) {
         let template = site.templates[templateName];
         let hostname =
-          template.hostname ?? site.hostname ?? pkg.appframe.hostname;
+          template.hostname ??
+          site.hostname ??
+          pkg.appframe.deploy?.hostname ??
+          pkg.appframe.hostname;
 
         if (options.hostname && options.hostname !== hostname) {
           continue;
