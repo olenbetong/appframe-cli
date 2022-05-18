@@ -75,7 +75,9 @@ async function updateProjectSetup() {
   delete pkg.appframe.hostname;
   pkg.appframe.proxy = pkg.appframe.proxy ?? {
     hostname:
-      pkg.appframe.proxyHostname ?? pkg.appframe.devHostname ?? "dev.obet.no",
+      pkg.appframe.proxyHostname ??
+      pkg.appframe.deploy.hostname ??
+      "dev.obet.no",
     routes: pkg.appframe.proxyRoutes ?? [],
   };
   delete pkg.appframe.proxyHostname;
