@@ -29,7 +29,7 @@ async function fileExists(file, useCwd = false) {
 async function updateProjectSetup() {
   console.log("Configuring package.json...");
 
-  let isVite = await fileExists("./vite.config.ts", true);
+  let isVite = await fileExists("./vite.config.mjs", true);
 
   const pkg = await importJson("./package.json", true);
   pkg.scripts.start = isVite
@@ -51,14 +51,19 @@ async function updateProjectSetup() {
   };
 
   pkg.appframe = pkg.appframe ?? {};
-  pkg.appframe.article =
-    pkg.appframe.article?.id ?? pkg.appframe.article ?? pkg.name;
+
   if (typeof pkg.appframe.article === "string") {
+    pkg.appframe.article = {
+      id: pkg.appframe.article ?? pkg.name,
+      hostname: pkg.appframe.hostname ?? "synergi.olenbetong.no",
+    };
+  } else if (!pkg.appframe.article) {
     pkg.appframe.article = {
       id: pkg.name,
       hostname: pkg.appframe.hostname ?? "synergi.olenbetong.no",
     };
   }
+
   pkg.appframe.deploy = pkg.appframe.deploy ?? {
     hostname: pkg.appframe.devHostname ?? "dev.obet.no",
   };
