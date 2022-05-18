@@ -1,4 +1,3 @@
-import chalk from "chalk";
 import {
   access,
   copyFile,
@@ -93,7 +92,38 @@ async function updateTypescriptConfig() {
       JSON.stringify(tsconfig, null, 2)
     );
   } catch (error) {
-    console.log(chalk.red(`Failed to update tsconfig.json: ${error.message}`));
+    await writeFile(
+      getProjectFile("./tsconfig.json"),
+      JSON.stringify(
+        {
+          compilerOptions: {
+            target: "es2019",
+            lib: ["dom", "dom.iterable", "esnext"],
+            allowJs: false,
+            noImplicitAny: false,
+            skipLibCheck: true,
+            esModuleInterop: true,
+            allowSyntheticDefaultImports: true,
+            strict: false,
+            forceConsistentCasingInFileNames: true,
+            noFallthroughCasesInSwitch: true,
+            module: "esnext",
+            moduleResolution: "node",
+            resolveJsonModule: true,
+            isolatedModules: true,
+            strictNullChecks: true,
+            noEmit: true,
+            jsx: "react-jsx",
+            paths: {
+              "@/*": ["./src/*"],
+            },
+          },
+          include: ["src"],
+        },
+        null,
+        2
+      )
+    );
   }
 }
 
@@ -156,6 +186,7 @@ async function addViteScripts() {
   }
 
   await rm(getProjectFile("./public"), { recursive: true, force: true });
+  await rm(getProjectFile("./src/react-app-env.d.ts"), { force: true });
 }
 
 async function updateProjectSetup() {
