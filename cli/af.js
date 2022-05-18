@@ -45,9 +45,10 @@ program
     "Tools to work with data resources used by the Data API"
   )
   .command(
-    "cra",
+    "vite",
     "Commands to use when working with a create-react-app application using @olenbetong/react-scripts"
   )
+  .alias("cra")
   .command(
     "bundle",
     "Commands to create, upload and publish af bundles from npm packages"

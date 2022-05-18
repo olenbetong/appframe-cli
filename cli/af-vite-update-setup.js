@@ -29,11 +29,14 @@ async function fileExists(file, useCwd = false) {
 async function updateProjectSetup() {
   console.log("Configuring package.json...");
 
+  let isVite = await fileExists("./vite.config.ts", true);
+
   const pkg = await importJson("./package.json", true);
-  pkg.scripts.start = "af cra generate-types && react-scripts start";
+  pkg.scripts.start = isVite
+    ? "af cra generate-types && node ./server.mjs"
+    : "af cra generate-types && react-scripts start";
+  pkg.scripts.build = isVite ? "tsc && vite build" : "react-scripts build";
   pkg.scripts.deploy = "af cra deploy";
-  pkg.scripts["publish-to-prod"] = "af cra publish";
-  pkg.scripts["generate-types"] = "af cra generate-types";
   pkg.browserslist = {
     production: [
       "last 6 chrome versions",
@@ -48,7 +51,8 @@ async function updateProjectSetup() {
   };
 
   pkg.appframe = pkg.appframe ?? {};
-  pkg.appframe.article = pkg.appframe.article ?? pkg.name;
+  pkg.appframe.article =
+    pkg.appframe.article?.id ?? pkg.appframe.article ?? pkg.name;
   if (typeof pkg.appframe.article === "string") {
     pkg.appframe.article = {
       id: pkg.name,
