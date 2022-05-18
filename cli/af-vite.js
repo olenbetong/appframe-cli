@@ -34,6 +34,7 @@ program
   .command(
     "copy-datasources",
     "Copies datasources for an article from SynergiDev to SynergiStage"
-  );
+  )
+  .command("migrate-from-cra", "Migrates a CRA project to use Vite");
 
 await program.parseAsync(process.argv);
