@@ -1,48 +1,105 @@
 import chalk from "chalk";
 import { Command } from "commander";
-import { spawn } from "node:child_process";
 import prompts from "prompts";
 
 import { Server } from "../lib/Server.js";
 import { importJson } from "../lib/importJson.js";
-import { writeFile } from "node:fs/promises";
+import { rmdir, writeFile } from "node:fs/promises";
+import degit from "degit";
+import { execShellCommand } from "../lib/execShellCommand.js";
 
 function getProjectFile(file) {
   return new URL(file, `file://${process.cwd()}/`);
 }
 
-function runCreateReactApp(name) {
-  return new Promise((resolve, reject) => {
-    let cra = spawn(
-      "npx",
-      [
-        "create-react-app",
-        "--scripts-version",
-        "@olenbetong/react-scripts",
-        "--template",
-        "@olenbetong/appframe",
-        name,
-      ],
-      { stdio: "inherit" }
+async function tryGitInit() {
+  try {
+    await execShellCommand("git init");
+    return true;
+  } catch (e) {
+    console.warn("Git repo not initialized:", e.message);
+    return false;
+  }
+}
+
+async function tryGitCommit() {
+  try {
+    await execShellCommand("git add -A");
+    await execShellCommand(
+      'git commit -m "Initialize project using @olenbetong/appframe-cli"'
     );
+    return true;
+  } catch (e) {
+    // We couldn't commit in already initialized git repo,
+    // maybe the commit author config is not set.
+    console.warn("Git commit not created", e);
+    console.warn("Removing .git directory...");
+    try {
+      // unlinkSync() doesn't work on directories.
+      await rmdir(getProjectFile("./.git"));
+    } catch (removeErr) {
+      // Ignore.
+    }
+    return false;
+  }
+}
 
-    cra.on("close", (code) => {
-      if (code === 0) {
-        resolve();
-      } else {
-        reject();
-      }
-    });
-
-    cra.on("error", (error) => {
-      console.error(chalk.red(error.message));
-      reject(error);
-    });
+async function installDependencies(templatePackage) {
+  // Install additional template dependencies, if present.
+  const dependenciesToInstall = Object.entries({
+    ...templatePackage.dependencies,
+    ...templatePackage.devDependencies,
   });
+  if (dependenciesToInstall.length) {
+    let args = dependenciesToInstall.map(([dependency, version]) => {
+      return `${dependency}@${version}`;
+    });
+
+    console.log(`Installing template dependencies...`);
+
+    await execShellCommand(`npm i -D ${args.join(" ")}`);
+  }
+}
+
+async function copyTemplateRepo(name) {
+  console.log(
+    `Copying template repo (olenbetong/vite-template-appframe) into ./${name}...`
+  );
+  const emitter = degit("olenbetong/vite-template-appframe", {
+    cache: false,
+    verbose: false,
+    force: true,
+  });
+
+  emitter.on("warn", (warning) => {
+    console.log(chalk.yellow(warning.message));
+  });
+
+  await emitter.clone(`./${name}`);
 }
 
 async function initApp(name) {
-  await runCreateReactApp(name);
+  await copyTemplateRepo(name);
+  process.chdir("./" + name);
+
+  const templateConfig = await importJson("./template.json", true);
+  let initializedGit = false;
+  if (await tryGitInit()) {
+    initializedGit = true;
+    console.log("Initialized a git repository.");
+  }
+
+  writeFile(
+    getProjectFile("./package.json"),
+    JSON.stringify(templateConfig.package, null, 2)
+  );
+
+  await installDependencies(templateConfig.package);
+
+  // Create git commit if git repo was initialized
+  if (initializedGit && (await tryGitCommit())) {
+    console.log("Created git commit.");
+  }
 
   let server = new Server("dev.obet.no");
   await server.login();
@@ -146,7 +203,7 @@ async function initApp(name) {
     });
   }
 
-  let pkg = await importJson(`./${name}/package.json`, true);
+  let pkg = await importJson(`./package.json`, true);
   pkg.appframe = pkg.appframe ?? {};
   pkg.appframe.article = {
     id: result.articleId,
@@ -154,19 +211,36 @@ async function initApp(name) {
   };
 
   await writeFile(
-    getProjectFile(`./${name}/package.json`),
+    getProjectFile(`./package.json`),
     JSON.stringify(pkg, null, 2)
   );
 
   try {
     await writeFile(
-      getProjectFile(`./${name}/src/config.ts`),
+      getProjectFile(`./src/config.ts`),
       `export const ARTICLE_ID = "${result.articleId}";
 export const ARTICLE_TITLE = "${result.articleTitle}";`
     );
   } catch (error) {
     // well that sucks
   }
+
+  console.log();
+  console.log(`Success! Created ${name} at ./${name}`);
+  console.log("Inside that directory, you can run several commands:");
+  console.log();
+  console.log(chalk.cyan(`  npm start`));
+  console.log("    Starts the development server.");
+  console.log();
+  console.log(chalk.cyan(`  npm run build`));
+  console.log("    Bundles the app into static files for production.");
+  console.log();
+  console.log("We suggest that you begin by typing:");
+  console.log();
+  console.log(chalk.cyan("  cd"), name);
+  console.log(`  ${chalk.cyan(`npm start`)}`);
+  console.log();
+  console.log("Happy hacking!");
 }
 
 const appPkg = await importJson("../package.json");
