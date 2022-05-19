@@ -143,10 +143,13 @@ async function updateImports() {
   for await (let file of getFiles(srcDir.pathname)) {
     let fileContent = await readFile(file, "utf-8");
     for (let rootName of rootNames) {
-      fileContent = fileContent.replaceAll(
-        `from "${rootName}`,
-        `from "@/${rootName}`
+      let re = new RegExp(
+        `(import\\(?)(\\s*\\/\\*\\s*webpackChunkName:\\s+[\\w\\-]+\\s*\\*\\/)?(\\s*)"${rootName}`,
+        "g"
       );
+      fileContent = fileContent
+        .replaceAll(`from "${rootName}`, `from "@/${rootName}`)
+        .replace(re, `$1$2$3"@/${rootName}`);
     }
 
     await writeFile(file, fileContent);
