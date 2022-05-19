@@ -1,6 +1,8 @@
+import chalk from "chalk";
+import { Command } from "commander";
+
 import { Server } from "../lib/Server.js";
 import { importJson } from "../lib/importJson.js";
-import { Command } from "commander";
 
 async function copyDatasourcesFromDev(articleWithHost) {
   let config;
@@ -14,7 +16,10 @@ async function copyDatasourcesFromDev(articleWithHost) {
   } else {
     try {
       const pkg = await importJson("./package.json", true);
-      config = { ...pkg.appframe };
+      config = {
+        hostname: pkg.appframe.article?.id ?? pkg.appframe.hostname,
+        article: pkg.appframe.article?.id ?? pkg.appframe.article,
+      };
     } catch (error) {
       console.log(
         chalk.red(
