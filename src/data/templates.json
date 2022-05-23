@@ -24,6 +24,16 @@
 			"title": "Global Appframe Types",
 			"source": "../templates/global.d.ts.tpl",
 			"target": "./src/global.d.ts"
+		},
+		"vite-server": {
+			"title": "Vite - Config",
+			"source": "../templates/vite.config.mjs.tpl",
+			"target": "./vite.config.mjs"
+		},
+		"vite-config": {
+			"title": "Vite - Dev server",
+			"source": "../templates/server.mjs.tpl",
+			"target": "./server.mjs"
 		}
 	}
 }

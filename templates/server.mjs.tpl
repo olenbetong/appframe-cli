@@ -13,9 +13,9 @@ async function createServer() {
     server: { middlewareMode: "ssr" },
   });
 
-  app.use(await createProxyMiddleware());
+  app.use(createProxyMiddleware());
   app.use(vite.middlewares);
-  app.use(await createDevMiddleware(vite));
+  app.use(createDevMiddleware(vite));
   startDevServer(app);
 }
 
