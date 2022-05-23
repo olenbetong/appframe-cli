@@ -1,4 +1,4 @@
-#!/usr/bin/env node --loader ts-node/esm
+#!/usr/bin/env node
 
 import chalk from "chalk";
 import { Command } from "commander";
@@ -73,5 +73,5 @@ program.action(async () => {
     );
   }
 });
-console.log("hi");
+
 await program.parseAsync(process.argv);

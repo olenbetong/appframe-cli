@@ -2,7 +2,7 @@
   "name": "@olenbetong/appframe-cli",
   "description": "Utility functions for AppframeWeb",
   "bin": {
-    "af": "./cli/af.ts"
+    "af": "./cli/af.js"
   },
   "type": "module",
   "version": "3.33.6",
