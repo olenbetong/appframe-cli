@@ -99,8 +99,8 @@ async function updateProjectSetup() {
     await execShellCommand("npm install -D @olenbetong/appframe-cli");
   }
 
-  console.log("Installing latest @olenbetong/data-object...");
-  await execShellCommand("npm i @olenbetong/data-object@latest");
+  console.log("Installing latest @olenbetong/appframe-data...");
+  await execShellCommand("npm i @olenbetong/appframe-data@latest");
 
   if (!(await fileExists("./.github/workflows", true))) {
     await mkdir(getProjectFile("./.github/workflows"), { recursive: true });

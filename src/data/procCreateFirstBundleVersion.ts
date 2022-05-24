@@ -1,4 +1,4 @@
-import { Client, ProcedureAPI } from "@olenbetong/data-object";
+import { Client, ProcedureAPI } from "@olenbetong/appframe-data";
 
 export default (client: Client) =>
   new ProcedureAPI({

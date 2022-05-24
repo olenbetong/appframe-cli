@@ -12,7 +12,7 @@
   <body class="theme-ob">
     <div id="root"></div>
     <script src="/lib/@olenbetong/common/1.0.0/dist/iife/common.localization.min.js"></script>
-    <script src="/lib/@olenbetong/data-object/1.0.0-alpha.66/dist/iife/af.DataObject.js"></script>
+    <script src="/lib/@olenbetong/appframe-data/1.0.0-alpha.66/dist/iife/af.DataObject.js"></script>
     <!-- {Appframe} -->
     <script type="module" src="/src/index.tsx"></script>
   </body>

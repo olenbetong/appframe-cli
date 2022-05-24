@@ -4,7 +4,7 @@ import {
   DataObjectOptions,
   Procedure,
   generateApiDataObject,
-} from "@olenbetong/data-object";
+} from "@olenbetong/appframe-data";
 
 type AppframeCore = {
   article: {

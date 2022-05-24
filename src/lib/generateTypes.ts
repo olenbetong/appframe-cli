@@ -1,6 +1,6 @@
 /* global globalThis */
 
-import { DataObject, Procedure } from "@olenbetong/data-object";
+import { DataObject, Procedure } from "@olenbetong/appframe-data";
 
 /**
  * Converts a database object parameter type to a typescript type
@@ -157,7 +157,7 @@ export function generateTypes(
   if (procedures.length) types.push("Procedure");
 
   let result = [
-    `import { ${types.join(", ")} } from "@olenbetong/data-object";${
+    `import { ${types.join(", ")} } from "@olenbetong/appframe-data";${
       customExists &&
       (dataObjects.includes("Custom.") || procedures.includes("Custom."))
         ? '\nimport * as Custom from "./customTypes";'

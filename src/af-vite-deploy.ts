@@ -4,8 +4,8 @@ import { Text, render, useApp } from "ink";
 import fs from "node:fs/promises";
 import { Fragment, createElement as h, useEffect, useState } from "react";
 
-import * as af from "@olenbetong/data-object";
-import { Client, setDefaultClient } from "@olenbetong/data-object";
+import * as af from "@olenbetong/appframe-data";
+import { Client, setDefaultClient } from "@olenbetong/appframe-data";
 
 import { importJson } from "./lib/importJson.js";
 

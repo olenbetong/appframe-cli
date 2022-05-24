@@ -1,4 +1,4 @@
-import { FieldDefinition } from "@olenbetong/data-object";
+import { FieldDefinition } from "@olenbetong/appframe-data";
 import { Command } from "./lib/Command.js";
 import { importJson } from "./lib/importJson.js";
 import { Server } from "./lib/Server.js";
@@ -52,7 +52,7 @@ function getProcedureDefinition(
   }
 
   return `
-import { ProcedureAPI } from "@olenbetong/data-object";
+import { ProcedureAPI } from "@olenbetong/appframe-data";
 
 new ProcedureAPI({
   procedureId: "${name}",
@@ -124,7 +124,7 @@ ${fieldTypes}}`;
   let output = "";
   if (!options.global) {
     output +=
-      'import { generateApiDataObject } from "@olenbetong/data-object";\n\n';
+      'import { generateApiDataObject } from "@olenbetong/appframe-data";\n\n';
   }
 
   if (options.types) {

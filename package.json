@@ -28,7 +28,7 @@
     "prettier": "^2.6.2"
   },
   "dependencies": {
-    "@olenbetong/data-object": "^1.0.0-alpha.67",
+    "@olenbetong/appframe-data": "^0.1.0",
     "chalk": "^5.0.1",
     "commander": "^9.2.0",
     "d3": "^7.4.4",

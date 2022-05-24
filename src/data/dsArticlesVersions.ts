@@ -2,7 +2,7 @@ import {
   Client,
   generateApiDataObject,
   SortOrder,
-} from "@olenbetong/data-object";
+} from "@olenbetong/appframe-data";
 
 export default (client: Client) =>
   generateApiDataObject({

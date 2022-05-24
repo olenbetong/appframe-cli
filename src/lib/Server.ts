@@ -10,7 +10,7 @@ import {
   Procedure,
   ProcedureAPI,
   SortOrder,
-} from "@olenbetong/data-object";
+} from "@olenbetong/appframe-data";
 
 import {
   getApplyProcedure,
