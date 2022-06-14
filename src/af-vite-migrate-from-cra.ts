@@ -1,30 +1,8 @@
-import {
-  access,
-  copyFile,
-  readFile,
-  readdir,
-  rename,
-  writeFile,
-  rm,
-} from "node:fs/promises";
+import { copyFile, readFile, readdir, writeFile, rm } from "node:fs/promises";
 import { resolve } from "node:path";
 
 import { execShellCommand } from "./lib/execShellCommand.js";
 import { importJson } from "./lib/importJson.js";
-
-async function fileExists(file: string | URL, useCwd = false) {
-  let completeUrl = new URL(
-    file,
-    useCwd ? `file://${process.cwd()}/` : import.meta.url
-  );
-
-  try {
-    await access(completeUrl);
-    return true;
-  } catch (error) {
-    return false;
-  }
-}
 
 function getProjectFile(file: string) {
   return new URL(file, `file://${process.cwd()}/`);
@@ -85,6 +63,7 @@ async function updateTypescriptConfig() {
 
     tsconfig.compilerOptions.paths = tsconfig.compilerOptions.paths ?? {};
     tsconfig.compilerOptions.paths["@/*"] = ["./src/*"];
+    tsconfig.compilerOptions.paths["~/*"] = ["./src/*"];
     delete tsconfig.compilerOptions.baseUrl;
 
     await writeFile(
@@ -116,6 +95,7 @@ async function updateTypescriptConfig() {
             jsx: "react-jsx",
             paths: {
               "@/*": ["./src/*"],
+              "~/*": ["./src/*"],
             },
           },
           include: ["src"],
@@ -184,14 +164,7 @@ async function addViteScripts() {
     getProjectFile("./index.html")
   );
 
-  if (await fileExists(getProjectFile("./public/favicon.ico"))) {
-    await rename(
-      getProjectFile("./public/favicon.ico"),
-      getProjectFile("./src/favicon.ico")
-    );
-  }
-
-  await rm(getProjectFile("./public"), { recursive: true, force: true });
+  await rm(getProjectFile("./public/index.html"), { force: true });
   await rm(getProjectFile("./src/react-app-env.d.ts"), { force: true });
 }
 

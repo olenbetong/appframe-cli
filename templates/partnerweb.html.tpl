@@ -2,10 +2,10 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <link rel="shortcut icon" href="/src/favicon.ico" />
+    <link rel="shortcut icon" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
-    <title>Partner: Ready-mix dashboard</title>
+    <title>Partner: My Application</title>
 
     <!-- {Theme} -->
   </head>
@@ -198,8 +198,8 @@
 
     <div id="root"></div>
     
-    <script src="/lib/@olenbetong/common/1.0.0/dist/iife/common.localization.min.js"></script>
-    <script src="/lib/@olenbetong/appframe-data/1.0.0-alpha.66/dist/iife/af.DataObject.js"></script>
+    <script src="/lib/@olenbetong/appframe-core/1.0.2/dist/iife/af.common.js"></script>
+    <script src="/lib/@olenbetong/appframe-data/0.1.2/dist/iife/af.data.js"></script>
     <!-- {Appframe} -->
     <script type="module" src="/src/index.tsx"></script>
 		<script src="/file/site/script/ob.es.navbar.jsx"></script>
