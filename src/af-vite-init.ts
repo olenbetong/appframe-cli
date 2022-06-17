@@ -192,7 +192,7 @@ async function initApp(name: string) {
       hostname: result.hostname,
       id: result.articleId,
       htmlContent:
-        '@Render("Template", ID: "ob.scripts.light")\n<div id="root"></div>',
+        '@Render("Template", ID: "ob.scripts.light")\n@Render("Block", ID: "ViteScripts")\n<div id="root"></div>',
       title: result.articleTitle,
       template: "ob.es.noscript",
     });
