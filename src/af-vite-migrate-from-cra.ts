@@ -62,8 +62,8 @@ async function updateTypescriptConfig() {
     const tsconfig = await importJson("./tsconfig.json", true);
 
     tsconfig.compilerOptions.paths = tsconfig.compilerOptions.paths ?? {};
-    tsconfig.compilerOptions.paths["@/*"] = ["./src/*"];
     tsconfig.compilerOptions.paths["~/*"] = ["./src/*"];
+    tsconfig.compilerOptions.paths["@/*"] = ["./src/*"];
     delete tsconfig.compilerOptions.baseUrl;
 
     await writeFile(
@@ -94,8 +94,8 @@ async function updateTypescriptConfig() {
             noEmit: true,
             jsx: "react-jsx",
             paths: {
-              "@/*": ["./src/*"],
               "~/*": ["./src/*"],
+              "@/*": ["./src/*"],
             },
           },
           include: ["src"],
@@ -130,7 +130,7 @@ async function updateImports() {
       fileContent = fileContent
         .replace(
           new RegExp(`(from "${rootName}(?!\\w))`, "g"),
-          `from "@/${rootName}`
+          `from "~/${rootName}`
         )
         .replace(re, `$1$2$3"@/${rootName}`);
     }
