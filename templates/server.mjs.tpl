@@ -10,7 +10,7 @@ import {
 async function createServer() {
   const app = express();
   const vite = await createViteServer({
-    server: { middlewareMode: "ssr" },
+    server: { middlewareMode: true },
   });
 
   app.use(createProxyMiddleware());
