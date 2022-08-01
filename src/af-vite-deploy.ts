@@ -16,7 +16,6 @@ async function exists(path: string | URL) {
     await fs.stat(path);
     return true;
   } catch (error) {
-    console.log(chalk.red((error as Error).message));
     return false;
   }
 }
@@ -81,10 +80,11 @@ function shouldFileBeExcluded(file: string) {
 
 let scriptPath: string;
 let stylePath: string;
-let styles: string[];
-let scripts: string[];
+let styles: string[] = [];
+let scripts: string[] = [];
 let vitePath = new URL(`file://${process.cwd()}/dist/assets/`);
-let isVite = await exists(vitePath);
+let isVite =
+  appPackageJson.devDependencies["vite"] || appPackageJson.dependencies["vite"];
 
 if (isVite) {
   console.log(chalk.blue("Using Vite configuration"));
@@ -94,10 +94,12 @@ if (isVite) {
   }/`;
   stylePath = vitePath.toString();
 
-  let files = await fs.readdir(vitePath);
-  styles = files.filter(
-    (file) => file.endsWith(".css") || file.endsWith(".css.map")
-  );
+  if (await exists(vitePath)) {
+    let files = await fs.readdir(vitePath);
+    styles = files.filter(
+      (file) => file.endsWith(".css") || file.endsWith(".css.map")
+    );
+  }
   scripts = await fs.readdir(new URL(scriptPath));
 } else {
   console.log(chalk.blue("Using CRA configuration"));
