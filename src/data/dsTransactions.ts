@@ -20,5 +20,6 @@ export default (client: Client) =>
       "LocalCreatedBy",
       "CreatedBy",
       "CreatedByName",
+      "LastError",
     ],
   });

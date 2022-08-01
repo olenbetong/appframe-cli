@@ -20,8 +20,14 @@ async function applyTransactions(namespaceArg: string, options: ServerOption) {
     }
 
     let transactions = await server.getTransactions("apply", namespace);
+    let errors = transactions.filter((r) => r.Status == 2);
     if (transactions.length === 0) {
       console.error(chalk.yellow("No transactions available to apply."));
+    } else if (errors.length > 0) {
+      console.error(
+        chalk.red("There are transactions with errors blocking this namespace:")
+      );
+      console.table(errors.map(({ Status, ...tran }) => tran));
     } else {
       console.table(transactions);
       if (isInteractive) {

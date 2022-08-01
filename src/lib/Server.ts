@@ -641,7 +641,7 @@ export class Server {
   ) {
     let filter = [filterOrType];
     if (filterOrType === "apply") {
-      filter = ["[Status] IN (0, 2, 4) AND [IsLocal] = 0"];
+      filter = ["[Status] IN (0, 2) AND [IsLocal] = 0"];
     } else if (filterOrType === "deploy") {
       filter = ["(([Status] = 0 AND [IsLocal] = 1) OR [Status] = 1)"];
     }
@@ -668,6 +668,8 @@ export class Server {
       Name: r.Name,
       CreatedBy: r.CreatedByName,
       LocalCreatedBy: r.LocalCreatedBy,
+      Status: r.Status,
+      LastError: r.LastError,
     }));
   }
 
