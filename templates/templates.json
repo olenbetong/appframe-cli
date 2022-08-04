@@ -25,6 +25,11 @@
 			"source": "../templates/global.d.ts.tpl",
 			"target": "./src/global.d.ts"
 		},
+		"eslint-config": {
+			"title": "eslint - Config",
+			"source": "../templates/eslint.js.tpl",
+			"target": "./.eslint.js"
+		},
 		"vite-server": {
 			"title": "Vite - Config",
 			"source": "../templates/vite.config.mjs.tpl",

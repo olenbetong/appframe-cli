@@ -123,6 +123,18 @@ async function updateProjectSetup() {
     await mkdir(getProjectFile("./.vscode"));
   }
 
+  if (!dependencies.includes("eslint")) {
+    console.log("Installing eslint...");
+    await execShellCommand(
+      "npm install -D eslint eslint-config-prettier eslint-plugin-react @typescript-eslint/eslint-plugin @typescript-eslint/parser"
+    );
+
+    await copyFile(
+      getCLIFile("../templates/eslintrc.js.tpl"),
+      getProjectFile("./.eslintrc.js")
+    );
+  }
+
   await copyFile(
     getCLIFile("../templates/vscode-settings.json.tpl"),
     getProjectFile("./.vscode/settings.json")
