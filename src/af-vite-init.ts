@@ -44,21 +44,8 @@ async function tryGitCommit() {
   }
 }
 
-async function installDependencies(templatePackage: any) {
-  // Install additional template dependencies, if present.
-  const dependenciesToInstall = Object.entries({
-    ...templatePackage.dependencies,
-    ...templatePackage.devDependencies,
-  });
-  if (dependenciesToInstall.length) {
-    let args = dependenciesToInstall.map(([dependency, version]) => {
-      return `${dependency}@${version}`;
-    });
-
-    console.log(`Installing template dependencies...`);
-
-    await execShellCommand(`npm i -D ${args.join(" ")}`);
-  }
+async function installDependencies() {
+  await execShellCommand(`npm install`);
 }
 
 async function copyTemplateRepo(name: string) {
@@ -82,19 +69,13 @@ async function initApp(name: string) {
   await copyTemplateRepo(name);
   process.chdir("./" + name);
 
-  const templateConfig = await importJson("./template.json", true);
   let initializedGit = false;
   if (await tryGitInit()) {
     initializedGit = true;
     console.log("Initialized a git repository.");
   }
 
-  writeFile(
-    getProjectFile("./package.json"),
-    JSON.stringify(templateConfig.package, null, 2)
-  );
-
-  await installDependencies(templateConfig.package);
+  await installDependencies();
 
   // Create git commit if git repo was initialized
   if (initializedGit && (await tryGitCommit())) {
