@@ -117,7 +117,7 @@ async function publishFromDev(articleWithHost?: string, version?: string) {
   try {
     await runStageOperations(
       "dev.obet.no",
-      [/*"publish", "generate",*/ "deploy"],
+      ["publish", "generate", "deploy"],
       config,
       crossServerState
     );
