@@ -210,7 +210,7 @@ export class Server {
             this.dsTransactions.map((r) => ({
               Namespace: r.Namespace,
               Name: r.Name,
-              CreatedBy: r.CreatedBy,
+              CreatedBy: r.CreatedByName,
               LocalCreatedBy: r.LocalCreatedBy,
             }))
           );
@@ -662,7 +662,7 @@ export class Server {
       filter.filter(Boolean).join(" AND ")
     );
     await dsTransactions.refreshDataSource();
-
+    console.log(dsTransactions.getData());
     return dsTransactions.map((r) => ({
       Namespace: r.Namespace,
       Name: r.Name,

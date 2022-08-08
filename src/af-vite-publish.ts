@@ -114,24 +114,32 @@ async function publishFromDev(articleWithHost?: string, version?: string) {
 
   let crossServerState = {};
 
-  await runStageOperations(
-    "dev.obet.no",
-    ["publish", "generate", "deploy"],
-    config,
-    crossServerState
-  );
-  await runStageOperations(
-    "stage.obet.no",
-    ["download", "apply", "deploy"],
-    config,
-    crossServerState
-  );
-  await runStageOperations(
-    "test.obet.no",
-    ["download"],
-    config,
-    crossServerState
-  );
+  try {
+    await runStageOperations(
+      "dev.obet.no",
+      [/*"publish", "generate",*/ "deploy"],
+      config,
+      crossServerState
+    );
+    await runStageOperations(
+      "stage.obet.no",
+      ["download", "apply", "deploy"],
+      config,
+      crossServerState
+    );
+    await runStageOperations(
+      "test.obet.no",
+      ["download"],
+      config,
+      crossServerState
+    );
+  } catch (error) {
+    console.log(chalk.red(`Failed to publish: ${(error as any).message}`));
+    console.log(
+      chalk.red(`Last successful step: ${(error as any).lastSuccessfulStep}`)
+    );
+    process.exit(1);
+  }
 }
 
 const appPkg = await importJson("../package.json");
