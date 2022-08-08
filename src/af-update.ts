@@ -6,15 +6,24 @@ try {
   let cliPkg = await importJson("../package.json");
   let args = ["install", "@olenbetong/appframe-cli@latest", "-g"];
 
-  console.log("npm", args.join(" "));
-  await spawnShellCommand("npm", args);
+  console.log(process.platform === "win32" ? "npm.cmd" : "npm", args.join(" "));
+  await spawnShellCommand(
+    process.platform === "win32" ? "npm.cmd" : "npm",
+    args
+  );
 
   try {
     let pkg = await importJson("./package.json", true);
     if (pkg.dependencies?.[cliPkg.name] || pkg.devDependencies?.[cliPkg.name]) {
       args.pop();
-      console.log("npm", args.join(" "));
-      await spawnShellCommand("npm", args);
+      console.log(
+        process.platform === "win32" ? "npm.cmd" : "npm",
+        args.join(" ")
+      );
+      await spawnShellCommand(
+        process.platform === "win32" ? "npm.cmd" : "npm",
+        args
+      );
     } else {
       console.log(
         chalk.blue(
