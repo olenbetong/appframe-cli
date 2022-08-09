@@ -27,8 +27,8 @@
 		},
 		"eslint-config": {
 			"title": "eslint - Config",
-			"source": "../templates/eslint.js.tpl",
-			"target": "./.eslint.js"
+			"source": "../templates/eslintrc.js.tpl",
+			"target": "./.eslintrc.js"
 		},
 		"vite-server": {
 			"title": "Vite - Config",
