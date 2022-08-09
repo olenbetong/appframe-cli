@@ -58,7 +58,7 @@ const procCheckoutArticle = new af.ProcedureAPI<any, any>({
 });
 
 const procRemovePreviousBuild = new af.ProcedureAPI<any, any>({
-  procedureId: "astp_WebSiteCMS_DeleteArticleWebpackFiles",
+  procedureId: "astp_WebShared_DeleteArticleWebpackFiles",
   parameters: [{ name: "HostName" }, { name: "ArticleID" }],
 });
 
