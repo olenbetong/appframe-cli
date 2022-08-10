@@ -15,6 +15,9 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
       - run: npm install
       - run: npm run build
+        env:
+          APPFRAME_LOGIN: ${{ secrets.APPFRAME_LOGIN }}
+          APPFRAME_PWD: ${{ secrets.APPFRAME_PWD }}
       - run: npx af cra deploy
         env:
           APPFRAME_LOGIN: ${{ secrets.APPFRAME_LOGIN }}
