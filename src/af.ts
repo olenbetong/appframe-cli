@@ -46,9 +46,8 @@ program
   )
   .command(
     "vite",
-    "Commands to use when working with a create-react-app application using @olenbetong/react-scripts"
+    "Commands to use when working with a SynergiWeb application using Vite"
   )
-  .alias("cra")
   .command(
     "bundle",
     "Commands to create, upload and publish af bundles from npm packages"

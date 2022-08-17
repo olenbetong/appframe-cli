@@ -6,7 +6,7 @@ const program = new Command();
 program
   .version(appPkg.version)
   .description(
-    "Commands to use when working with a create-react-app application using @olenbetong/react-scripts"
+    "Commands to use when working with a SynergiWeb application using Vite"
   )
   .configureHelp({
     sortSubcommands: true,
@@ -27,7 +27,7 @@ program
   )
   .command(
     "init <name>",
-    "Bootstraps a new application using create-react-app with @olenbetong/react-scripts"
+    "Bootstraps a new application using Vite with @olenbetong/appframe-vite"
   )
   .command("appdesigner", "Opens the appdesigner for the current project")
   .command("convert-typescript", "Prepares the project to use typescript")

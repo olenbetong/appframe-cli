@@ -13,12 +13,12 @@ npm install --save-dev @olenbetong/appframe-cli
 
 ## Commands
 
-### deploy-cra
+### vite deploy
 
-In a create-react-app project with @olenbetong/react-scripts, run this command after building to deploy the application:
+In a SynergiWeb project with Vite, run this command after building to deploy the application:
 
 ```
-npx af deploy-cra
+npx af vite deploy
 ```
 
 ### generate-data-object

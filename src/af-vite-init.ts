@@ -232,7 +232,7 @@ program
   .version(appPkg.version)
   .argument(
     "<name>",
-    "Name passed to create-react-app (will also be the folder name)"
+    "Name of the new application. Will also be the folder name)"
   )
   .action(initApp);
 
