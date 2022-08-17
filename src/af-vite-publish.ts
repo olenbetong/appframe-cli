@@ -104,7 +104,7 @@ async function publishFromDev(articleWithHost?: string, version?: string) {
     } catch (error) {
       console.log(
         chalk.red(
-          "Failed to load article config. Either run the command from a folder with a CRA application with appframe config in package.json, or provide an argument with hostname and article ID."
+          "Failed to load article config. Either run the command from a folder with a SynergiWeb application with appframe config in package.json, or provide an argument with hostname and article ID."
         )
       );
 

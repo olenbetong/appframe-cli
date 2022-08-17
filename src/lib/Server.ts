@@ -995,7 +995,7 @@ export class Server {
 
   /**
    * Copy data objects and fields for an article from dev server.
-   * This is used to enable running CRA dev environments against the
+   * This is used to enable running Vite dev environments against the
    * stage server. Instead of publishing the article to update data objects
    * on stage, we can copy the data objects and fields from the dev server
    * directly.

@@ -23,7 +23,7 @@ async function copyDatasourcesFromDev(articleWithHost?: string) {
     } catch (error) {
       console.log(
         chalk.red(
-          "Failed to load article config. Either run the command from a folder with a CRA application with appframe config in package.json, or provide an argument with hostname and article ID."
+          "Failed to load article config. Either run the command from a folder with a SynergiWeb application with appframe config in package.json, or provide an argument with hostname and article ID."
         )
       );
 
@@ -42,7 +42,7 @@ program
   .version(appPkg.version)
   .argument(
     "[article-with-hostname]",
-    "Select article and hostname to publish (ex. synergi.olenbetong.no/portal). Will look for a CRA config in package.json if undefined"
+    "Select article and hostname to publish (ex. synergi.olenbetong.no/portal). Will look for a SynergiWeb config in package.json if undefined"
   )
   .action(copyDatasourcesFromDev);
 

@@ -33,10 +33,10 @@ async function updateProjectSetup() {
 
   const pkg = await importJson("./package.json", true);
   pkg.scripts.start = isVite
-    ? "af cra generate-types && node ./server.mjs"
-    : "af cra generate-types && react-scripts start";
+    ? "af vite generate-types && node ./server.mjs"
+    : "af vite generate-types && react-scripts start";
   pkg.scripts.build = isVite ? "tsc && vite build" : "react-scripts build";
-  pkg.scripts.deploy = "af cra deploy";
+  pkg.scripts.deploy = "af vite deploy";
   pkg.browserslist = {
     production: [
       "last 6 chrome versions",

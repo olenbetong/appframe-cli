@@ -18,11 +18,11 @@ jobs:
         env:
           APPFRAME_LOGIN: ${{ secrets.APPFRAME_LOGIN }}
           APPFRAME_PWD: ${{ secrets.APPFRAME_PWD }}
-      - run: npx af cra deploy
+      - run: npx af vite deploy
         env:
           APPFRAME_LOGIN: ${{ secrets.APPFRAME_LOGIN }}
           APPFRAME_PWD: ${{ secrets.APPFRAME_PWD }}
-      - run: npx af cra publish
+      - run: npx af vite publish
         env:
           APPFRAME_LOGIN: ${{ secrets.APPFRAME_LOGIN }}
           APPFRAME_PWD: ${{ secrets.APPFRAME_PWD }}

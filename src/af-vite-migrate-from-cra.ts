@@ -45,7 +45,7 @@ async function updatePackageJson() {
   console.log("Updating package.json...");
 
   const appPkg = await importJson("./package.json", true);
-  appPkg.scripts["start"] = "af cra generate-types && node ./server.mjs";
+  appPkg.scripts["start"] = "af vite generate-types && node ./server.mjs";
   appPkg.scripts["build"] = "tsc && vite build";
   delete appPkg.scripts["eject"];
   delete appPkg.scripts["test"];
@@ -63,7 +63,6 @@ async function updateTypescriptConfig() {
 
     tsconfig.compilerOptions.paths = tsconfig.compilerOptions.paths ?? {};
     tsconfig.compilerOptions.paths["~/*"] = ["./src/*"];
-    tsconfig.compilerOptions.paths["@/*"] = ["./src/*"];
     delete tsconfig.compilerOptions.baseUrl;
 
     await writeFile(
