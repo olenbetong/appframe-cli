@@ -131,7 +131,7 @@ async function updateImports() {
           new RegExp(`(from "${rootName}(?!\\w))`, "g"),
           `from "~/${rootName}`
         )
-        .replace(re, `$1$2$3"@/${rootName}`);
+        .replace(re, `$1$2$3"~/${rootName}`);
     }
 
     await writeFile(file, fileContent);

@@ -12,7 +12,8 @@ function getCLIFile(file: string) {
   return new URL(file, import.meta.url);
 }
 
-const { templates } = await importJson("../templates/templates.json");
+// @ts-ignore
+const { templates } = await import("../templates/templates.js");
 
 async function updateTemplate(template: any) {
   let templateList;
