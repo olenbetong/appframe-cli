@@ -16,12 +16,12 @@ export const templates = {
   "html-synergi": {
     title: "index.html for SynergiWeb applications",
     source: "../templates/synergiweb.html.tpl",
-    target: "./public/index.html",
+    target: "./index.html",
   },
   "html-partner": {
     title: "index.html for Partner applications",
     source: "../templates/partnerweb.html.tpl",
-    target: "./public/index.html",
+    target: "./index.html",
   },
   "types-config": {
     title: "types.json to customize data object/procedure types",
