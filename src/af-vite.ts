@@ -16,6 +16,7 @@ program
     "generate-types",
     "Generate Typescript definitions for data objects and procedures in the article in package.json"
   )
+  .alias("gt")
   .command(
     "update-setup",
     "Ensures the project has deploy/publish scripts set up"
@@ -35,6 +36,7 @@ program
     "copy-datasources",
     "Copies datasources for an article from SynergiDev to SynergiStage"
   )
+  .alias("cd")
   .command("migrate-from-cra", "Migrates a CRA project to use Vite");
 
 await program.parseAsync(process.argv);
