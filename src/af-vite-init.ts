@@ -140,9 +140,9 @@ async function initApp(name: string) {
       },
     },
     {
-      type: (prev) => (prev === "existing" ? null : "text"),
-      name: "articleTitle",
-      message: "Enter article title",
+      type: "text",
+      name: "articleId",
+      message: "Enter article ID",
       onState: (state) => {
         if (state.aborted) {
           process.nextTick(() => {
@@ -152,9 +152,9 @@ async function initApp(name: string) {
       },
     },
     {
-      type: "text",
-      name: "articleId",
-      message: "Enter article ID",
+      type: (prev) => (prev === "existing" ? null : "text"),
+      name: "articleTitle",
+      message: "Enter article title",
       onState: (state) => {
         if (state.aborted) {
           process.nextTick(() => {
@@ -187,6 +187,8 @@ async function initApp(name: string) {
   }
 
   let pkg = await importJson(`./package.json`, true);
+  pkg.name = result.articleId ?? "new-application";
+  pkg.version = "0.0.1";
   pkg.appframe = pkg.appframe ?? {};
   pkg.appframe.article = {
     id: result.articleId,
