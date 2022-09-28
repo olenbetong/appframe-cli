@@ -195,6 +195,16 @@ async function initApp(name: string) {
     hostname: result.hostname,
   };
 
+  let stageServer = result.newOrExisting === "new" ? "dev" : "stage";
+  let isPartner = result.hostname.startsWith("partner");
+
+  pkg.appframe.proxy = {
+    ...pkg.appframe.proxy,
+    hostname: isPartner
+      ? `${stageServer}.partner.obet.no`
+      : `${stageServer}.obet.no`,
+  };
+
   await writeFile(
     getProjectFile(`./package.json`),
     JSON.stringify(pkg, null, 2)
