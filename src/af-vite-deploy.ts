@@ -222,18 +222,38 @@ function Deployer() {
 
         let manifest = await importJson(`./dist/manifest.json`, true);
         let entry = manifest["index.html"];
+        let prefetchSet = new Set<string>();
+
+        for (let { file } of Object.values<any>(manifest)) {
+          if (file && file !== entry.file && file.endsWith(".min.js")) {
+            prefetchSet.add(file);
+          }
+        }
+
         let html = `<script src="${entry.file.replace(
           "file/article",
           `/file/article`
         )}" type="module"></script>`;
+
         if (entry.imports) {
           for (let name of entry.imports) {
             let chunk = manifest[name];
-            html += `\n<link type="modulepreload" href= src="${chunk.file.replace(
+            html += `\n<link rel="modulepreload" href="${chunk.file.replace(
               "file/article",
               `/file/article`
             )}">`;
+
+            if (prefetchSet.has(chunk.file)) {
+              prefetchSet.delete(chunk.file);
+            }
           }
+        }
+
+        for (let file of prefetchSet.values()) {
+          html += `\n<link rel="prefetch" href="${file.replace(
+            "file/article",
+            "/file/article"
+          )}">`;
         }
 
         await blockHandler.update({
