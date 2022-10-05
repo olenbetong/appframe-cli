@@ -1,4 +1,3 @@
-import chalk from "chalk";
 import dotenv from "dotenv";
 import { Text, render, useApp } from "ink";
 import fs from "node:fs/promises";
@@ -8,17 +7,9 @@ import * as af from "@olenbetong/appframe-data";
 import { Client, setDefaultClient } from "@olenbetong/appframe-data";
 
 import { importJson } from "./lib/importJson.js";
+import chalk from "chalk";
 
 dotenv.config();
-
-async function exists(path: string | URL) {
-  try {
-    await fs.stat(path);
-    return true;
-  } catch (error) {
-    return false;
-  }
-}
 
 const appPackageJson = await importJson("./package.json", true);
 const { appframe } = appPackageJson;
@@ -62,67 +53,24 @@ const procRemovePreviousBuild = new af.ProcedureAPI<any, any>({
   parameters: [{ name: "HostName" }, { name: "ArticleID" }],
 });
 
-function shouldFileBeExcluded(file: string) {
-  let exclude =
-    file.includes(".chunk") ||
-    file.endsWith(".map") ||
-    file.endsWith("LICENSE") ||
-    file.endsWith("LICENSE.txt");
-
-  let isMain = file.startsWith("main") || file.startsWith("vendors-main");
-
-  if (isMain && !file.endsWith(".map")) {
-    exclude = false;
-  }
-
-  return exclude;
-}
-
-let scriptPath: string;
-let stylePath: string;
+let scriptPath: string = `file://${process.cwd()}/dist/file/article/script/${
+  appframe.article?.id ?? appframe.article
+}/`;
+let stylePath: string = `file://${process.cwd()}/dist/file/article/style/${
+  appframe.article?.id ?? appframe.article
+}/`;
 let styles: string[] = [];
-let scripts: string[] = [];
-let vitePath = new URL(`file://${process.cwd()}/dist/assets/`);
-let isVite =
-  appPackageJson.devDependencies["vite"] || appPackageJson.dependencies["vite"];
+let scripts: string[] = await fs.readdir(new URL(scriptPath));
+let manifest = await importJson(`./dist/manifest.json`, true);
 
-if (isVite) {
-  console.log(chalk.blue("Using Vite configuration"));
-
-  scriptPath = `file://${process.cwd()}/dist/file/article/script/${
-    appframe.article?.id ?? appframe.article
-  }/`;
-  stylePath = vitePath.toString();
-
-  if (await exists(vitePath)) {
-    let files = await fs.readdir(vitePath);
-    styles = files.filter(
-      (file) => file.endsWith(".css") || file.endsWith(".css.map")
-    );
-  }
-  scripts = await fs.readdir(new URL(scriptPath));
-} else {
-  console.log(chalk.blue("Using CRA configuration"));
-
-  scriptPath = `file://${process.cwd()}/build/file/article/script/${
-    appframe.article?.id ?? appframe.article
-  }/`;
-  stylePath = `file://${process.cwd()}/build/file/article/style/${
-    appframe.article?.id ?? appframe.article
-  }/`;
-
-  // Separate try/catch blocks, since there might not be a style folder,
-  // which is not a problem.
-  try {
-    styles = await fs.readdir(new URL(stylePath));
-  } catch (error) {
-    console.log(chalk.red((error as Error).message));
-  }
-  try {
-    scripts = await fs.readdir(new URL(scriptPath));
-  } catch (error) {
-    console.log(chalk.red((error as Error).message));
-  }
+// Not every application generates CSS files. Can safely ignore errors
+try {
+  let files = await fs.readdir(new URL(stylePath));
+  styles = files.filter(
+    (file) => file.endsWith(".css") || file.endsWith(".css.map")
+  );
+} catch (error) {
+  console.error(chalk.red((error as any).message));
 }
 
 async function getFileContents(path: string, file: string) {
@@ -165,7 +113,7 @@ function Deployer() {
           ArticleID: articleId,
           HostName: articleHost,
           ID: file,
-          Exclude: shouldFileBeExcluded(file),
+          Exclude: manifest["index.html"]?.["css"]?.includes(file),
           Style: await getFileContents(stylePath, file),
         };
 
@@ -188,7 +136,7 @@ function Deployer() {
           ArticleID: articleId,
           HostName: articleHost,
           ID: file,
-          Exclude: isVite ? true : shouldFileBeExcluded(file),
+          Exclude: true,
           Script: await getFileContents(scriptPath, file),
         };
 
@@ -204,65 +152,64 @@ function Deployer() {
         setScriptDone((d) => d + 1);
       }
 
-      if (isVite) {
-        let blockHandler = dsArticlesBlocks.dataHandler;
-        let blocks = (await blockHandler.retrieve({
-          whereClause: `[HostName] = '${articleHost}' AND [ArticleID] = '${articleId}' AND [ID] = 'ViteScripts'`,
-        })) as any[];
-        let block;
-        if (blocks.length === 0) {
-          block = await blockHandler.create({
-            HostName: articleHost,
-            ArticleId: articleId,
-            ID: "ViteScripts",
-          });
-        } else {
-          block = blocks[0];
-        }
-
-        let manifest = await importJson(`./dist/manifest.json`, true);
-        let entry = manifest["index.html"];
-        let prefetchSet = new Set<string>();
-
-        for (let { file } of Object.values<any>(manifest)) {
-          if (file && file !== entry.file && file.endsWith(".min.js")) {
-            prefetchSet.add(file);
-          }
-        }
-
-        let html = `<script src="${entry.file.replace(
-          "file/article",
-          `/file/article`
-        )}" type="module"></script>`;
-
-        if (entry.imports) {
-          for (let name of entry.imports) {
-            let chunk = manifest[name];
-            html += `\n<link rel="modulepreload" href="${chunk.file.replace(
-              "file/article",
-              `/file/article`
-            )}">`;
-
-            if (prefetchSet.has(chunk.file)) {
-              prefetchSet.delete(chunk.file);
-            }
-          }
-        }
-
-        for (let file of prefetchSet.values()) {
-          html += `\n<link rel="prefetch" href="${file.replace(
-            "file/article",
-            "/file/article"
-          )}">`;
-        }
-
-        await blockHandler.update({
-          PrimKey: block.PrimKey,
-          HtmlContent: html,
+      let blockHandler = dsArticlesBlocks.dataHandler;
+      let blocks = (await blockHandler.retrieve({
+        whereClause: `[HostName] = '${articleHost}' AND [ArticleID] = '${articleId}' AND [ID] = 'ViteScripts'`,
+      })) as any[];
+      let block;
+      if (blocks.length === 0) {
+        block = await blockHandler.create({
+          HostName: articleHost,
+          ArticleId: articleId,
+          ID: "ViteScripts",
         });
-
-        setBlockDone(true);
+      } else {
+        block = blocks[0];
       }
+
+      let entry = manifest["index.html"];
+      let prefetchSet = new Set<string>();
+
+      for (let { file } of Object.values<any>(manifest)) {
+        if (file && file !== entry.file && file.endsWith(".min.js")) {
+          prefetchSet.add(file);
+        } else if (file?.endsWith(".css") && !entry?.css?.includes(file)) {
+          prefetchSet.add(file);
+        }
+      }
+
+      let html = `<script src="${entry.file.replace(
+        "file/article",
+        `/file/article`
+      )}" type="module"></script>`;
+
+      if (entry.imports) {
+        for (let name of entry.imports) {
+          let chunk = manifest[name];
+          html += `\n<link rel="modulepreload" href="${chunk.file.replace(
+            "file/article",
+            `/file/article`
+          )}">`;
+
+          if (prefetchSet.has(chunk.file)) {
+            prefetchSet.delete(chunk.file);
+          }
+        }
+      }
+
+      for (let file of prefetchSet.values()) {
+        html += `\n<link rel="prefetch" href="${file.replace(
+          "file/article",
+          "/file/article"
+        )}" as="${file.endsWith("css") ? "style" : "script"}>`;
+      }
+
+      await blockHandler.update({
+        PrimKey: block.PrimKey,
+        HtmlContent: html,
+      });
+
+      setBlockDone(true);
 
       exit();
     }
@@ -307,16 +254,15 @@ function Deployer() {
           : `  ⬛ Publishing scripts (${scriptDone}/${scriptCount})...`
         : "  ⬛ Publish scripts"
     ),
-    isVite &&
-      h(
-        Text,
-        {},
-        hasRemovedPrevious && scriptDone === scriptCount
-          ? blockDone
-            ? `  ✅ Update script block`
-            : `  ⬛ Updating HTLM script block...`
-          : "  ⬛ Update HTML script block"
-      )
+    h(
+      Text,
+      {},
+      hasRemovedPrevious && scriptDone === scriptCount
+        ? blockDone
+          ? `  ✅ Update script block`
+          : `  ⬛ Updating HTLM script block...`
+        : "  ⬛ Update HTML script block"
+    )
   );
 }
 
