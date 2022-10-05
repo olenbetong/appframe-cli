@@ -201,7 +201,7 @@ function Deployer() {
         html += `\n<link rel="prefetch" href="${file.replace(
           "file/article",
           "/file/article"
-        )}" as="${file.endsWith("css") ? "style" : "script"}>`;
+        )}" as="${file.endsWith("css") ? "style" : "script"}">`;
       }
 
       await blockHandler.update({
