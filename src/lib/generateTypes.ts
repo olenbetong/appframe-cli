@@ -99,24 +99,31 @@ function getProcedureTypes(
 
   for (let procedure of procedures) {
     let id = procedure.options.procedureId;
+    let params = procedure.getParameters();
     let typeName = id.startsWith("proc") ? id.substring(4) : id;
     typeName = typeName + "Params";
 
-    result.push(`export type ${typeName} = {`);
+    if (params.length > 0) {
+      result.push(`export type ${typeName} = {`);
 
-    for (let param of procedure.getParameters()) {
-      let type =
-        parameterOverrides[id]?.[param.name] ??
-        afTypeToTsType(param.type, true) + " | null";
-      let required = parameterOverrides[id]?.__required?.includes(param.name);
+      for (let param of params) {
+        let type =
+          parameterOverrides[id]?.[param.name] ??
+          afTypeToTsType(param.type, true) + " | null";
+        let required = parameterOverrides[id]?.__required?.includes(param.name);
 
+        result.push(
+          `\t${param.name}${required || param.required ? "" : "?"}: ${type};`
+        );
+      }
+
+      result.push("};");
+      result.push("");
+    } else {
       result.push(
-        `\t${param.name}${required || param.required ? "" : "?"}: ${type};`
+        `export type ${typeName} = null | undefined | Record<string, never>;\n`
       );
     }
-
-    result.push("};");
-    result.push("");
 
     globals.push(
       `${id}: Procedure<${typeName}, ${
