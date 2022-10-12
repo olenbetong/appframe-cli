@@ -8,7 +8,15 @@ import { importJson } from "./lib/importJson.js";
 
 const isInteractive = process.stdout.isTTY;
 
-async function applyTransactions(namespaceArg: string, options: ServerOption) {
+type ApplyOptions = ServerOption & {
+  preapprove?: string[];
+};
+
+function collect(value: string, previous: string[]) {
+  return previous.concat([value]);
+}
+
+async function applyTransactions(namespaceArg: string, options: ApplyOptions) {
   try {
     await getServerFromOptions(options);
     let server = new Server(options.server);
@@ -29,8 +37,19 @@ async function applyTransactions(namespaceArg: string, options: ServerOption) {
       );
       console.table(errors.map(({ Status, ...tran }) => tran));
     } else {
+      let isApproved = true;
+
+      transactions.forEach((transaction) => {
+        if (!options.preapprove?.includes(transaction.Name)) {
+          isApproved = false;
+        }
+      });
+
       console.table(transactions);
-      if (isInteractive) {
+
+      if (isApproved) {
+        console.log(chalk.blue("All transactions approved by CLI parameters."));
+      } else if (isInteractive) {
         let result = await prompts({
           type: "confirm",
           name: "confirmApply",
@@ -58,6 +77,12 @@ program
   .version(appPkg.version)
   .addServerOption()
   .addNamespaceArgument()
+  .option(
+    "-p, --preapprove <value>",
+    "names of updates that can be applied without prompting the user first",
+    collect,
+    []
+  )
   .action(applyTransactions);
 
 await program.parseAsync(process.argv);
