@@ -8,7 +8,10 @@ import { Server } from "./lib/Server.js";
 
 const cli = await importJson("../package.json");
 
-async function createApplicationRelease(type: string) {
+async function createApplicationRelease(
+  type: string,
+  options: { apply: boolean }
+) {
   let tempfile = crypto.randomBytes(8).readBigUInt64LE(0).toString(24) + ".tmp";
 
   try {
@@ -43,14 +46,14 @@ async function createApplicationRelease(type: string) {
       "gh run list -L 1 --json databaseId --jq '.[].databaseId'"
     );
     await spawnShellCommand("gh", ["run", "watch", githubId.trim()]);
-    await spawnShellCommand("af", [
-      "apply",
-      "-s",
-      "test.obet.no",
-      Namespace,
-      "-p",
-      `${hostname}/${id}`,
-    ]);
+
+    let applyParameters = ["apply", "-s", "test.obet.no", Namespace];
+
+    if (options.apply) {
+      applyParameters.push("-p", `${hostname}/${id}`);
+    }
+
+    await spawnShellCommand("af", applyParameters);
   } catch (error) {
     console.error(chalk.red((error as Error).message));
     try {
@@ -64,6 +67,11 @@ const program = new Command();
 program
   .version(cli.version)
   .argument("[type]", "version type passed to npm version", "patch")
+  .option(
+    "-a, --apply",
+    "automatically apply the application on production if there are no other updates in the same namespace",
+    false
+  )
   .action(createApplicationRelease);
 
 await program.parseAsync(process.argv);
