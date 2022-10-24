@@ -105,9 +105,10 @@ async function updateImports() {
     "@olenbetong/react-data-object-connect": "@olenbetong/appframe-react",
     "@olenbetong/utils": "@olenbetong/appframe-core",
     "@olenbetong/common": "@olenbetong/appframe-core",
-    "@olenbetong/value-toggle": "@olenbetong/ob-react",
-    "@olenbetong/date-navigator": "@olenbetong/ob-react",
-    "@olenbetong/color-card": "@olenbetong/ob-react",
+    "@olenbetong/value-toggle": "@olenbetong/synergi-react",
+    "@olenbetong/date-navigator": "@olenbetong/synergi-react",
+    "@olenbetong/color-card": "@olenbetong/synergi-react",
+    "@olenbetong/ob-react": "@olenbetong/synergi-react",
   };
 
   for await (let file of getFiles(srcDir.pathname)) {
@@ -211,12 +212,14 @@ async function updateProjectSetup() {
     ],
     { dependencies, updateIfExists: true }
   );
+
   if (
     dependencies.includes("@olenbetong/value-toggle") ||
     dependencies.includes("@olenbetong/date-navigator") ||
-    dependencies.includes("@olenbetong/color-card")
+    dependencies.includes("@olenbetong/color-card") ||
+    dependencies.includes("@olenbetong/ob-react")
   ) {
-    await installPackage("@olenbetong/ob-react", {
+    await installPackage("@olenbetong/synergi-react", {
       dependencies,
       updateIfExists: true,
     });
