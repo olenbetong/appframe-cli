@@ -28,6 +28,11 @@ async function applyTransactions(namespaceArg: string, options: ApplyOptions) {
     }
 
     let transactions = await server.getTransactions("apply", namespace);
+    let onHold = await server.dsTransactions.retrieve({
+      whereClause: `[Type] <> 98 AND [Namespace] = '${namespace}' AND [Status] = 4`,
+      maxRecords: -1,
+    });
+
     let errors = transactions.filter((r) => r.Status == 2);
     if (transactions.length === 0) {
       console.error(chalk.yellow("No transactions available to apply."));
@@ -50,6 +55,16 @@ async function applyTransactions(namespaceArg: string, options: ApplyOptions) {
       if (isApproved) {
         console.log(chalk.blue("All transactions approved by CLI parameters."));
       } else if (isInteractive) {
+        if (onHold.length > 0) {
+          console.log("");
+          console.log(
+            chalk.yellow(
+              `CAUTION! There are ${onHold.length} transactions on hold in namespace ${namespace}. Be certain that your updates don't depend on them before applying!`
+            )
+          );
+          console.log("");
+        }
+
         let result = await prompts({
           type: "confirm",
           name: "confirmApply",
