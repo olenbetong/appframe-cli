@@ -94,13 +94,13 @@ function Deployer() {
       let articleHost = appframe.article?.hostname ?? appframe.hostname;
       let articleId = appframe.article?.id ?? appframe.article;
 
-      await procCheckoutArticle.executeAsync({
+      await procCheckoutArticle.execute({
         HostName: articleHost,
         ArticleID: articleId,
         Forced: true,
       });
       setHasCheckedOut(true);
-      await procRemovePreviousBuild.executeAsync({
+      await procRemovePreviousBuild.execute({
         HostName: articleHost,
         ArticleID: articleId,
       });
@@ -121,11 +121,11 @@ function Deployer() {
           "whereClause",
           `[HostName] = '${articleHost}' AND [ArticleID] = '${articleId}' AND [ID] = '${file}'`
         );
-        await dsArticlesStyles.refreshDataSourceAsync();
+        await dsArticlesStyles.refreshDataSource();
         dsArticlesStyles.setCurrentIndex(
           dsArticlesStyles.getDataLength() > 0 ? 0 : -1
         );
-        await dsArticlesStyles.saveAsync(record);
+        await dsArticlesStyles.save(record);
         setStyleDone((d) => d + 1);
       }
 
@@ -144,11 +144,11 @@ function Deployer() {
           "whereClause",
           `[HostName] = '${articleHost}' AND [ArticleID] = '${articleId}' AND [ID] = '${file}'`
         );
-        await dsArticlesScripts.refreshDataSourceAsync();
+        await dsArticlesScripts.refreshDataSource();
         dsArticlesScripts.setCurrentIndex(
           dsArticlesScripts.getDataLength() > 0 ? 0 : -1
         );
-        await dsArticlesScripts.saveAsync(record);
+        await dsArticlesScripts.save(record);
         setScriptDone((d) => d + 1);
       }
 

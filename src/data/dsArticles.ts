@@ -1,9 +1,8 @@
-import { Client, generateApiDataObject } from "@olenbetong/appframe-data";
+import { Client, generateApiDataHandler } from "@olenbetong/appframe-data";
 
 export default (client: Client) =>
-  generateApiDataObject({
+  generateApiDataHandler({
     resource: "sviw_WebSiteCMS_Articles",
-    id: "dsArticles",
     fields: ["HostName", "ArticleId", "Namespace_ID", "Namespace"],
     client,
   });

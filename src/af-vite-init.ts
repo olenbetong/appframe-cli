@@ -7,6 +7,7 @@ import { importJson } from "./lib/importJson.js";
 import { rmdir, writeFile } from "node:fs/promises";
 import degit from "degit";
 import { execShellCommand } from "./lib/execShellCommand.js";
+import { SortOrder } from "@olenbetong/appframe-data";
 
 function getProjectFile(file: string) {
   return new URL(file, `file://${process.cwd()}/`);
@@ -84,7 +85,10 @@ async function initApp(name: string) {
 
   let server = new Server("dev.obet.no");
   await server.login();
-  await server.dsNamespaces.refreshDataSource();
+  let namespaces = await server.dsNamespaces.retrieve({
+    maxRecords: -1,
+    sortOrder: [{ GroupName: SortOrder.Asc }, { Name: SortOrder.Asc }],
+  });
 
   let questions: PromptObject<
     "hostname" | "newOrExisting" | "namespace" | "articleTitle" | "articleId"
@@ -127,7 +131,7 @@ async function initApp(name: string) {
       type: (prev) => (prev === "new" ? "autocomplete" : null),
       name: "namespace",
       message: "Namespace to create article in?",
-      choices: server.dsNamespaces.getData().map((r) => ({
+      choices: namespaces.map((r) => ({
         title: r.GroupName ? `${r.Name} (${r.GroupName})` : r.Name,
         value: r.ID,
       })),

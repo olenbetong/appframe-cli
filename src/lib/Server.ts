@@ -5,7 +5,7 @@ import prompts, { PromptObject } from "prompts";
 
 import {
   Client,
-  DataObject,
+  DataHandler,
   FileUploader,
   Procedure,
   ProcedureAPI,
@@ -46,17 +46,17 @@ export class Server {
   private username: string;
   private password: string;
   readonly client: Client;
-  readonly dsArticles: DataObject<any>;
-  readonly dsArticlesPermissions: DataObject<any>;
-  readonly dsArticlesVersions: DataObject<any>;
-  readonly dsBundles: DataObject<any>;
-  readonly dsBundlesProjects: DataObject<any>;
-  readonly dsDataResources: DataObject<any>;
-  readonly dsNamespaces: DataObject<any>;
-  readonly dsSiteScripts: DataObject<any>;
-  readonly dsSiteStyles: DataObject<any>;
-  readonly dsTemplates: DataObject<any>;
-  readonly dsTransactions: DataObject<any>;
+  readonly dsArticles: DataHandler<any>;
+  readonly dsArticlesPermissions: DataHandler<any>;
+  readonly dsArticlesVersions: DataHandler<any>;
+  readonly dsBundles: DataHandler<any>;
+  readonly dsBundlesProjects: DataHandler<any>;
+  readonly dsDataResources: DataHandler<any>;
+  readonly dsNamespaces: DataHandler<any>;
+  readonly dsSiteScripts: DataHandler<any>;
+  readonly dsSiteStyles: DataHandler<any>;
+  readonly dsTemplates: DataHandler<any>;
+  readonly dsTransactions: DataHandler<any>;
   readonly procApply: Procedure<any, any>;
   readonly procCheckoutArticle: ProcedureAPI<any, any>;
   readonly procCreateArticle: ProcedureAPI<any, any>;
@@ -161,8 +161,7 @@ export class Server {
 
   async addDataResource(id: string, name?: string) {
     this.logServerMessage(`Adding data resource (${id})...`);
-    this.dsDataResources.setCurrentIndex(-1);
-    await this.dsDataResources.save({
+    await this.dsDataResources.create({
       DBObjectID: id,
       Name: name,
     });
@@ -207,10 +206,10 @@ export class Server {
       for (let record of transactions) {
         if (record.Name !== name) {
           console.table(
-            this.dsTransactions.map((r) => ({
+            transactions.map((r) => ({
               Namespace: r.Namespace,
               Name: r.Name,
-              CreatedBy: r.CreatedByName,
+              CreatedBy: r.CreatedBy,
               LocalCreatedBy: r.LocalCreatedBy,
             }))
           );
@@ -238,8 +237,7 @@ export class Server {
     this.logServerMessage(
       `Adding role ${roleId} to article ${articleId}'s permissions...`
     );
-    this.dsArticlesPermissions.setCurrentIndex(-1);
-    await this.dsArticlesPermissions.save({
+    await this.dsArticlesPermissions.create({
       ArticleID: articleId,
       RoleID: roleId,
       HostName: hostname,
@@ -248,7 +246,7 @@ export class Server {
 
   async checkoutArticle(hostname: string, article: string) {
     this.logServerMessage(`Checking out article (${hostname}/${article})...`);
-    await this.procCheckoutArticle.executeAsync({
+    await this.procCheckoutArticle.execute({
       HostName: hostname,
       ArticleID: article,
       Forced: true,
@@ -271,7 +269,7 @@ export class Server {
     template: string;
   }) {
     this.logServerMessage(`Creating article ${hostname}/${id}...`);
-    await this.procCreateArticle.executeAsync({
+    await this.procCreateArticle.execute({
       HostName: hostname,
       ArticleID: id,
       HTMLContent: htmlContent,
@@ -285,22 +283,18 @@ export class Server {
   async deleteDataResource(id: string) {
     let { dsDataResources } = this;
     let resource = await this.getResourceDefinition(id);
-    dsDataResources.setParameter(
-      "whereClause",
-      `[DBObjectID] = '${resource.DBObjectID}'`
-    );
-    await dsDataResources.refreshDataSource();
+    let resourceRecord = await dsDataResources.retrieve({
+      whereClause: `[DBObjectID] = '${resource.DBObjectID}'`,
+      maxRecords: -1,
+    });
 
-    if (dsDataResources.getDataLength() === 1) {
-      dsDataResources.setCurrentIndex(0);
-      this.logServerMessage(
-        `Deleting '${dsDataResources.currentRow("DBObjectID")}'...`
-      );
-      await dsDataResources.deleteCurrentRow();
+    if (resourceRecord.length === 1) {
+      this.logServerMessage(`Deleting '${resourceRecord[0].DBObjectID}'...`);
+      await dsDataResources.destroy({ PrimKey: resourceRecord[0].PrimKey });
     } else {
       this.logServerMessage(
         chalk.red(
-          `Expected 1 resource to match '${id}'. Found ${dsDataResources.getDataLength()}`
+          `Expected 1 resource to match '${id}'. Found ${resourceRecord.length}`
         )
       );
       process.exit(1);
@@ -427,9 +421,9 @@ export class Server {
     this.logServerMessage(
       `Getting article information (${hostname}/${article})...`
     );
-    let articles = (await dsArticles.dataHandler.retrieve({
+    let articles = await dsArticles.retrieve({
       whereClause: `[HostName] = '${hostname}' AND [ArticleID] = '${article}'`,
-    })) as any[];
+    });
 
     return articles[0];
   }
@@ -437,22 +431,17 @@ export class Server {
   /**
    * Gets the bundle version for the given bundle with version 0
    *
-   * @param {string} bundle Name of the bundle
+   * @param {string} bundleName Name of the bundle
    */
-  async getBundle(bundle: string) {
+  async getBundle(bundleName: string) {
     let { dsBundles } = this;
-    this.logServerMessage(`Getting bundle (${bundle})...`);
-    dsBundles.setParameter(
-      "whereClause",
-      `[Name] = '${bundle}' AND [Version] = 0`
-    );
-    await dsBundles.refreshDataSource();
+    this.logServerMessage(`Getting bundle (${bundleName})...`);
+    let bundle = await dsBundles.retrieve({
+      maxRecords: 1,
+      whereClause: `[Name] = '${bundleName}' AND [Version] = 0`,
+    });
 
-    if (dsBundles.getDataLength() === 0) {
-      return undefined;
-    }
-
-    return dsBundles.getData(0);
+    return bundle[0];
   }
 
   /**
@@ -469,9 +458,10 @@ export class Server {
       filter = `[ID] = ${namespace}`;
     }
 
-    let namespaces = (await dsNamespaces.dataHandler.retrieve({
+    let namespaces = await dsNamespaces.retrieve({
       whereClause: filter,
-    })) as any[];
+      sortOrder: [{ GroupName: SortOrder.Asc, Name: SortOrder.Asc }],
+    });
 
     return namespaces[0];
   }
@@ -492,18 +482,16 @@ export class Server {
 
     if (!namespace && !options.all) {
       if (process.stdout.isTTY) {
-        dsNamespaces.setParameter("maxRecords", -1);
-        dsNamespaces.setParameter("sortOrder", [
-          { GroupName: SortOrder.Asc },
-          { Name: SortOrder.Asc },
-        ]);
-        await dsNamespaces.refreshDataSource();
+        let namespaces = await dsNamespaces.retrieve({
+          maxRecords: -1,
+          sortOrder: [{ GroupName: SortOrder.Asc }, { Name: SortOrder.Asc }],
+        });
 
         let question: PromptObject<"namespace"> = {
           type: "autocomplete",
           name: "namespace",
           message: "Select namespace",
-          choices: dsNamespaces.getData().map((r) => ({
+          choices: namespaces.map((r) => ({
             title: r.GroupName ? `${r.Name} (${r.GroupName})` : r.Name,
             value: r.Name,
           })),
@@ -657,13 +645,12 @@ export class Server {
     }
 
     let { dsTransactions } = this;
-    dsTransactions.setParameter(
-      "whereClause",
-      filter.filter(Boolean).join(" AND ")
-    );
-    await dsTransactions.refreshDataSource();
+    let transactions = await dsTransactions.retrieve({
+      whereClause: filter.filter(Boolean).join(" AND "),
+      maxRecords: -1,
+    });
 
-    return dsTransactions.map((r) => ({
+    return transactions.map((r) => ({
       Namespace: r.Namespace,
       Name: r.Name,
       CreatedBy: r.CreatedByName,
@@ -681,8 +668,7 @@ export class Server {
    */
   async createBundle(name: string, namespaceId: number) {
     this.logServerMessage(`Creating bundle (${name})...`);
-    this.dsBundlesProjects.setCurrentIndex(-1);
-    let newBundle = await this.dsBundlesProjects.save({
+    let newBundle = await this.dsBundlesProjects.create({
       Name: name,
       Namespace_ID: namespaceId,
     });
@@ -710,7 +696,7 @@ export class Server {
     description: string
   ) {
     this.logServerMessage("Publishing bundle...");
-    await this.procPublishBundle.executeAsync({
+    await this.procPublishBundle.execute({
       description,
       issueid: null,
       project_id: projectId,
@@ -731,31 +717,24 @@ export class Server {
     await this.checkoutArticle(hostname, articleId);
 
     let { dsArticlesVersions, dsTransactions } = this;
-    dsArticlesVersions.setParameter(
-      "whereClause",
-      `[HostName] = '${hostname}' AND [ArticleId] LIKE '${articleId}.___'`
-    );
-    await dsArticlesVersions.refreshDataSource();
-
-    dsTransactions.setParameter(
-      "whereClause",
-      `[Name] = '${hostname}/${articleId}'`
-    );
-    dsTransactions.setParameter("sortOrder", [{ Version: SortOrder.Desc }]);
-    await dsTransactions.refreshDataSource();
+    let articleVersions = await dsArticlesVersions.retrieve({
+      whereClause: `[HostName] = '${hostname}' AND [ArticleId] LIKE '${articleId}.___'`,
+      maxRecords: 1,
+      sortOrder: [{ ArticleId: SortOrder.Desc }],
+    });
+    let transactions = await dsTransactions.retrieve({
+      whereClause: `[Name] = '${hostname}/${articleId}'`,
+      maxRecords: -1,
+      sortOrder: [{ Version: SortOrder.Desc }],
+    });
 
     // When we restore dev server, we sometimes get a mismatch between article versions
     // and transaction versions. To be able to generate a transaction, we have to publish
     // the app until the latest article version is higher than the latest transaction
     // version.
-    if (
-      dsTransactions.getDataLength() > 0 &&
-      dsArticlesVersions.getDataLength() > 0
-    ) {
-      let transactionVersion = dsTransactions.getData(0, "Version");
-      let articleVersion = Number(
-        dsArticlesVersions.getData(0, "ArticleId").split(".")[1]
-      );
+    if (transactions.length > 0 && articleVersions.length > 0) {
+      let transactionVersion = transactions[0].Version;
+      let articleVersion = Number(articleVersions[0].ArticleId.split(".")[1]);
 
       this.logServerMessage(
         `Last published version: ${Number(articleVersion)}`
@@ -774,10 +753,11 @@ export class Server {
           Description: version,
         });
 
-        await dsArticlesVersions.refreshDataSource();
-        articleVersion = Number(
-          dsArticlesVersions.getData(0, "ArticleId").split(".")[1]
-        );
+        articleVersions = await dsArticlesVersions.retrieve({
+          whereClause: `[HostName] = '${hostname}' AND [ArticleId] LIKE '${articleId}.___'`,
+          maxRecords: 1,
+        });
+        articleVersion = Number(articleVersions[0].ArticleId.split(".")[1]);
       }
     } else {
       this.logServerMessage(`Publishing app (v${version})...`);
@@ -885,30 +865,34 @@ export class Server {
     contentTest?: string
   ) {
     this.logServerMessage(`Getting template '${hostname}/${templateId}'...`);
-    this.dsTemplates.setParameter(
-      "whereClause",
-      `[HostName] = '${hostname}' AND [Name] = '${templateId}'`
-    );
-    await this.dsTemplates.refreshDataSource();
+    let template = await this.dsTemplates.retrieve({
+      whereClause: `[HostName] = '${hostname}' AND [Name] = '${templateId}'`,
+      maxRecords: 1,
+    });
 
-    if (this.dsTemplates.getDataLength() === 0) {
-      this.logServerMessage(
-        `Template '${hostname}/${templateId}' not found. Creating...`
-      );
-      this.dsTemplates.setCurrentIndex(-1);
-      this.dsTemplates.currentRow("HostName", hostname);
-      this.dsTemplates.currentRow("Name", templateId);
-    }
-
+    let updates: any = {};
     if (content !== undefined) {
-      this.dsTemplates.currentRow("HTMLContent", content);
-    }
-    if (contentTest !== undefined) {
-      this.dsTemplates.currentRow("HTMLContentTest", contentTest);
+      updates.HTMLContent = content;
     }
 
-    this.logServerMessage(`Saving template '${hostname}/${templateId}'...`);
-    await this.dsTemplates.endEdit();
+    if (contentTest !== undefined) {
+      updates.HTMLContentTest = contentTest;
+    }
+
+    if (template.length === 0) {
+      this.logServerMessage(`Creating template '${hostname}/${templateId}'...`);
+      await this.dsTemplates.create({
+        HostName: hostname,
+        Name: templateId,
+        ...updates,
+      });
+    } else {
+      this.logServerMessage(`Updating template '${hostname}/${templateId}'...`);
+      await this.dsTemplates.update({
+        PrimKey: template[0].PrimKey,
+        ...updates,
+      });
+    }
   }
 
   /**
@@ -926,30 +910,41 @@ export class Server {
     contentTest?: string
   ) {
     this.logServerMessage(`Getting site script '${hostname}/${scriptId}'...`);
-    this.dsSiteScripts.setParameter(
-      "whereClause",
-      `[HostName] = '${hostname}' AND [Name] = '${scriptId}'`
-    );
-    await this.dsSiteScripts.refreshDataSource();
+    let siteScripts = await this.dsSiteScripts.retrieve({
+      whereClause: `[HostName] = '${hostname}' AND [Name] = '${scriptId}'`,
+      maxRecords: 1,
+    });
 
-    if (this.dsSiteScripts.getDataLength() === 0) {
+    let updates: any = {};
+    if (content !== undefined) {
+      updates.ScriptContent = content;
+    }
+
+    if (contentTest !== undefined) {
+      updates.ScriptContentTest = contentTest;
+    }
+
+    if (siteScripts.length === 0) {
       this.logServerMessage(
         `Site script '${hostname}/${scriptId}' not found. Creating...`
       );
-      this.dsSiteScripts.setCurrentIndex(-1);
-      this.dsSiteScripts.currentRow("HostName", hostname);
-      this.dsSiteScripts.currentRow("Name", scriptId);
+      this.logServerMessage(
+        `Creating site script '${hostname}/${scriptId}'...`
+      );
+      await this.dsSiteScripts.create({
+        HostName: hostname,
+        Name: scriptId,
+        ...updates,
+      });
+    } else {
+      this.logServerMessage(
+        `Updating site script '${hostname}/${scriptId}'...`
+      );
+      await this.dsSiteScripts.update({
+        PrimKey: siteScripts[0].PrimKey,
+        ...updates,
+      });
     }
-
-    if (content !== undefined) {
-      this.dsSiteScripts.currentRow("ScriptContent", content);
-    }
-    if (contentTest !== undefined) {
-      this.dsSiteScripts.currentRow("ScriptContentTest", contentTest);
-    }
-
-    this.logServerMessage(`Saving site script '${hostname}/${scriptId}'...`);
-    await this.dsSiteScripts.endEdit();
   }
 
   /**
@@ -967,30 +962,34 @@ export class Server {
     contentTest?: string
   ) {
     this.logServerMessage(`Getting site style '${hostname}/${styleId}'...`);
-    this.dsSiteStyles.setParameter(
-      "whereClause",
-      `[HostName] = '${hostname}' AND [Name] = '${styleId}'`
-    );
-    await this.dsSiteStyles.refreshDataSource();
+    let siteStyle = await this.dsSiteStyles.retrieve({
+      whereClause: `[HostName] = '${hostname}' AND [Name] = '${styleId}'`,
+      maxRecords: 1,
+    });
 
-    if (this.dsSiteStyles.getDataLength() === 0) {
-      this.logServerMessage(
-        `Site style '${hostname}/${styleId}' not found. Creating...`
-      );
-      this.dsSiteStyles.setCurrentIndex(-1);
-      this.dsSiteStyles.currentRow("HostName", hostname);
-      this.dsSiteStyles.currentRow("Name", styleId);
-    }
-
+    let updates: any = {};
     if (content !== undefined) {
-      this.dsSiteStyles.currentRow("StyleContent", content);
-    }
-    if (contentTest !== undefined) {
-      this.dsSiteStyles.currentRow("StyleContentTest", contentTest);
+      updates.StyleContent = content;
     }
 
-    this.logServerMessage(`Saving site style '${hostname}/${styleId}'...`);
-    await this.dsSiteStyles.endEdit();
+    if (contentTest !== undefined) {
+      updates.StyleContentTest = contentTest;
+    }
+
+    if (siteStyle.length === 0) {
+      this.logServerMessage(`Creating site style '${hostname}/${styleId}'...`);
+      await this.dsSiteStyles.create({
+        HostName: hostname,
+        Name: styleId,
+        ...updates,
+      });
+    } else {
+      this.logServerMessage(`Updating site style '${hostname}/${styleId}'...`);
+      await this.dsSiteStyles.update({
+        PrimKey: siteStyle[0].PrimKey,
+        ...updates,
+      });
+    }
   }
 
   /**

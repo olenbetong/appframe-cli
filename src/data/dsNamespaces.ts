@@ -1,13 +1,9 @@
-import { Client, generateApiDataObject } from "@olenbetong/appframe-data";
+import { Client, generateApiDataHandler } from "@olenbetong/appframe-data";
 
 export default (client: Client) =>
-  generateApiDataObject({
+  generateApiDataHandler({
     client,
     resource: "sviw_Deploy_NamespacesWithGroupNames",
-    id: "dsSomeDataObjectID",
-    allowUpdate: false,
-    allowInsert: false,
-    allowDelete: false,
     fields: [
       {
         name: "PrimKey",
@@ -34,8 +30,4 @@ export default (client: Client) =>
         hasDefault: false,
       },
     ],
-    parameters: {
-      maxRecords: -1,
-      sort: [{ GroupName: "asc", Name: "asc" }],
-    },
   });

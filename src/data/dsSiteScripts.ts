@@ -1,12 +1,9 @@
-import { Client, generateApiDataObject } from "@olenbetong/appframe-data";
+import { Client, generateApiDataHandler } from "@olenbetong/appframe-data";
 
 export default (client: Client) =>
-  generateApiDataObject({
+  generateApiDataHandler({
     client,
     resource: "stbv_WebSiteCMS_Scripts",
-    id: "dsSomeDataObjectID",
-    allowInsert: true,
-    allowUpdate: true,
     fields: [
       {
         name: "PrimKey",
@@ -145,7 +142,4 @@ export default (client: Client) =>
         hasDefault: false,
       },
     ],
-    parameters: {
-      maxRecords: 50,
-    },
   });

@@ -1,13 +1,9 @@
-import { Client, generateApiDataObject } from "@olenbetong/appframe-data";
+import { Client, generateApiDataHandler } from "@olenbetong/appframe-data";
 
 export default (client: Client) =>
-  generateApiDataObject({
+  generateApiDataHandler({
     client,
     resource: "stbv_WebSiteCMS_ArticlesPermissions",
-    id: "dsArticlesPermissions",
-    allowInsert: true,
-    allowUpdate: true,
-    allowDelete: true,
     fields: [
       {
         name: "PrimKey",
@@ -42,7 +38,4 @@ export default (client: Client) =>
         type: "number",
       },
     ],
-    parameters: {
-      maxRecords: -1,
-    },
   });

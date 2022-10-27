@@ -1,11 +1,9 @@
-import { Client, generateApiDataObject } from "@olenbetong/appframe-data";
+import { Client, generateApiDataHandler } from "@olenbetong/appframe-data";
 
 export default (client: Client) =>
-  generateApiDataObject({
+  generateApiDataHandler({
     client,
     resource: "stbv_Bundle_Projects",
-    allowInsert: true,
-    id: "dsBundlesProjects",
     fields: [
       {
         name: "Name",

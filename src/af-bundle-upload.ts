@@ -46,15 +46,12 @@ async function prepareBundle(pkgName: string, options: { bundle: string }) {
     let bundle = await server.getBundle(options.bundle ?? name);
 
     if (!bundle) {
-      server.dsNamespaces.setParameter("maxRecords", -1);
-      server.dsNamespaces.setParameter("sortOrder", [
-        { GroupName: SortOrder.Asc },
-        { Name: SortOrder.Asc },
-      ]);
-
       console.log("Bundle not found. Select a name to create it.");
 
-      await server.dsNamespaces.refreshDataSource();
+      let namespaces = await server.dsNamespaces.retrieve({
+        maxRecords: -1,
+        sortOrder: [{ GroupName: SortOrder.Asc }, { Name: SortOrder.Asc }],
+      });
 
       let question: PromptObject<"bundleName" | "namespace">[] = [
         {
@@ -74,7 +71,7 @@ async function prepareBundle(pkgName: string, options: { bundle: string }) {
           type: "autocomplete",
           name: "namespace",
           message: "Select namespace",
-          choices: server.dsNamespaces.getData().map((r) => ({
+          choices: namespaces.map((r) => ({
             title: r.GroupName ? `${r.Name} (${r.GroupName})` : r.Name,
             value: r.ID,
           })),

@@ -1,13 +1,9 @@
-import { Client, generateApiDataObject } from "@olenbetong/appframe-data";
+import { Client, generateApiDataHandler } from "@olenbetong/appframe-data";
 
 export default (client: Client) =>
-  generateApiDataObject({
+  generateApiDataHandler({
     client,
     resource: "sviw_Deploy_Transactions",
-    id: "dsTransactions",
-    parameters: {
-      maxRecords: -1,
-    },
     fields: [
       "ID",
       "Name",
