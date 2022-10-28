@@ -756,6 +756,7 @@ export class Server {
         articleVersions = await dsArticlesVersions.retrieve({
           whereClause: `[HostName] = '${hostname}' AND [ArticleId] LIKE '${articleId}.___'`,
           maxRecords: 1,
+          sortOrder: [{ ArticleId: SortOrder.Desc }],
         });
         articleVersion = Number(articleVersions[0].ArticleId.split(".")[1]);
       }
