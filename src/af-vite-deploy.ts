@@ -19,28 +19,45 @@ const client = new Client(appframe.deploy?.hostname ?? appframe.devHostname);
 await client.login(username ?? "", password ?? "");
 setDefaultClient(client);
 
-const dsArticlesBlocks = af.generateApiDataObject({
-  id: "dsArticlesBlocks",
+type ArticleBlockRecord = {
+  PrimKey: string;
+  HtmlContent: string;
+  HostName: string;
+  ArticleId: string;
+  ID: string;
+};
+
+const dsArticlesBlocks = af.generateApiDataHandler<ArticleBlockRecord>({
   resource: "stbv_WebSiteCMS_HtmlBlocks",
   fields: ["PrimKey", "HostName", "ArticleId", "ID", "HtmlContent"],
-  allowInsert: true,
-  allowUpdate: true,
 });
 
-const dsArticlesScripts = af.generateApiDataObject({
-  id: "dsArticlesScripts",
+type ArticleScriptRecord = {
+  PrimKey: string;
+  Script: string;
+  Exclude: boolean;
+  ID: string;
+  HostName: string;
+  ArticleID: string;
+};
+
+const dsArticlesScripts = af.generateApiDataHandler<ArticleScriptRecord>({
   resource: "stbv_WebSiteCMS_ArticlesScripts",
   fields: ["PrimKey", "Script", "Exclude", "ID", "HostName", "ArticleID"],
-  allowInsert: true,
-  allowUpdate: true,
 });
 
-const dsArticlesStyles = af.generateApiDataObject({
-  id: "dsArticlesStyles",
+type ArticleStyleRecord = {
+  PrimKey: string;
+  Style: string;
+  Exclude: boolean;
+  ID: string;
+  HostName: string;
+  ArticleID: string;
+};
+
+const dsArticlesStyles = af.generateApiDataHandler<ArticleStyleRecord>({
   resource: "stbv_WebSiteCMS_ArticlesStyles",
   fields: ["PrimKey", "Style", "Exclude", "ID", "HostName", "ArticleID"],
-  allowInsert: true,
-  allowUpdate: true,
 });
 
 const procCheckoutArticle = new af.ProcedureAPI<any, any>({
@@ -109,7 +126,7 @@ function Deployer() {
       // Publish styles
       setStyleCount(styles.length);
       for (let file of styles) {
-        let record = {
+        let record: Partial<ArticleStyleRecord> = {
           ArticleID: articleId,
           HostName: articleHost,
           ID: file,
@@ -117,52 +134,60 @@ function Deployer() {
           Style: await getFileContents(stylePath, file),
         };
 
-        dsArticlesStyles.setParameter(
-          "whereClause",
-          `[HostName] = '${articleHost}' AND [ArticleID] = '${articleId}' AND [ID] = '${file}'`
-        );
-        await dsArticlesStyles.refreshDataSource();
-        dsArticlesStyles.setCurrentIndex(
-          dsArticlesStyles.getDataLength() > 0 ? 0 : -1
-        );
-        await dsArticlesStyles.save(record);
+        let current = await dsArticlesStyles.retrieve<ArticleStyleRecord>({
+          whereClause: `[HostName] = '${articleHost}' AND [ArticleID] = '${articleId}' AND [ID] = '${file}'`,
+        });
+        if (current.length > 0) {
+          await dsArticlesStyles.update({
+            PrimKey: current[0].PrimKey,
+            Exclude: record.Exclude,
+            Style: record.Style,
+          });
+        } else {
+          await dsArticlesStyles.create(record);
+        }
+
         setStyleDone((d) => d + 1);
       }
 
       // Publish scripts
       setScriptCount(scripts.length);
       for (let file of scripts) {
-        let record = {
-          ArticleID: articleId,
-          HostName: articleHost,
-          ID: file,
-          Exclude: true,
-          Script: await getFileContents(scriptPath, file),
-        };
+        let scriptContent = await getFileContents(scriptPath, file);
+        let current = await dsArticlesScripts.retrieve<ArticleScriptRecord>({
+          whereClause: `[HostName] = '${articleHost}' AND [ArticleID] = '${articleId}' AND [ID] = '${file}'`,
+        });
 
-        dsArticlesScripts.setParameter(
-          "whereClause",
-          `[HostName] = '${articleHost}' AND [ArticleID] = '${articleId}' AND [ID] = '${file}'`
-        );
-        await dsArticlesScripts.refreshDataSource();
-        dsArticlesScripts.setCurrentIndex(
-          dsArticlesScripts.getDataLength() > 0 ? 0 : -1
-        );
-        await dsArticlesScripts.save(record);
+        if (current.length > 0) {
+          await dsArticlesScripts.update({
+            PrimKey: current[0].PrimKey,
+            Script: scriptContent,
+            Exclude: true,
+          });
+        } else {
+          await dsArticlesScripts.create({
+            ArticleID: articleId,
+            HostName: articleHost,
+            ID: file,
+            Exclude: true,
+            Script: scriptContent,
+          });
+        }
+
         setScriptDone((d) => d + 1);
       }
 
-      let blockHandler = dsArticlesBlocks.dataHandler;
-      let blocks = (await blockHandler.retrieve({
+      let blockHandler = dsArticlesBlocks;
+      let blocks = await blockHandler.retrieve<ArticleBlockRecord>({
         whereClause: `[HostName] = '${articleHost}' AND [ArticleID] = '${articleId}' AND [ID] = 'ViteScripts'`,
-      })) as any[];
-      let block;
+      });
+      let block: ArticleBlockRecord;
       if (blocks.length === 0) {
-        block = await blockHandler.create({
+        block = (await blockHandler.create({
           HostName: articleHost,
           ArticleId: articleId,
           ID: "ViteScripts",
-        });
+        })) as ArticleBlockRecord;
       } else {
         block = blocks[0];
       }
@@ -178,7 +203,11 @@ function Deployer() {
         }
       }
 
-      let html = `<script src="${entry.file.replace(
+      let html = `
+<script>
+af?.common?.expose?.("af.article.version", "${appPackageJson.version}");
+</script>
+<script src="${entry.file.replace(
         "file/article",
         `/file/article`
       )}" type="module"></script>`;
