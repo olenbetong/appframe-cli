@@ -45,21 +45,37 @@ function getProcedureDefinition(
   for (let parameter of procDefinition.Parameters) {
     parameters.push({
       name: parameter.ParamName,
-      type: afTypeToTsType(parameter.DataType, "ts-proc"),
+      type: afTypeToTsType(parameter.DataType, "field"),
       hasDefault: parameter.has_default_value,
       required: !parameter.has_default_value && !parameter.is_nullable,
     });
   }
 
-  return `
-import { ProcedureAPI } from "@olenbetong/appframe-data";
+  let output = [`import { ProcedureAPI } from "@olenbetong/appframe-data";`];
+  let paramTypeName = "ProcParams";
 
-new ProcedureAPI({
+  if (options.types) {
+    let typeOutput = [`export type ${paramTypeName} = {`];
+    for (let parameter of procDefinition.Parameters) {
+      typeOutput.push(
+        `\t${parameter.ParamName}${
+          parameter.has_default_value || parameter.is_nullable ? "?" : ""
+        }: ${afTypeToTsType(parameter.DataType, "ts-proc")}`
+      );
+    }
+    typeOutput.push("};");
+    output.push(typeOutput.join("\n"));
+  }
+
+  output.push(`new ProcedureAPI${
+    options.types ? `<${paramTypeName}, unknown>` : ""
+  }({
   procedureId: "${name}",
   parameters: ${JSON.stringify(parameters, null, 2)},
-  timeout: 30
-});
-  `;
+  timeout: 30000
+});`);
+
+  return output.join("\n\n");
 }
 
 function getDataObjectDefinition(
