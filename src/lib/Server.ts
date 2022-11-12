@@ -742,7 +742,7 @@ export class Server {
         `Last transaction version: ${Number(transactionVersion)}`
       );
 
-      while (articleVersion <= transactionVersion) {
+      do {
         this.logServerMessage(`Publishing app (${version})...`);
 
         await this.procPublishArticle.execute({
@@ -758,7 +758,7 @@ export class Server {
           sortOrder: [{ ArticleId: SortOrder.Desc }],
         });
         articleVersion = Number(articleVersions[0].ArticleId.split(".")[1]);
-      }
+      } while (articleVersion <= transactionVersion);
     } else {
       this.logServerMessage(`Publishing app (v${version})...`);
 
