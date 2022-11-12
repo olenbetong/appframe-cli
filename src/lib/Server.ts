@@ -7,8 +7,7 @@ import {
   Client,
   DataHandler,
   FileUploader,
-  Procedure,
-  ProcedureAPI,
+  ProcedureBase,
   SortOrder,
 } from "@olenbetong/appframe-data";
 
@@ -57,16 +56,16 @@ export class Server {
   readonly dsSiteStyles: DataHandler<any>;
   readonly dsTemplates: DataHandler<any>;
   readonly dsTransactions: DataHandler<any>;
-  readonly procApply: Procedure<any, any>;
-  readonly procCheckoutArticle: ProcedureAPI<any, any>;
-  readonly procCreateArticle: ProcedureAPI<any, any>;
-  readonly procCreateFirstBundleVersion: ProcedureAPI<any, any>;
-  readonly procCopyDataSourcesFromDev: ProcedureAPI<any, any>;
-  readonly procDeploy: Procedure<any, any>;
-  readonly procGenerate: Procedure<any, any>;
-  readonly procPublishArticle: ProcedureAPI<any, any>;
-  readonly procPublishBundle: Procedure<any, any>;
-  readonly procPublishWebAsset: ProcedureAPI<any, any>;
+  readonly procApply: ProcedureBase<any, any>;
+  readonly procCheckoutArticle: ProcedureBase<any, any>;
+  readonly procCreateArticle: ProcedureBase<any, any>;
+  readonly procCreateFirstBundleVersion: ProcedureBase<any, any>;
+  readonly procCopyDataSourcesFromDev: ProcedureBase<any, any>;
+  readonly procDeploy: ProcedureBase<any, any>;
+  readonly procGenerate: ProcedureBase<any, any>;
+  readonly procPublishArticle: ProcedureBase<any, any>;
+  readonly procPublishBundle: ProcedureBase<any, any>;
+  readonly procPublishWebAsset: ProcedureBase<any, any>;
 
   /**
    * Creates a server instance. If username or password is not provided, will attempt to look for

@@ -33,10 +33,7 @@ function getDataObjectTypes(
   let result = [];
   let globals = [];
   let dataObjects = Object.values(
-    (globalThis.af.article.dataObjects ?? {}) as Record<
-      string,
-      DataObject<unknown>
-    >
+    (globalThis.af.article.dataObjects ?? {}) as Record<string, DataObject<any>>
   ).sort((p1, p2) => (p1.getDataSourceId() >= p2.getDataSourceId() ? 1 : -1));
 
   for (let dataObject of dataObjects) {
