@@ -1,12 +1,5 @@
 import chalk from "chalk";
-import {
-  access,
-  copyFile,
-  mkdir,
-  readFile,
-  readdir,
-  writeFile,
-} from "node:fs/promises";
+import { access, copyFile, mkdir, readdir, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import prettier from "prettier";
 
@@ -176,12 +169,11 @@ async function upgradePackageConfig(pkg: any) {
   pkg.appframe.deploy = pkg.appframe.deploy ?? {
     hostname: pkg.appframe.devHostname ?? "dev.obet.no",
   };
-  delete pkg.appframe.devHostname;
+
   pkg.appframe.build = pkg.appframe.build ?? {
     externals: pkg.appframe.disableExternals ? false : true,
   };
-  delete pkg.appframe.disableExternals;
-  delete pkg.appframe.hostname;
+
   pkg.appframe.proxy = pkg.appframe.proxy ?? {
     hostname:
       pkg.appframe.proxyHostname ??
@@ -189,6 +181,10 @@ async function upgradePackageConfig(pkg: any) {
       "dev.obet.no",
     routes: pkg.appframe.proxyRoutes ?? [],
   };
+
+  delete pkg.appframe.devHostname;
+  delete pkg.appframe.disableExternals;
+  delete pkg.appframe.hostname;
   delete pkg.appframe.proxyHostname;
   delete pkg.appframe.proxyRoutes;
   delete pkg.appframe.usePreact;
@@ -197,6 +193,12 @@ async function upgradePackageConfig(pkg: any) {
     getProjectFile("./package.json"),
     JSON.stringify(pkg, null, 2)
   );
+}
+
+async function ensureProjectFolderExists(folderName: string) {
+  if (!(await fileExists(folderName, true))) {
+    await mkdir(getProjectFile(folderName), { recursive: true });
+  }
 }
 
 async function updateProjectSetup() {
@@ -209,27 +211,31 @@ async function updateProjectSetup() {
     ...Object.keys(pkg.devDependencies ?? {}),
   ];
 
-  await removePackageIfExists(
-    [
-      "@olenbetong/data-object",
-      "@olenbetong/react-data-object-connect",
-      "@olenbetong/utils",
-      "@olenbetong/common",
-      "@olenbetong/value-toggle",
-      "@olenbetong/date-navigator",
-      "@olenbetong/color-card",
-      "@olenbetong/ob-react",
-    ],
-    dependencies
-  );
-  await installPackage(
-    [
-      "@olenbetong/appframe-data",
-      "@olenbetong/appframe-core",
-      "@olenbetong/appframe-react",
-    ],
-    { dependencies, updateIfExists: true }
-  );
+  let packagesToRemove: string[] = [
+    "@olenbetong/data-object",
+    "@olenbetong/react-data-object-connect",
+    "@olenbetong/utils",
+    "@olenbetong/common",
+    "@olenbetong/value-toggle",
+    "@olenbetong/date-navigator",
+    "@olenbetong/color-card",
+    "@olenbetong/ob-react",
+    "@typescript-eslint/eslint-plugin",
+    "@typescript-eslint/parser",
+    "eslint-config-prettier",
+    "eslint-plugin-react",
+  ];
+
+  let packagesToInstallOrUpdate: string[] = [
+    "@olenbetong/appframe-data",
+    "@olenbetong/appframe-core",
+    "@olenbetong/appframe-react",
+  ];
+
+  let devPackagesToInstallOrUpdate: string[] = [
+    "eslint",
+    "@olenbetong/eslint-config",
+  ];
 
   if (
     dependencies.includes("@olenbetong/value-toggle") ||
@@ -237,39 +243,30 @@ async function updateProjectSetup() {
     dependencies.includes("@olenbetong/color-card") ||
     dependencies.includes("@olenbetong/ob-react")
   ) {
-    await installPackage("@olenbetong/synergi-react", {
-      dependencies,
-      updateIfExists: true,
-    });
-  }
-  await transformLegacyImports();
-
-  const { templates } = await import("../templates/templates.js");
-  if (!(await fileExists("./.github/workflows", true))) {
-    await mkdir(getProjectFile("./.github/workflows"), { recursive: true });
-  }
-  await updateTemplateFile(templates["workflow-build-and-deploy"]);
-  await updateTemplateFile(templates["workflow-publish-and-deploy"]);
-
-  if (!(await fileExists("./.vscode", true))) {
-    await mkdir(getProjectFile("./.vscode"));
+    packagesToInstallOrUpdate.push("@olenbetong/synergi-react");
   }
 
-  await updateTemplateFile(templates["vs-code-settings"]);
-  await removePackageIfExists(
-    [
-      "@typescript-eslint/eslint-plugin",
-      "@typescript-eslint/parser",
-      "eslint-config-prettier",
-      "eslint-plugin-react",
-    ],
-    dependencies
-  );
-  await installPackage(["eslint", "@olenbetong/eslint-config"], {
+  await removePackageIfExists(packagesToRemove, dependencies);
+  await installPackage(packagesToInstallOrUpdate, {
+    dependencies,
+    updateIfExists: true,
+  });
+  await installPackage(devPackagesToInstallOrUpdate, {
     isDev: true,
     updateIfExists: true,
     dependencies,
   });
+
+  await transformLegacyImports();
+
+  const { templates } = await import("../templates/templates.js");
+
+  await ensureProjectFolderExists("./.github/workflows");
+  await ensureProjectFolderExists("./.vscode");
+
+  await updateTemplateFile(templates["workflow-build-and-deploy"]);
+  await updateTemplateFile(templates["workflow-publish-and-deploy"]);
+  await updateTemplateFile(templates["vs-code-settings"]);
   await updateTemplateFile(templates["eslint-config"]);
 }
 
