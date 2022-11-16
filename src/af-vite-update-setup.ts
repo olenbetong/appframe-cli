@@ -3,12 +3,16 @@ import {
   access,
   copyFile,
   mkdir,
-  writeFile,
   readFile,
   readdir,
+  writeFile,
 } from "node:fs/promises";
 import { resolve } from "node:path";
+import prettier from "prettier";
 
+import babel, { Visitor } from "@babel/core";
+
+import { BabelTransformImportPlugin } from "./lib/BabelTransformImportPlugin.js";
 import { execShellCommand } from "./lib/execShellCommand.js";
 import { importJson } from "./lib/importJson.js";
 
@@ -97,39 +101,42 @@ async function* getFiles(dir: string): AsyncGenerator<string> {
   }
 }
 
-async function updateImports() {
-  console.log("Updating imports...");
+async function transformLegacyImports() {
   let srcDir = getProjectFile("./src/");
-  let replacements = {
-    "@olenbetong/data-object": "@olenbetong/appframe-data",
-    "@olenbetong/react-data-object-connect": "@olenbetong/appframe-react",
-    "@olenbetong/utils": "@olenbetong/appframe-core",
-    "@olenbetong/common": "@olenbetong/appframe-core",
-    "@olenbetong/value-toggle": "@olenbetong/synergi-react",
-    "@olenbetong/date-navigator": "@olenbetong/synergi-react",
-    "@olenbetong/color-card": "@olenbetong/synergi-react",
-    "@olenbetong/ob-react": "@olenbetong/synergi-react",
-  };
+  console.log("Transforming import declarations...");
 
   for await (let file of getFiles(srcDir.pathname)) {
-    let fileContent = await readFile(file, "utf-8");
-    for (let pkg of Object.keys(replacements)) {
-      fileContent = fileContent.replaceAll(
-        `"${pkg}"`,
-        `"${replacements[pkg as keyof typeof replacements]}"`
-      );
-    }
+    let extension = file.substring(file.lastIndexOf("."));
 
-    await writeFile(file, fileContent);
+    if ([".tsx", ".ts", ".jsx", ".js"].includes(extension)) {
+      let isModified = false;
+      let result = await babel.transformFileAsync(file, {
+        retainLines: true,
+        configFile: false,
+        babelrc: false,
+        plugins: [
+          ["@babel/syntax-typescript", { isTSX: true }],
+          BabelTransformImportPlugin({
+            onChange() {
+              isModified = true;
+            },
+          }),
+        ],
+      });
+
+      if (isModified && result?.code) {
+        let code = prettier.format(result.code, { parser: "typescript" });
+        await writeFile(file, code);
+      }
+    }
   }
 }
 
-async function updateProjectSetup() {
+async function upgradePackageConfig(pkg: any) {
   console.log("Configuring package.json...");
 
   let isVite = await fileExists("./vite.config.mjs", true);
 
-  const pkg = await importJson("./package.json", true);
   pkg.scripts.start = isVite
     ? "af vite generate-types && node ./server.mjs"
     : "af vite generate-types && react-scripts start";
@@ -186,6 +193,12 @@ async function updateProjectSetup() {
     getProjectFile("./package.json"),
     JSON.stringify(pkg, null, 2)
   );
+}
+
+async function updateProjectSetup() {
+  const pkg = await importJson("./package.json", true);
+
+  await upgradePackageConfig(pkg);
 
   let dependencies = [
     ...Object.keys(pkg.dependencies ?? {}),
@@ -201,6 +214,7 @@ async function updateProjectSetup() {
       "@olenbetong/value-toggle",
       "@olenbetong/date-navigator",
       "@olenbetong/color-card",
+      "@olenbetong/ob-react",
     ],
     dependencies
   );
@@ -224,7 +238,7 @@ async function updateProjectSetup() {
       updateIfExists: true,
     });
   }
-  await updateImports();
+  await transformLegacyImports();
 
   const { templates } = await import("../templates/templates.js");
   if (!(await fileExists("./.github/workflows", true))) {
