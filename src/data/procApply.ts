@@ -1,8 +1,9 @@
-import { Client, Procedure } from "@olenbetong/appframe-data";
+import { Client, ProcedureAPI } from "@olenbetong/appframe-data";
 
 export default (client: Client) =>
-  new Procedure({
+  new ProcedureAPI<{ BatchsSize?: number; Namespaces: string }, unknown>({
     client,
-    articleId: "af-updater",
-    procedureId: "procApply",
+    procedureId: "sstp_Deploy_Apply",
+    parameters: [{ name: "BatchsSize" }, { name: "Namespaces" }],
+    transaction: false,
   });

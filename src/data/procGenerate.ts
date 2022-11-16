@@ -1,8 +1,9 @@
-import { Client, Procedure } from "@olenbetong/appframe-data";
+import { Client, ProcedureAPI } from "@olenbetong/appframe-data";
 
 export default (client: Client) =>
-  new Procedure({
+  new ProcedureAPI<{ Namespace_ID?: Number }, unknown>({
     client,
-    articleId: "af-updater",
-    procedureId: "procGenerate",
+    procedureId: "sstp_Deploy_Generate",
+    parameters: [{ name: "Namespace_ID" }],
+    transaction: false,
   });
