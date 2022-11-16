@@ -72,9 +72,13 @@ async function installPackage(
     } else {
       console.log(`Adding '${pkg}'...`);
     }
-
-    await execShellCommand(`npm i ${isDev ? "-D " : ""}${pkg}@latest --force`);
   }
+
+  await execShellCommand(
+    `npm i ${isDev ? "-D " : ""}${packages
+      .map((pkg) => `${pkg}@latest`)
+      .join(" ")} --force`
+  );
 }
 
 type TemplateDef = {
