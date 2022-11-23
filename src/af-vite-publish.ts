@@ -3,6 +3,7 @@ import { importJson } from "./lib/importJson.js";
 import { Command } from "commander";
 import chalk from "chalk";
 import prompts, { PromptObject } from "prompts";
+import { execShellCommand } from "./lib/execShellCommand.js";
 
 type StageOperation = "download" | "apply" | "deploy" | "generate" | "publish";
 
@@ -96,10 +97,12 @@ async function publishFromDev(articleWithHost?: string, version?: string) {
   } else {
     try {
       const pkg = await importJson("./package.json", true);
+      const version = (await execShellCommand("git describe")).trim();
+
       config = {
         article: pkg.appframe.article?.id ?? pkg.appframe.artcle,
         hostname: pkg.appframe.article?.hostname ?? pkg.appframe.hostname,
-        version: "v" + pkg.version,
+        version,
       };
     } catch (error) {
       console.log(
