@@ -161,7 +161,7 @@ ${fieldTypes}}`;
 
   if (options.master && options.master.indexOf(":") > 0) {
     let [name, path] = options.master.split(":");
-    output += `import { ${name} } from "${path}";`;
+    output += `import { ${name} } from "${path}";\n\n`;
   }
 
   if (options.types) {
