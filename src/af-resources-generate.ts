@@ -215,9 +215,9 @@ ${fieldTypes}}`;
   output += `export const ${options.id} = ${api}({
   resource: "${name}",
   id: "${options.id}",${masterObject}${linkFields}
-  allowUpdate: ${options.permissions?.includes("U")},
-  allowInsert: ${options.permissions?.includes("I")},
-  allowDelete: ${options.permissions?.includes("D")},
+  allowUpdate: ${options.permissions?.includes("U") ?? false},
+  allowInsert: ${options.permissions?.includes("I") ?? false},
+  allowDelete: ${options.permissions?.includes("D") ?? false},
   fields: ${JSON.stringify(
     fields.map((f) => {
       f.type = afTypeToTsType(f.type, "field");
