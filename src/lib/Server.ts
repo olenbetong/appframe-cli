@@ -33,6 +33,8 @@ import {
   getTemplatesDataObject,
   getTransactionsDataObject,
   getCopyDatasourcesFromDevProcedure,
+  DataResourcesParametersRecord,
+  getDataResourcesParametersDataObject,
 } from "../data/index.js";
 
 config({ path: process.cwd() + "/.env" });
@@ -51,6 +53,7 @@ export class Server {
   readonly dsBundles: DataHandler<any>;
   readonly dsBundlesProjects: DataHandler<any>;
   readonly dsDataResources: DataHandler<any>;
+  readonly dsDataResourcesParameters: DataHandler<DataResourcesParametersRecord>;
   readonly dsNamespaces: DataHandler<any>;
   readonly dsSiteScripts: DataHandler<any>;
   readonly dsSiteStyles: DataHandler<any>;
@@ -87,6 +90,9 @@ export class Server {
     this.dsBundles = getBundlesDataObject(this.client);
     this.dsBundlesProjects = getBundlesProjectsDataObject(this.client);
     this.dsDataResources = getDataResourcesDataObject(this.client);
+    this.dsDataResourcesParameters = getDataResourcesParametersDataObject(
+      this.client
+    );
     this.dsNamespaces = getNamespacesDataObject(this.client);
     this.dsSiteScripts = getSiteScriptsDataObject(this.client);
     this.dsSiteStyles = getSiteStylesDataObject(this.client);

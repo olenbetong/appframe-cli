@@ -4,6 +4,10 @@ export { default as getArticlesVersionsDataObject } from "./dsArticlesVersions.j
 export { default as getBundlesDataObject } from "./dsBundles.js";
 export { default as getBundlesProjectsDataObject } from "./dsBundlesProjects.js";
 export { default as getDataResourcesDataObject } from "./dsDataResources.js";
+export {
+  default as getDataResourcesParametersDataObject,
+  DataResourcesParametersRecord,
+} from "./dsDataResourcesParameters.js";
 export { default as getNamespacesDataObject } from "./dsNamespaces.js";
 export { default as getSiteScriptsDataObject } from "./dsSiteScripts.js";
 export { default as getSiteStylesDataObject } from "./dsSiteStyles.js";
