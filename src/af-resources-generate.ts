@@ -266,7 +266,7 @@ async function getResourceDefinition(
   if (options.id) command += ` --id ${options.id}`;
   if (options.global) flags += "g";
   if (options.types) flags += "t";
-  if (flags) command += ` ${flags}`;
+  if (flags) command += ` -${flags}`;
   if (options.fields) command += ` --fields ${options.fields}`;
   if (options.maxRecords) command += ` --max-records ${options.maxRecords}`;
   if (options.sortOrder) command += ` --sort-order ${options.sortOrder}`;
