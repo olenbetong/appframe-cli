@@ -96,8 +96,13 @@ async function publishFromDev(articleWithHost?: string, version?: string) {
     }
   } else {
     try {
-      const pkg = await importJson("./package.json", true);
-      const version = (await execShellCommand("git describe")).trim();
+      let pkg = await importJson("./package.json", true);
+      let version: string;
+      try {
+        version = (await execShellCommand("git describe")).trim();
+      } catch (error) {
+        version = pkg.version;
+      }
 
       config = {
         article: pkg.appframe.article?.id ?? pkg.appframe.artcle,
@@ -110,8 +115,9 @@ async function publishFromDev(articleWithHost?: string, version?: string) {
           "Failed to load article config. Either run the command from a folder with a SynergiWeb application with appframe config in package.json, or provide an argument with hostname and article ID."
         )
       );
+      console.log(chalk.red((error as any).message));
 
-      process.exit(0);
+      process.exit(1);
     }
   }
 
