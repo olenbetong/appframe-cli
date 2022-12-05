@@ -55,14 +55,31 @@ function getProcedureDefinition(
   for (let parameter of procDefinition.Parameters) {
     parameters.push({
       name: parameter.ParamName,
-      type: afTypeToTsType(parameter.DataType, "field"),
+      type: afTypeToTsType(parameter.TypeName, "field"),
       hasDefault: parameter.has_default_value,
       required: !parameter.has_default_value && !parameter.is_nullable,
     });
   }
 
-  let output = [`import { ProcedureAPI } from "@olenbetong/appframe-data";`];
+  let output = [];
+  if (!options.global) {
+    output.push(`import { ProcedureAPI } from "@olenbetong/appframe-data";`);
+
+    if (options.expose) {
+      output.push(`import { expose } from "@olenbetong/appframe-core";`);
+    }
+
+    output.push("");
+  }
   let paramTypeName = "ProcParams";
+  let procName = "proc";
+  if (options.id) {
+    procName = options.id;
+    paramTypeName = `${options.id}Params`;
+    if (paramTypeName.startsWith("proc")) {
+      paramTypeName = paramTypeName.substring(4);
+    }
+  }
 
   if (options.types) {
     let typeOutput = [`export type ${paramTypeName} = {`];
@@ -70,22 +87,32 @@ function getProcedureDefinition(
       typeOutput.push(
         `\t${parameter.ParamName}${
           parameter.has_default_value || parameter.is_nullable ? "?" : ""
-        }: ${afTypeToTsType(parameter.DataType, "ts-proc")}`
+        }: ${afTypeToTsType(parameter.TypeName, "ts-proc")}`
       );
     }
     typeOutput.push("};");
     output.push(typeOutput.join("\n"));
+    output.push("");
   }
 
-  output.push(`new ProcedureAPI${
-    options.types ? `<${paramTypeName}, unknown>` : ""
-  }({
+  output.push(`export const ${procName} = new ${
+    options.global ? "af." : ""
+  }ProcedureAPI${options.types ? `<${paramTypeName}, unknown>` : ""}({
   procedureId: "${name}",
   parameters: ${JSON.stringify(parameters, null, 2)},
   timeout: 30000
 });`);
 
-  return output.join("\n\n");
+  if (options.expose) {
+    output.push("");
+    output.push(
+      `${
+        options.global ? "af.common." : ""
+      }expose("af.article.procedures", ${procName});`
+    );
+  }
+
+  return output.join("\n");
 }
 
 function getDataObjectDefinition(
@@ -287,7 +314,8 @@ async function getResourceDefinition(
   if (options.types) flags += "t";
   if (flags) command += ` -${flags}`;
   if (options.fields) command += ` --fields ${options.fields}`;
-  if (options.maxRecords) command += ` --max-records ${options.maxRecords}`;
+  if (options.maxRecords && definition.ObjectType !== "P")
+    command += ` --max-records ${options.maxRecords}`;
   if (options.sortOrder) command += ` --sort-order ${options.sortOrder}`;
   if (options.permissions) command += ` --permissions ${options.permissions}`;
   if (options.master) command += ` --master ${options.master}`;
