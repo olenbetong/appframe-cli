@@ -185,12 +185,16 @@ ${fieldTypes}}`;
   if (!options.global) {
     output += `import { generateApiDataObject${
       options.sortOrder ? ", SortOrder" : ""
+    }${
+      options.expose ? ", DataObject" : ""
     } } from "@olenbetong/appframe-data";`;
 
     if (options.expose) {
       output += `\nimport { expose } from "@olenbetong/appframe-core";`;
     }
     output += "\n\n";
+  } else if (options.expose && options.types) {
+    output += `import { DataObject } from "@olenbetong/appframe-data";\n\n`;
   }
 
   if (options.master && options.master.indexOf(":") > 0) {
@@ -274,9 +278,18 @@ ${fieldTypes}}`;
   if (options.expose) {
     let id = typeof options.expose === "string" ? options.expose : options.id;
     if (options.global) {
-      output += `\naf.common.expose("af.article.dataObjects.${id}", ${options.id});\n`;
+      output += `\naf.common.expose("af.article.dataObjects.${id}", ${options.id});\nwindow.${id} = ${options.id};\n`;
     } else {
-      output += `\nexpose("af.article.dataObjects.${id}", ${options.id});\n`;
+      output += `\nexpose("af.article.dataObjects.${id}", ${options.id});\nwindow.${id} = ${options.id};\n`;
+    }
+
+    if (options.types) {
+      output += `\ndeclare global {
+  var ${id}: DataObject<${typeName}>;
+  interface Window {
+    ${id}: DataObject<${typeName}>;
+  }
+}\n`;
     }
   }
 
