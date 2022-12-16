@@ -172,7 +172,6 @@ function getDataObjectDefinition(
   let api = "generateApiDataObject";
   let types = "";
   let typeName = `${options.id}Record`;
-  let sortOrder = "";
   let typeOverrides: Record<string, string> = {};
 
   if (options.overrides) {
@@ -237,34 +236,6 @@ ${fieldTypes}}`;
     output += types + "\n\n";
   }
 
-  if (options.sortOrder) {
-    let sorts = options.sortOrder.split(",");
-    let sortPrefix = options.global ? "af.data.SortOrder." : "SortOrder.";
-
-    if (sorts.length) {
-      sortOrder = sorts
-        .map((sort) => {
-          let [field, order = "asc"] = sort.split(":");
-          switch (order.toLocaleLowerCase()) {
-            case "asc":
-              order = "Asc";
-              break;
-            case "desc":
-              order = "Desc";
-              break;
-            case "ascnullslast":
-              order = "AscNullsLast";
-              break;
-            case "descnullsfirst":
-              order = "DescNullsFirst";
-              break;
-          }
-          return `{ ${field}: ${sortPrefix}${order} }`;
-        })
-        .join(", ");
-    }
-  }
-
   let masterObject = "";
   let linkFields = "";
 
@@ -301,20 +272,41 @@ ${fieldTypes}}`;
     `fields: ${JSON.stringify(fieldsOption, null, 2).split("\n").join("\n\t")}`
   );
 
-  let parametersOption: any = {
-    maxRecords: Number(options.maxRecords),
-  };
-  if (sortOrder) {
-    parametersOption.sortOrder = sortOrder;
+  let parametersOption: string[] = [`maxRecords: ${options.maxRecords}`];
+
+  if (options.sortOrder) {
+    let sorts = options.sortOrder.split(",");
+    let sortPrefix = options.global ? "af.data.SortOrder." : "SortOrder.";
+
+    let sortOrder = sorts
+      .map((sort) => {
+        let [field, order = "asc"] = sort.split(":");
+        switch (order.toLocaleLowerCase()) {
+          case "asc":
+            order = "Asc";
+            break;
+          case "desc":
+            order = "Desc";
+            break;
+          case "ascnullslast":
+            order = "AscNullsLast";
+            break;
+          case "descnullsfirst":
+            order = "DescNullsFirst";
+            break;
+        }
+        return `{ ${field}: ${sortPrefix}${order} }`;
+      })
+      .join(", ");
+
+    parametersOption.push(`sortOrder: [${sortOrder}]`);
   }
+
   if (options.distinct) {
-    parametersOption.distinctRows = true;
+    parametersOption.push(`distinctRows: true`);
   }
-  dsOptions.push(
-    `parameters: ${JSON.stringify(parametersOption, null, 2)
-      .split("\n")
-      .join("\n\t")}`
-  );
+
+  dsOptions.push(`parameters: {\n\t\t${parametersOption.join(",\n\t\t")}\n\t}`);
 
   output += `export const ${options.id} = ${api}({
   ${dsOptions.join(",\n\t")}
