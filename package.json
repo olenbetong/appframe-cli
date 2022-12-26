@@ -31,7 +31,7 @@
     "@babel/core": "^7.20.2",
     "@babel/plugin-syntax-typescript": "^7.20.0",
     "@babel/types": "^7.20.2",
-    "@olenbetong/appframe-data": "^0.6.5",
+    "@olenbetong/appframe-data": "^0.7.9",
     "chalk": "^5.1.2",
     "commander": "^9.4.1",
     "d3": "^7.6.1",
