@@ -262,7 +262,7 @@ ${fieldTypes}}`;
         let [thisField, masterField] = field.split(":");
         return `${thisField}: "${masterField ?? thisField}",`;
       })
-      .join("\n\t\t")}\n\t},`;
+      .join("\n\t\t")}\n\t}`;
 
     dsOptions.push(linkFields);
   }
