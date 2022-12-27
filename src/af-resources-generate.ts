@@ -333,9 +333,9 @@ ${fieldTypes}}`;
   if (options.expose) {
     let id = typeof options.expose === "string" ? options.expose : options.id;
     if (options.global) {
-      output += `\naf.common.expose("af.article.dataObjects.${id}", ${options.id});\n`;
+      output += `\naf.common.expose("af.article.dataObjects.${id}", ${options.id}, { overwrite: true });`;
     } else {
-      output += `\nexpose("af.article.dataObjects.${id}", ${options.id});\n`;
+      output += `\nexpose("af.article.dataObjects.${id}", ${options.id}, { overwrite: true });`;
     }
   }
 
