@@ -368,6 +368,7 @@ async function getResourceDefinition(
 
   let command: string[] = [`af resources generate ${resource}`];
   if (options.id) command.push(`--id ${options.id}`);
+  if (options.unique) command.push(`--unique ${options.unique}`);
   if (options.global) command.push("--global");
   if (options.types) command.push("--types");
   if (options.maxRecords && definition.ObjectType !== "P")
