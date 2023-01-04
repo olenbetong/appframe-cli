@@ -8,6 +8,7 @@ import { Client, setDefaultClient } from "@olenbetong/appframe-data";
 
 import { importJson } from "./lib/importJson.js";
 import chalk from "chalk";
+import { execShellCommand } from "./lib/execShellCommand.js";
 
 dotenv.config();
 
@@ -203,9 +204,16 @@ function Deployer() {
         }
       }
 
+      let version: string;
+      try {
+        version = (await execShellCommand("git describe")).trim();
+      } catch (error) {
+        version = appPackageJson.version;
+      }
+
       let html = `
 <script>
-af?.common?.expose?.("af.article.version", "${appPackageJson.version}");
+af?.common?.expose?.("af.article.version", "${version}");
 </script>
 <script src="${entry.file.replace(
         "file/article",
