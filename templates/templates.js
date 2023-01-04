@@ -48,6 +48,11 @@ export const templates = {
     source: "../templates/server.mjs.tpl",
     target: "./server.mjs",
   },
+  "prettier-config": {
+    title: "Prettier Config",
+    source: "../templates/prettierrc.tpl",
+    target: "./.prettierrc",
+  },
   "workflow-build-and-deploy": {
     title: "Github Workflow - Build and deploy",
     source: "../templates/github-workflows-build-and-deploy.yaml.tpl",

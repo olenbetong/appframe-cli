@@ -3,7 +3,7 @@ import { access, copyFile, mkdir, readdir, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import prettier from "prettier";
 
-import babel, { Visitor } from "@babel/core";
+import babel from "@babel/core";
 
 import { BabelTransformImportPlugin } from "./lib/BabelTransformImportPlugin.js";
 import { execShellCommand } from "./lib/execShellCommand.js";
@@ -39,39 +39,39 @@ async function removePackageIfExists(
     if (dependencies.includes(pkg)) {
       console.log(`Removing '${pkg}'...`);
       await execShellCommand(`npm rm ${pkg} --force`);
-    } else {
-      console.log(pkg, "not found");
     }
   }
 }
 
 async function installPackage(
   packages: string | string[],
-  {
-    isDev = false,
-    updateIfExists = false,
-    dependencies,
-  }: { isDev?: boolean; updateIfExists?: boolean; dependencies: string[] }
+  options: { isDev?: boolean; updateIfExists?: boolean; dependencies: string[] }
 ) {
+  let { isDev = false, updateIfExists = false, dependencies } = options;
   if (typeof packages === "string") {
     packages = [packages];
   }
 
-  for (let pkg of packages) {
-    if (dependencies.includes(pkg)) {
-      if (!updateIfExists) continue;
+  let toInstall = [];
 
+  for (let pkg of packages) {
+    let exists = dependencies.includes(pkg);
+    if (exists && updateIfExists) {
       console.log(`Updating '${pkg}'...`);
-    } else {
+      toInstall.push(pkg);
+    } else if (!exists) {
       console.log(`Adding '${pkg}'...`);
+      toInstall.push(pkg);
     }
   }
 
-  await execShellCommand(
-    `npm i ${isDev ? "-D " : ""}${packages
+  if (toInstall.length > 0) {
+    let cmd = `npm i ${isDev ? "-D " : ""}${toInstall
       .map((pkg) => `${pkg}@latest`)
-      .join(" ")} --force`
-  );
+      .join(" ")} --force`;
+
+    await execShellCommand(cmd);
+  }
 }
 
 type TemplateDef = {
@@ -234,6 +234,8 @@ async function updateProjectSetup() {
 
   let devPackagesToInstallOrUpdate: string[] = [
     "eslint",
+    "prettier",
+    "@trivago/prettier-plugin-sort-imports",
     "@olenbetong/eslint-config",
   ];
 
@@ -249,11 +251,11 @@ async function updateProjectSetup() {
   await removePackageIfExists(packagesToRemove, dependencies);
   await installPackage(packagesToInstallOrUpdate, {
     dependencies,
-    updateIfExists: true,
+    updateIfExists: false,
   });
   await installPackage(devPackagesToInstallOrUpdate, {
     isDev: true,
-    updateIfExists: true,
+    updateIfExists: false,
     dependencies,
   });
 
@@ -268,6 +270,7 @@ async function updateProjectSetup() {
   await updateTemplateFile(templates["workflow-publish-and-deploy"]);
   await updateTemplateFile(templates["vs-code-settings"]);
   await updateTemplateFile(templates["eslint-config"]);
+  await updateTemplateFile(templates["prettier-config"]);
 }
 
 updateProjectSetup().catch((error) => {
