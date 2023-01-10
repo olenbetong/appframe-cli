@@ -10,7 +10,7 @@ const cli = await importJson("../package.json");
 
 async function createApplicationRelease(
   type: string,
-  options: { apply: boolean }
+  options: { preid?: string; apply: boolean }
 ) {
   let tempfile = crypto.randomBytes(8).readBigUInt64LE(0).toString(24) + ".tmp";
 
@@ -27,12 +27,16 @@ async function createApplicationRelease(
     let { appframe } = appPkg;
     let { hostname, id } = appframe.article;
     let server = new Server("dev.obet.no");
+
     await server.login();
+
     let { Namespace } = await server.getArticle(hostname, id);
     let tempnotes =
       "#### 🚀 Enhancements\n- New features and improvements\n\n#### 🐛 Bugfix\n- Bug fixes\n\n#### 🏠 Internal changes\n- Changes that don't affect the user";
+
     await writeFile(tempfile, tempnotes, { encoding: "utf-8" });
     await spawnShellCommand("nano", [tempfile]);
+
     let releaseNotes = await readFile(tempfile, { encoding: "utf-8" });
 
     // Give the user a chance to abort the release by
@@ -40,7 +44,11 @@ async function createApplicationRelease(
       throw Error("Release aborted. No release notes were written.");
     }
 
-    let version = (await execShellCommand(`npm version ${type}`)).trim();
+    let version = (
+      await execShellCommand(
+        `npm version ${type} ${options.preid ? `--preid ${options.preid}` : ""}`
+      )
+    ).trim();
     releaseNotes = `## ${appPkg.name}@${version.replace(
       "v",
       ""
@@ -55,11 +63,14 @@ async function createApplicationRelease(
       tempfile,
     ]);
     await unlink(tempfile);
+
     console.log("Waiting a bit to let GitHub initialize the action...");
+
     await execShellCommand("sleep 5");
     let githubId = await execShellCommand(
       "gh run list -L 1 --json databaseId --jq '.[].databaseId'"
     );
+
     await spawnShellCommand("gh", ["run", "watch", githubId.trim()]);
 
     let applyParameters = ["apply", "-s", "test.obet.no", Namespace];
@@ -87,6 +98,7 @@ program
     "automatically apply the application on production if there are no other updates in the same namespace",
     false
   )
+  .option("--preid <preid>", "Pre-id parameter to send to npm version")
   .action(createApplicationRelease);
 
 await program.parseAsync(process.argv);
