@@ -7,7 +7,10 @@ import { getServerFromOptions } from "./lib/getServerFromOptions.js";
 
 const appPkg = await importJson("../package.json");
 
-async function listResources(options: { server: string }) {
+async function listResources(
+  search: string | null | undefined,
+  options: { server: string }
+) {
   await getServerFromOptions(options);
   let server = new Server(options.server);
   await server.login();
@@ -19,11 +22,23 @@ async function listResources(options: { server: string }) {
       name += ` (${resource.DBObjectID})`;
     }
 
-    console.log(name);
+    if (
+      !search ||
+      name.toLocaleLowerCase().includes(search.toLocaleLowerCase())
+    ) {
+      console.log(name);
+    }
   }
 }
 
 const program = new Command();
-program.version(appPkg.version).addServerOption().action(listResources);
+program
+  .version(appPkg.version)
+  .addServerOption()
+  .action(listResources)
+  .argument(
+    "[search]",
+    "Optionally filter and display only resources containing the search string"
+  );
 
 await program.parseAsync(process.argv);
