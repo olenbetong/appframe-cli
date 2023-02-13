@@ -5,6 +5,8 @@ import crypto from "node:crypto";
 import { unlink, writeFile, readFile } from "node:fs/promises";
 import { execShellCommand, spawnShellCommand } from "./lib/execShellCommand.js";
 import { Server } from "./lib/Server.js";
+import semver from "semver";
+import prompts from "prompts";
 
 const cli = await importJson("../package.json");
 
@@ -28,6 +30,26 @@ async function createApplicationRelease(
     let { hostname, id } = appframe.article;
     let server = new Server("dev.obet.no");
 
+    let nextVersion = (
+      await execShellCommand(
+        `npx semver ${appPkg.version} -i ${type} ${
+          options.preid ? `--preid=${options.preid}` : ""
+        }`
+      )
+    ).trim();
+    let result = await prompts({
+      type: "confirm",
+      name: "confirmVersion",
+      message: `New version number will be ${nextVersion}. Do you want to continue? (y/N)`,
+      initial: false,
+    });
+
+    if (!result.confirmVersion) {
+      process.exit(0);
+    }
+
+    console.log("Running type checks...");
+    await spawnShellCommand("npx", ["tsc"]);
     await server.login();
 
     let { Namespace } = await server.getArticle(hostname, id);
