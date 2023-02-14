@@ -53,8 +53,7 @@ async function createApplicationRelease(
     await server.login();
 
     let { Namespace } = await server.getArticle(hostname, id);
-    let tempnotes =
-      "#### 🚀 Enhancements\n- New features and improvements\n\n#### 🐛 Bugfix\n- Bug fixes\n\n#### 🏠 Internal changes\n- Changes that don't affect the user";
+    let tempnotes = `## ${appPkg.name}@${nextVersion}\n\n#### 🚀 Enhancements\n- New features and improvements\n\n#### 🐛 Bugfix\n- Bug fixes\n\n#### 🏠 Internal changes\n- Changes that don't affect the user`;
 
     await writeFile(tempfile, tempnotes, { encoding: "utf-8" });
     await spawnShellCommand("nano", [tempfile]);
