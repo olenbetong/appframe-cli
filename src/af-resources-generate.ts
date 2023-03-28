@@ -316,7 +316,7 @@ ${fieldTypes}}`;
   }
 
   if (options.where) {
-    parametersOption.push(`where: "${options.where}"`);
+    parametersOption.push(`whereClause: "${options.where}"`);
   }
 
   if (options.distinct) {
