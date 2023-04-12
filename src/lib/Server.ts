@@ -723,7 +723,7 @@ export class Server {
 
     let { dsArticlesVersions, dsTransactions } = this;
     let articleVersions = await dsArticlesVersions.retrieve({
-      whereClause: `[HostName] = '${hostname}' AND [ArticleId] LIKE '${articleId}.___'`,
+      whereClause: `[HostName] = '${hostname}' AND ([ArticleId] LIKE '${articleId}.___' OR [ArticleId] LIKE '${articleId}._______')`,
       maxRecords: 1,
       sortOrder: [{ ArticleId: SortOrder.Desc }],
     });
@@ -759,7 +759,7 @@ export class Server {
         });
 
         articleVersions = await dsArticlesVersions.retrieve({
-          whereClause: `[HostName] = '${hostname}' AND [ArticleId] LIKE '${articleId}.___'`,
+          whereClause: `[HostName] = '${hostname}' AND ([ArticleId] LIKE '${articleId}.___' OR [ArticleId] LIKE '${articleId}._______')`,
           maxRecords: 1,
           sortOrder: [{ ArticleId: SortOrder.Desc }],
         });
