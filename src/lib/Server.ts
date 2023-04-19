@@ -725,7 +725,7 @@ export class Server {
     let articleVersions = await dsArticlesVersions.retrieve({
       whereClause: `[HostName] = '${hostname}' AND ([ArticleId] LIKE '${articleId}.___' OR [ArticleId] LIKE '${articleId}._______')`,
       maxRecords: 1,
-      sortOrder: [{ ArticleId: SortOrder.Desc }],
+      sortOrder: [{ ArticleVersion: SortOrder.Desc }],
     });
     let transactions = await dsTransactions.retrieve({
       whereClause: `[Name] = '${hostname}/${articleId}'`,
@@ -761,7 +761,7 @@ export class Server {
         articleVersions = await dsArticlesVersions.retrieve({
           whereClause: `[HostName] = '${hostname}' AND ([ArticleId] LIKE '${articleId}.___' OR [ArticleId] LIKE '${articleId}._______')`,
           maxRecords: 1,
-          sortOrder: [{ ArticleId: SortOrder.Desc }],
+          sortOrder: [{ ArticleVersion: SortOrder.Desc }],
         });
         articleVersion = Number(articleVersions[0].ArticleId.split(".")[1]);
       } while (articleVersion <= transactionVersion);
