@@ -33,7 +33,7 @@ async function createApplicationRelease(
     let nextVersion = (
       await execShellCommand(
         `npx semver ${appPkg.version} -i ${type} ${
-          options.preid ? `--preid=${options.preid}` : ""
+          options.preid ? `--preid ${options.preid}` : ""
         }`
       )
     ).trim();

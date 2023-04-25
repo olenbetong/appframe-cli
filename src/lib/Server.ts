@@ -721,9 +721,9 @@ export class Server {
   async publishArticle(hostname: string, articleId: string, version: string) {
     await this.checkoutArticle(hostname, articleId);
 
-    let { dsArticlesVersions, dsTransactions } = this;
-    let articleVersions = await dsArticlesVersions.retrieve({
-      whereClause: `[HostName] = '${hostname}' AND ([ArticleId] LIKE '${articleId}.___' OR [ArticleId] LIKE '${articleId}._______')`,
+    let { dsArticles, dsTransactions } = this;
+    let articleVersions = await dsArticles.retrieve({
+      whereClause: `[HostName] = '${hostname}' AND [ArticleDevID] = '${articleId}'`,
       maxRecords: 1,
       sortOrder: [{ ArticleVersion: SortOrder.Desc }],
     });
@@ -758,8 +758,8 @@ export class Server {
           Description: version,
         });
 
-        articleVersions = await dsArticlesVersions.retrieve({
-          whereClause: `[HostName] = '${hostname}' AND ([ArticleId] LIKE '${articleId}.___' OR [ArticleId] LIKE '${articleId}._______')`,
+        articleVersions = await dsArticles.retrieve({
+          whereClause: `[HostName] = '${hostname}' AND [ArticleDevID] = '${articleId}'`,
           maxRecords: 1,
           sortOrder: [{ ArticleVersion: SortOrder.Desc }],
         });
