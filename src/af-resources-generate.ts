@@ -215,8 +215,8 @@ function getDataObjectDefinition(
       fieldTypes += `  ${field.name}: ${type};\n`;
     }
 
-    types = `export type ${typeName} = {
-${fieldTypes}}`;
+    types = `export type ${typeName} = Readonly<{
+${fieldTypes}}>`;
   }
 
   if (options.global) {
