@@ -40,7 +40,7 @@ function getDataObjectTypes(
     let id = dataObject.getDataSourceId();
     let typeName = id.startsWith("ds") ? id.substring(2) : id;
     typeName = typeName + "Record";
-    result.push(`export type ${typeName} = {`);
+    result.push(`export type ${typeName} = Readonly<{`);
 
     for (let field of dataObject.getFields()) {
       let type =
@@ -53,7 +53,7 @@ function getDataObjectTypes(
       result.push(`\t${fieldName}: ${type};`);
     }
 
-    result.push("};");
+    result.push("}>;");
     result.push("");
 
     globals.push(`${id}: DataObject<${typeName}>;`);
