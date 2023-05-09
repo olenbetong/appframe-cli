@@ -5,7 +5,6 @@ import crypto from "node:crypto";
 import { unlink, writeFile, readFile } from "node:fs/promises";
 import { execShellCommand, spawnShellCommand } from "./lib/execShellCommand.js";
 import { Server } from "./lib/Server.js";
-import semver from "semver";
 import prompts from "prompts";
 
 const cli = await importJson("../package.json");
