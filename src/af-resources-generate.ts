@@ -125,7 +125,7 @@ function getProcedureDefinition(
     output.push(
       `${
         options.global ? "af.common." : ""
-      }expose("af.article.procedures", ${procName});`
+      }expose("af.article.procedures.${procName}", ${procName}, { overwrite: true });`
     );
   }
 
