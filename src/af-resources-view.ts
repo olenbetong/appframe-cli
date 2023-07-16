@@ -7,25 +7,25 @@ const isInteractive = process.stdin.isTTY;
 const appPkg = await importJson("../package.json");
 
 async function viewResourceDefinition(
-  resource: string,
-  options: { server: string }
+	resource: string,
+	options: { server: string },
 ) {
-  await getServerFromOptions(options);
-  let server = new Server(options.server);
-  await server.login();
-  let resourceName = await server.getResourceArgument(resource);
-  let definition = await server.getResourceDefinition(resourceName);
-  console.log(definition);
+	await getServerFromOptions(options);
+	let server = new Server(options.server);
+	await server.login();
+	let resourceName = await server.getResourceArgument(resource);
+	let definition = await server.getResourceDefinition(resourceName);
+	console.log(definition);
 }
 
 const program = new Command();
 program
-  .version(appPkg.version)
-  .addServerOption()
-  .argument(
-    isInteractive ? "[resource]" : "<resource>",
-    "Name of the resource to show definition"
-  )
-  .action(viewResourceDefinition);
+	.version(appPkg.version)
+	.addServerOption()
+	.argument(
+		isInteractive ? "[resource]" : "<resource>",
+		"Name of the resource to show definition",
+	)
+	.action(viewResourceDefinition);
 
 await program.parseAsync(process.argv);

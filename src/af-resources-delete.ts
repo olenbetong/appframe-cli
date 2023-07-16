@@ -6,20 +6,20 @@ import { importJson } from "./lib/importJson.js";
 const appPkg = await importJson("./package.json");
 
 async function deleteDataResource(id: string, options: { server: string }) {
-  await getServerFromOptions(options);
-  let server = new Server(options.server);
-  await server.login();
-  await server.deleteDataResource(id);
+	await getServerFromOptions(options);
+	let server = new Server(options.server);
+	await server.login();
+	await server.deleteDataResource(id);
 }
 
 const program = new Command();
 program
-  .version(appPkg.version)
-  .addServerOption()
-  .argument(
-    "<id>",
-    "Database object id or name for the data resource to delete"
-  )
-  .action(deleteDataResource);
+	.version(appPkg.version)
+	.addServerOption()
+	.argument(
+		"<id>",
+		"Database object id or name for the data resource to delete",
+	)
+	.action(deleteDataResource);
 
 await program.parseAsync(process.argv);

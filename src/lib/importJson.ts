@@ -10,11 +10,11 @@ import { readFile } from "node:fs/promises";
  * @returns JSON content
  */
 export async function importJson(url: string | URL, useCwd: boolean = false) {
-  let completeUrl = new URL(
-    url,
-    useCwd
-      ? `file://${process.cwd()}/`
-      : import.meta.url.replace(/lib\/importJson.js$/, "")
-  );
-  return JSON.parse(await readFile(completeUrl, "utf-8"));
+	let completeUrl = new URL(
+		url,
+		useCwd
+			? `file://${process.cwd()}/`
+			: import.meta.url.replace(/lib\/importJson.js$/, ""),
+	);
+	return JSON.parse(await readFile(completeUrl, "utf-8"));
 }

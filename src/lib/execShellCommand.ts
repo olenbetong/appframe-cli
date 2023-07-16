@@ -10,24 +10,24 @@ import { exec, spawn } from "node:child_process";
  * @returns
  */
 export function execShellCommand(
-  cmd: string,
-  pipeOutput: boolean = false
+	cmd: string,
+	pipeOutput: boolean = false,
 ): Promise<string> {
-  return new Promise((resolve, reject) => {
-    let childProcess = exec(cmd, (error, stdout, stderr) => {
-      if (error) {
-        (error as any).inner = stderr;
-        reject(error);
-      } else {
-        resolve(stdout ? stdout : stderr);
-      }
-    });
+	return new Promise((resolve, reject) => {
+		let childProcess = exec(cmd, (error, stdout, stderr) => {
+			if (error) {
+				(error as any).inner = stderr;
+				reject(error);
+			} else {
+				resolve(stdout ? stdout : stderr);
+			}
+		});
 
-    if (pipeOutput) {
-      childProcess.stdout?.pipe(process.stdout);
-      childProcess.stderr?.pipe(process.stderr);
-    }
-  });
+		if (pipeOutput) {
+			childProcess.stdout?.pipe(process.stdout);
+			childProcess.stderr?.pipe(process.stderr);
+		}
+	});
 }
 
 /**
@@ -38,20 +38,20 @@ export function execShellCommand(
  * @returns Promise<any>
  */
 export function spawnShellCommand(cmd: string, args: string[]): Promise<void> {
-  return new Promise((resolve, reject) => {
-    let cra = spawn(cmd, args, { stdio: "inherit" });
+	return new Promise((resolve, reject) => {
+		let cra = spawn(cmd, args, { stdio: "inherit" });
 
-    cra.on("close", (code) => {
-      if (code === 0) {
-        resolve();
-      } else {
-        reject();
-      }
-    });
+		cra.on("close", (code) => {
+			if (code === 0) {
+				resolve();
+			} else {
+				reject();
+			}
+		});
 
-    cra.on("error", (error) => {
-      console.error(chalk.red(error.message));
-      reject(error);
-    });
-  });
+		cra.on("error", (error) => {
+			console.error(chalk.red(error.message));
+			reject(error);
+		});
+	});
 }

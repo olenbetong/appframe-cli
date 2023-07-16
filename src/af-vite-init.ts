@@ -10,246 +10,250 @@ import { execShellCommand } from "./lib/execShellCommand.js";
 import { SortOrder } from "@olenbetong/appframe-data";
 
 function getProjectFile(file: string) {
-  return new URL(file, `file://${process.cwd()}/`);
+	return new URL(file, `file://${process.cwd()}/`);
 }
 
 async function tryGitInit() {
-  try {
-    await execShellCommand("git init");
-    return true;
-  } catch (e: any) {
-    console.warn("Git repo not initialized:", e.message);
-    return false;
-  }
+	try {
+		await execShellCommand("git init");
+		return true;
+	} catch (e: any) {
+		console.warn("Git repo not initialized:", e.message);
+		return false;
+	}
 }
 
 async function tryGitCommit() {
-  try {
-    await execShellCommand("git add -A");
-    await execShellCommand(
-      'git commit -m "Initialize project using @olenbetong/appframe-cli"'
-    );
-    return true;
-  } catch (e) {
-    // We couldn't commit in already initialized git repo,
-    // maybe the commit author config is not set.
-    console.warn("Git commit not created", e);
-    console.warn("Removing .git directory...");
-    try {
-      // unlinkSync() doesn't work on directories.
-      await rmdir(getProjectFile("./.git"));
-    } catch (removeErr) {
-      // Ignore.
-    }
-    return false;
-  }
+	try {
+		await execShellCommand("git add -A");
+		await execShellCommand(
+			'git commit -m "Initialize project using @olenbetong/appframe-cli"',
+		);
+		return true;
+	} catch (e) {
+		// We couldn't commit in already initialized git repo,
+		// maybe the commit author config is not set.
+		console.warn("Git commit not created", e);
+		console.warn("Removing .git directory...");
+		try {
+			// unlinkSync() doesn't work on directories.
+			await rmdir(getProjectFile("./.git"));
+		} catch (removeErr) {
+			// Ignore.
+		}
+		return false;
+	}
 }
 
 async function installDependencies() {
-  await execShellCommand(`npm install`);
+	await execShellCommand(`npm install`);
 }
 
 async function copyTemplateRepo(name: string) {
-  console.log(
-    `Copying template repo (olenbetong/vite-template-appframe) into ./${name}...`
-  );
-  const emitter = degit("olenbetong/vite-template-appframe", {
-    cache: false,
-    verbose: false,
-    force: true,
-  });
+	console.log(
+		`Copying template repo (olenbetong/vite-template-appframe) into ./${name}...`,
+	);
+	const emitter = degit("olenbetong/vite-template-appframe", {
+		cache: false,
+		verbose: false,
+		force: true,
+	});
 
-  emitter.on("warn", (warning) => {
-    console.log(chalk.yellow(warning.message));
-  });
+	emitter.on("warn", (warning) => {
+		console.log(chalk.yellow(warning.message));
+	});
 
-  await emitter.clone(`./${name}`);
+	await emitter.clone(`./${name}`);
 }
 
 async function initApp(name: string) {
-  await copyTemplateRepo(name);
-  process.chdir("./" + name);
+	await copyTemplateRepo(name);
+	process.chdir("./" + name);
 
-  let initializedGit = false;
-  if (await tryGitInit()) {
-    initializedGit = true;
-    console.log("Initialized a git repository.");
-  }
+	let initializedGit = false;
+	if (await tryGitInit()) {
+		initializedGit = true;
+		console.log("Initialized a git repository.");
+	}
 
-  await installDependencies();
+	await installDependencies();
 
-  // Create git commit if git repo was initialized
-  if (initializedGit && (await tryGitCommit())) {
-    console.log("Created git commit.");
-  }
+	// Create git commit if git repo was initialized
+	if (initializedGit && (await tryGitCommit())) {
+		console.log("Created git commit.");
+	}
 
-  let server = new Server("dev.obet.no");
-  await server.login();
-  let namespaces = await server.dsNamespaces.retrieve({
-    maxRecords: -1,
-    sortOrder: [{ GroupName: SortOrder.Asc }, { Name: SortOrder.Asc }],
-  });
+	let server = new Server("dev.obet.no");
+	await server.login();
+	let namespaces = await server.dsNamespaces.retrieve({
+		maxRecords: -1,
+		sortOrder: [{ GroupName: SortOrder.Asc }, { Name: SortOrder.Asc }],
+	});
 
-  let questions: PromptObject<
-    "hostname" | "newOrExisting" | "namespace" | "articleTitle" | "articleId"
-  >[] = [
-    {
-      type: "select",
-      name: "hostname",
-      message: "Which website should the app be deployed to?",
-      choices: [
-        { title: "SynergiWeb", value: "synergi.olenbetong.no" },
-        { title: "PartnerWeb", value: "partner.olenbetong.no" },
-      ],
-      onState: (state) => {
-        if (state.aborted) {
-          process.nextTick(() => {
-            process.exit(0);
-          });
-        }
-      },
-      initial: 0,
-    },
-    {
-      type: "select",
-      name: "newOrExisting",
-      message: "Use an existing article, or create a new?",
-      choices: [
-        { value: "new", title: "Create a new article" },
-        { value: "existing", title: "Use an existing article" },
-      ],
-      onState: (state) => {
-        if (state.aborted) {
-          process.nextTick(() => {
-            process.exit(0);
-          });
-        }
-      },
-      initial: 0,
-    },
-    {
-      type: (prev) => (prev === "new" ? "autocomplete" : null),
-      name: "namespace",
-      message: "Namespace to create article in?",
-      choices: namespaces.map((r) => ({
-        title: r.GroupName ? `${r.Name} (${r.GroupName})` : r.Name,
-        value: r.ID,
-      })),
-      onState: (state) => {
-        if (state.aborted) {
-          process.nextTick(() => {
-            process.exit(0);
-          });
-        }
-      },
-    },
-    {
-      type: "text",
-      name: "articleId",
-      message: "Enter article ID",
-      onState: (state) => {
-        if (state.aborted) {
-          process.nextTick(() => {
-            process.exit(0);
-          });
-        }
-      },
-    },
-    {
-      type: (prev) => (prev === "existing" ? null : "text"),
-      name: "articleTitle",
-      message: "Enter article title",
-      onState: (state) => {
-        if (state.aborted) {
-          process.nextTick(() => {
-            process.exit(0);
-          });
-        }
-      },
-    },
-  ];
+	let questions: PromptObject<
+		| "hostname"
+		| "newOrExisting"
+		| "namespace"
+		| "articleTitle"
+		| "articleId"
+	>[] = [
+		{
+			type: "select",
+			name: "hostname",
+			message: "Which website should the app be deployed to?",
+			choices: [
+				{ title: "SynergiWeb", value: "synergi.olenbetong.no" },
+				{ title: "PartnerWeb", value: "partner.olenbetong.no" },
+			],
+			onState: (state) => {
+				if (state.aborted) {
+					process.nextTick(() => {
+						process.exit(0);
+					});
+				}
+			},
+			initial: 0,
+		},
+		{
+			type: "select",
+			name: "newOrExisting",
+			message: "Use an existing article, or create a new?",
+			choices: [
+				{ value: "new", title: "Create a new article" },
+				{ value: "existing", title: "Use an existing article" },
+			],
+			onState: (state) => {
+				if (state.aborted) {
+					process.nextTick(() => {
+						process.exit(0);
+					});
+				}
+			},
+			initial: 0,
+		},
+		{
+			type: (prev) => (prev === "new" ? "autocomplete" : null),
+			name: "namespace",
+			message: "Namespace to create article in?",
+			choices: namespaces.map((r) => ({
+				title: r.GroupName ? `${r.Name} (${r.GroupName})` : r.Name,
+				value: r.ID,
+			})),
+			onState: (state) => {
+				if (state.aborted) {
+					process.nextTick(() => {
+						process.exit(0);
+					});
+				}
+			},
+		},
+		{
+			type: "text",
+			name: "articleId",
+			message: "Enter article ID",
+			onState: (state) => {
+				if (state.aborted) {
+					process.nextTick(() => {
+						process.exit(0);
+					});
+				}
+			},
+		},
+		{
+			type: (prev) => (prev === "existing" ? null : "text"),
+			name: "articleTitle",
+			message: "Enter article title",
+			onState: (state) => {
+				if (state.aborted) {
+					process.nextTick(() => {
+						process.exit(0);
+					});
+				}
+			},
+		},
+	];
 
-  let result = await prompts(questions);
+	let result = await prompts(questions);
 
-  if (result.newOrExisting === "new") {
-    await server.createArticle({
-      namespaceId: result.namespace,
-      hostname: result.hostname,
-      id: result.articleId,
-      htmlContent:
-        '@Render("Template", ID: "ob.scripts.light")\n@Render("Block", ID: "ViteScripts")\n<div id="root"></div>',
-      title: result.articleTitle,
-      template: "ob.es.noscript",
-    });
+	if (result.newOrExisting === "new") {
+		await server.createArticle({
+			namespaceId: result.namespace,
+			hostname: result.hostname,
+			id: result.articleId,
+			htmlContent:
+				'@Render("Template", ID: "ob.scripts.light")\n@Render("Block", ID: "ViteScripts")\n<div id="root"></div>',
+			title: result.articleTitle,
+			template: "ob.es.noscript",
+		});
 
-    // Add admin role to permissions
-    await server.addArticlePermission({
-      hostname: result.hostname,
-      articleId: result.articleId,
-      roleId: 1,
-    });
-  }
+		// Add admin role to permissions
+		await server.addArticlePermission({
+			hostname: result.hostname,
+			articleId: result.articleId,
+			roleId: 1,
+		});
+	}
 
-  let pkg = await importJson(`./package.json`, true);
-  pkg.name = result.articleId ?? "new-application";
-  pkg.version = "0.0.1";
-  pkg.appframe = pkg.appframe ?? {};
-  pkg.appframe.article = {
-    id: result.articleId,
-    hostname: result.hostname,
-  };
+	let pkg = await importJson(`./package.json`, true);
+	pkg.name = result.articleId ?? "new-application";
+	pkg.version = "0.0.1";
+	pkg.appframe = pkg.appframe ?? {};
+	pkg.appframe.article = {
+		id: result.articleId,
+		hostname: result.hostname,
+	};
 
-  let stageServer = result.newOrExisting === "new" ? "dev" : "stage";
-  let isPartner = result.hostname.startsWith("partner");
+	let stageServer = result.newOrExisting === "new" ? "dev" : "stage";
+	let isPartner = result.hostname.startsWith("partner");
 
-  pkg.appframe.proxy = {
-    ...pkg.appframe.proxy,
-    hostname: isPartner
-      ? `${stageServer}.partner.obet.no`
-      : `${stageServer}.obet.no`,
-  };
+	pkg.appframe.proxy = {
+		...pkg.appframe.proxy,
+		hostname: isPartner
+			? `${stageServer}.partner.obet.no`
+			: `${stageServer}.obet.no`,
+	};
 
-  await writeFile(
-    getProjectFile(`./package.json`),
-    JSON.stringify(pkg, null, 2)
-  );
+	await writeFile(
+		getProjectFile(`./package.json`),
+		JSON.stringify(pkg, null, 2),
+	);
 
-  try {
-    await writeFile(
-      getProjectFile(`./src/config.ts`),
-      `export const ARTICLE_ID = "${result.articleId}";
-export const ARTICLE_TITLE = "${result.articleTitle}";`
-    );
-  } catch (error) {
-    // well that sucks
-  }
+	try {
+		await writeFile(
+			getProjectFile(`./src/config.ts`),
+			`export const ARTICLE_ID = "${result.articleId}";
+export const ARTICLE_TITLE = "${result.articleTitle}";`,
+		);
+	} catch (error) {
+		// well that sucks
+	}
 
-  console.log();
-  console.log(`Success! Created ${name} at ./${name}`);
-  console.log("Inside that directory, you can run several commands:");
-  console.log();
-  console.log(chalk.cyan(`  npm start`));
-  console.log("    Starts the development server.");
-  console.log();
-  console.log(chalk.cyan(`  npm run build`));
-  console.log("    Bundles the app into static files for production.");
-  console.log();
-  console.log("We suggest that you begin by typing:");
-  console.log();
-  console.log(chalk.cyan("  cd"), name);
-  console.log(`  ${chalk.cyan(`npm start`)}`);
-  console.log();
-  console.log("Happy hacking!");
+	console.log();
+	console.log(`Success! Created ${name} at ./${name}`);
+	console.log("Inside that directory, you can run several commands:");
+	console.log();
+	console.log(chalk.cyan(`  npm start`));
+	console.log("    Starts the development server.");
+	console.log();
+	console.log(chalk.cyan(`  npm run build`));
+	console.log("    Bundles the app into static files for production.");
+	console.log();
+	console.log("We suggest that you begin by typing:");
+	console.log();
+	console.log(chalk.cyan("  cd"), name);
+	console.log(`  ${chalk.cyan(`npm start`)}`);
+	console.log();
+	console.log("Happy hacking!");
 }
 
 const appPkg = await importJson("../package.json");
 const program = new Command();
 program
-  .version(appPkg.version)
-  .argument(
-    "<name>",
-    "Name of the new application. Will also be the folder name)"
-  )
-  .action(initApp);
+	.version(appPkg.version)
+	.argument(
+		"<name>",
+		"Name of the new application. Will also be the folder name)",
+	)
+	.action(initApp);
 
 await program.parseAsync(process.argv);

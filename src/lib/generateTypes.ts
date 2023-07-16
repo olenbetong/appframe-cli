@@ -10,16 +10,16 @@ import { DataObject, Procedure } from "@olenbetong/appframe-data";
  * @returns {string} Typescript type matching the data object parameter type
  */
 export function afTypeToTsType(
-  type: string | undefined,
-  isProc: boolean = false
+	type: string | undefined,
+	isProc: boolean = false,
 ) {
-  if (type === "uniqueidentifier") {
-    return "string";
-  } else if (type && ["date", "datetime"].includes(type)) {
-    return isProc ? "string | Date" : "Date";
-  }
+	if (type === "uniqueidentifier") {
+		return "string";
+	} else if (type && ["date", "datetime"].includes(type)) {
+		return isProc ? "string | Date" : "Date";
+	}
 
-  return type ?? "string";
+	return type ?? "string";
 }
 
 /**
@@ -28,49 +28,52 @@ export function afTypeToTsType(
  * @param {Record<string, Record<string, string>>} parameterOverrides Overrides for data object field types
  */
 function getDataObjectTypes(
-  parameterOverrides: Record<string, Record<string, string>> = {}
+	parameterOverrides: Record<string, Record<string, string>> = {},
 ) {
-  let result = [];
-  let globals = [];
-  let dataObjects = Object.values(
-    (globalThis.af.article.dataObjects ?? {}) as Record<string, DataObject<any>>
-  ).sort((p1, p2) => (p1.getDataSourceId() >= p2.getDataSourceId() ? 1 : -1));
+	let result = [];
+	let globals = [];
+	let dataObjects = Object.values(
+		(globalThis.af.article.dataObjects ?? {}) as Record<
+			string,
+			DataObject<any>
+		>,
+	).sort((p1, p2) => (p1.getDataSourceId() >= p2.getDataSourceId() ? 1 : -1));
 
-  for (let dataObject of dataObjects) {
-    let id = dataObject.getDataSourceId();
-    let typeName = id.startsWith("ds") ? id.substring(2) : id;
-    typeName = typeName + "Record";
-    result.push(`export type ${typeName} = {`);
+	for (let dataObject of dataObjects) {
+		let id = dataObject.getDataSourceId();
+		let typeName = id.startsWith("ds") ? id.substring(2) : id;
+		typeName = typeName + "Record";
+		result.push(`export type ${typeName} = {`);
 
-    for (let field of dataObject.getFields()) {
-      let type =
-        parameterOverrides[id]?.[field.name] ??
-        afTypeToTsType(field.type ?? "string") +
-          (field.nullable ? " | null" : "");
-      let fieldName =
-        field.name.indexOf("-") > 0 ? `"${field.name}"` : field.name;
+		for (let field of dataObject.getFields()) {
+			let type =
+				parameterOverrides[id]?.[field.name] ??
+				afTypeToTsType(field.type ?? "string") +
+					(field.nullable ? " | null" : "");
+			let fieldName =
+				field.name.indexOf("-") > 0 ? `"${field.name}"` : field.name;
 
-      result.push(`\t${fieldName}: ${type};`);
-    }
+			result.push(`\t${fieldName}: ${type};`);
+		}
 
-    result.push("};");
-    result.push("");
+		result.push("};");
+		result.push("");
 
-    globals.push(`${id}: DataObject<${typeName}>;`);
-  }
+		globals.push(`${id}: DataObject<${typeName}>;`);
+	}
 
-  if (globals.length === 0) {
-    return "";
-  }
+	if (globals.length === 0) {
+		return "";
+	}
 
-  result.push("declare global {");
-  result.push(globals.map((g) => "\tvar " + g).join("\n"));
-  result.push("\tinterface Window {");
-  result.push(globals.map((g) => "\t\t" + g).join("\n"));
-  result.push("\t}");
-  result.push("}");
+	result.push("declare global {");
+	result.push(globals.map((g) => "\tvar " + g).join("\n"));
+	result.push("\tinterface Window {");
+	result.push(globals.map((g) => "\t\t" + g).join("\n"));
+	result.push("\t}");
+	result.push("}");
 
-  return result.join("\n");
+	return result.join("\n");
 }
 
 /**
@@ -80,97 +83,101 @@ function getDataObjectTypes(
  * @param {Record<string, string>} returnTypes
  */
 function getProcedureTypes(
-  parameterOverrides: Record<string, Record<string, string>> = {},
-  returnTypes: Record<string, string> = {}
+	parameterOverrides: Record<string, Record<string, string>> = {},
+	returnTypes: Record<string, string> = {},
 ) {
-  let result = [];
-  let globals = [];
-  let procedures = Object.values(
-    (globalThis.af.article.procedures ?? {}) as Record<
-      string,
-      Procedure<unknown, unknown>
-    >
-  ).sort((p1, p2) =>
-    p1.options.procedureId >= p2.options.procedureId ? 1 : -1
-  );
+	let result = [];
+	let globals = [];
+	let procedures = Object.values(
+		(globalThis.af.article.procedures ?? {}) as Record<
+			string,
+			Procedure<unknown, unknown>
+		>,
+	).sort((p1, p2) =>
+		p1.options.procedureId >= p2.options.procedureId ? 1 : -1,
+	);
 
-  for (let procedure of procedures) {
-    let id = procedure.options.procedureId;
-    let params = procedure.getParameters();
-    let typeName = id.startsWith("proc") ? id.substring(4) : id;
-    typeName = typeName + "Params";
+	for (let procedure of procedures) {
+		let id = procedure.options.procedureId;
+		let params = procedure.getParameters();
+		let typeName = id.startsWith("proc") ? id.substring(4) : id;
+		typeName = typeName + "Params";
 
-    if (params.length > 0) {
-      result.push(`export type ${typeName} = {`);
+		if (params.length > 0) {
+			result.push(`export type ${typeName} = {`);
 
-      for (let param of params) {
-        let type =
-          parameterOverrides[id]?.[param.name] ??
-          afTypeToTsType(param.type, true) + " | null";
-        let required = parameterOverrides[id]?.__required?.includes(param.name);
+			for (let param of params) {
+				let type =
+					parameterOverrides[id]?.[param.name] ??
+					afTypeToTsType(param.type, true) + " | null";
+				let required = parameterOverrides[id]?.__required?.includes(
+					param.name,
+				);
 
-        result.push(
-          `\t${param.name}${required || param.required ? "" : "?"}: ${type};`
-        );
-      }
+				result.push(
+					`\t${param.name}${
+						required || param.required ? "" : "?"
+					}: ${type};`,
+				);
+			}
 
-      result.push("};");
-      result.push("");
-    } else {
-      result.push(
-        `export type ${typeName} = null | undefined | Record<string, never>;\n`
-      );
-    }
+			result.push("};");
+			result.push("");
+		} else {
+			result.push(
+				`export type ${typeName} = null | undefined | Record<string, never>;\n`,
+			);
+		}
 
-    globals.push(
-      `${id}: Procedure<${typeName}, ${
-        Object.keys(returnTypes).includes(id) ? returnTypes[id] : "any"
-      }>;`
-    );
-  }
+		globals.push(
+			`${id}: Procedure<${typeName}, ${
+				Object.keys(returnTypes).includes(id) ? returnTypes[id] : "any"
+			}>;`,
+		);
+	}
 
-  if (globals.length === 0) {
-    return "";
-  }
+	if (globals.length === 0) {
+		return "";
+	}
 
-  result.push("declare global {");
-  result.push(globals.map((g) => "\tvar " + g).join("\n"));
-  result.push("\tinterface Window {");
-  result.push(globals.map((g) => "\t\t" + g).join("\n"));
-  result.push("\t}");
-  result.push("}");
+	result.push("declare global {");
+	result.push(globals.map((g) => "\tvar " + g).join("\n"));
+	result.push("\tinterface Window {");
+	result.push(globals.map((g) => "\t\t" + g).join("\n"));
+	result.push("\t}");
+	result.push("}");
 
-  return result.join("\n");
+	return result.join("\n");
 }
 
 export function generateTypes(
-  customExists = false,
-  overridesConfig: {
-    parameterTypes?: Record<string, Record<string, string>>;
-    procedureReturnTypes?: Record<string, string>;
-  } = {}
+	customExists = false,
+	overridesConfig: {
+		parameterTypes?: Record<string, Record<string, string>>;
+		procedureReturnTypes?: Record<string, string>;
+	} = {},
 ) {
-  let dataObjects = getDataObjectTypes(overridesConfig["parameterTypes"]);
-  let procedures = getProcedureTypes(
-    overridesConfig["parameterTypes"],
-    overridesConfig["procedureReturnTypes"]
-  );
+	let dataObjects = getDataObjectTypes(overridesConfig["parameterTypes"]);
+	let procedures = getProcedureTypes(
+		overridesConfig["parameterTypes"],
+		overridesConfig["procedureReturnTypes"],
+	);
 
-  let types = [];
-  if (dataObjects.length) types.push("DataObject");
-  if (procedures.length) types.push("Procedure");
+	let types = [];
+	if (dataObjects.length) types.push("DataObject");
+	if (procedures.length) types.push("Procedure");
 
-  let result = [
-    `import { ${types.join(", ")} } from "@olenbetong/appframe-data";${
-      customExists &&
-      (dataObjects.includes("Custom.") || procedures.includes("Custom."))
-        ? '\nimport * as Custom from "./customTypes";'
-        : ""
-    }`,
-  ];
+	let result = [
+		`import { ${types.join(", ")} } from "@olenbetong/appframe-data";${
+			customExists &&
+			(dataObjects.includes("Custom.") || procedures.includes("Custom."))
+				? '\nimport * as Custom from "./customTypes";'
+				: ""
+		}`,
+	];
 
-  if (dataObjects.length) result.push(dataObjects);
-  if (procedures.length) result.push(procedures);
+	if (dataObjects.length) result.push(dataObjects);
+	if (procedures.length) result.push(procedures);
 
-  return result.join("\n\n");
+	return result.join("\n\n");
 }

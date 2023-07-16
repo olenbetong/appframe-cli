@@ -6,25 +6,25 @@ import { getServerFromOptions } from "./lib/getServerFromOptions.js";
 import { importJson } from "./lib/importJson.js";
 
 async function checkForUpdates(options: { server: string }) {
-  try {
-    await getServerFromOptions(options);
-    let server = new Server(options.server);
-    let result = await server.login();
+	try {
+		await getServerFromOptions(options);
+		let server = new Server(options.server);
+		let result = await server.login();
 
-    if (result !== true) {
-      throw Error("Login failed!");
-    }
+		if (result !== true) {
+			throw Error("Login failed!");
+		}
 
-    let updates = await server.checkForUpdates();
-    if (updates.length === 0) {
-      console.log(chalk.yellow("No updates to download."));
-    } else {
-      console.table(updates);
-    }
-  } catch (error: any) {
-    console.error(chalk.red(error.message));
-    process.exit(1);
-  }
+		let updates = await server.checkForUpdates();
+		if (updates.length === 0) {
+			console.log(chalk.yellow("No updates to download."));
+		} else {
+			console.table(updates);
+		}
+	} catch (error: any) {
+		console.error(chalk.red(error.message));
+		process.exit(1);
+	}
 }
 
 const appPkg = await importJson("../package.json");
