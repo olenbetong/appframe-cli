@@ -122,7 +122,7 @@ async function transformLegacyImports() {
       });
 
       if (isModified && result?.code) {
-        let code = prettier.format(result.code, { parser: "typescript" });
+        let code = await prettier.format(result.code, { parser: "typescript" });
         await writeFile(file, code);
       }
     }
