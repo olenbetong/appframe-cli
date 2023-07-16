@@ -20,9 +20,7 @@ function addSpecifiersOrCreateImportDeclaration(
 		let parent = path.parent as babel.types.Program;
 		let importDeclaration: babel.types.ImportDeclaration | undefined =
 			parent.body.find(
-				(n) =>
-					n.type === "ImportDeclaration" &&
-					n.source.value === moduleName,
+				(n) => n.type === "ImportDeclaration" && n.source.value === moduleName,
 			) as babel.types.ImportDeclaration | undefined;
 
 		if (!importDeclaration) {
@@ -47,8 +45,7 @@ export function BabelTransformImportPlugin({
 			ImportDeclaration(path) {
 				let replacements: Record<string, string> = {
 					"@olenbetong/data-object": "@olenbetong/appframe-data",
-					"@olenbetong/react-data-object-connect":
-						"@olenbetong/appframe-react",
+					"@olenbetong/react-data-object-connect": "@olenbetong/appframe-react",
 					"@olenbetong/utils": "@olenbetong/appframe-core",
 					"@olenbetong/common": "@olenbetong/appframe-core",
 					"@olenbetong/value-toggle": "@olenbetong/synergi-react",
@@ -65,9 +62,7 @@ export function BabelTransformImportPlugin({
 						if ("imported" in specifier) {
 							let { imported } = specifier;
 							let name =
-								imported.type === "Identifier"
-									? imported.name
-									: imported.value;
+								imported.type === "Identifier" ? imported.name : imported.value;
 							if (AF_REACT_SPECIFIERS.includes(name)) {
 								afReactSpecifiers.push(specifier);
 							} else {
