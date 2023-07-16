@@ -110,14 +110,10 @@ function getProcedureTypes(
 				let type =
 					parameterOverrides[id]?.[param.name] ??
 					afTypeToTsType(param.type, true) + " | null";
-				let required = parameterOverrides[id]?.__required?.includes(
-					param.name,
-				);
+				let required = parameterOverrides[id]?.__required?.includes(param.name);
 
 				result.push(
-					`\t${param.name}${
-						required || param.required ? "" : "?"
-					}: ${type};`,
+					`\t${param.name}${required || param.required ? "" : "?"}: ${type};`,
 				);
 			}
 

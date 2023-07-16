@@ -72,9 +72,7 @@ function getProcedureDefinition(
 
 	let output = [];
 	if (!options.global) {
-		output.push(
-			`import { ProcedureAPI } from "@olenbetong/appframe-data";`,
-		);
+		output.push(`import { ProcedureAPI } from "@olenbetong/appframe-data";`);
 
 		if (options.expose) {
 			output.push(`import { expose } from "@olenbetong/appframe-core";`);
@@ -268,15 +266,9 @@ ${fieldTypes}}>`;
 
 		dsOptions.push(linkFields);
 	}
-	dsOptions.push(
-		`allowUpdate: ${options.permissions?.includes("U") ?? false}`,
-	);
-	dsOptions.push(
-		`allowInsert: ${options.permissions?.includes("I") ?? false}`,
-	);
-	dsOptions.push(
-		`allowDelete: ${options.permissions?.includes("D") ?? false}`,
-	);
+	dsOptions.push(`allowUpdate: ${options.permissions?.includes("U") ?? false}`);
+	dsOptions.push(`allowInsert: ${options.permissions?.includes("I") ?? false}`);
+	dsOptions.push(`allowDelete: ${options.permissions?.includes("D") ?? false}`);
 	dsOptions.push(`dynamicLoading: ${options.dynamic || false}`);
 
 	let fieldsOption = fields.map((field) => ({
@@ -284,9 +276,7 @@ ${fieldTypes}}>`;
 		type: afTypeToTsType(field.type, "field"),
 	}));
 	dsOptions.push(
-		`fields: ${JSON.stringify(fieldsOption, null, 2)
-			.split("\n")
-			.join("\n\t")}`,
+		`fields: ${JSON.stringify(fieldsOption, null, 2).split("\n").join("\n\t")}`,
 	);
 
 	let parametersOption: string[] = [`maxRecords: ${options.maxRecords}`];
@@ -333,9 +323,7 @@ ${fieldTypes}}>`;
 		parametersOption.push(`distinctRows: true`);
 	}
 
-	dsOptions.push(
-		`parameters: {\n\t\t${parametersOption.join(",\n\t\t")}\n\t}`,
-	);
+	dsOptions.push(`parameters: {\n\t\t${parametersOption.join(",\n\t\t")}\n\t}`);
 
 	output += `export const ${options.id} = ${api}({
   ${dsOptions.join(",\n\t")}
@@ -343,8 +331,7 @@ ${fieldTypes}}>`;
 `;
 
 	if (options.expose) {
-		let id =
-			typeof options.expose === "string" ? options.expose : options.id;
+		let id = typeof options.expose === "string" ? options.expose : options.id;
 		if (options.global) {
 			output += `\naf.common.expose("af.article.dataObjects.${id}", ${options.id}, { overwrite: true });`;
 		} else {
@@ -389,8 +376,7 @@ async function getResourceDefinition(
 	if (options.maxRecords && definition.ObjectType !== "P")
 		command.push(`--max-records ${options.maxRecords}`);
 	if (options.sortOrder) command.push(`--sort-order ${options.sortOrder}`);
-	if (options.permissions)
-		command.push(`--permissions ${options.permissions}`);
+	if (options.permissions) command.push(`--permissions ${options.permissions}`);
 	if (options.master) command.push(`--master ${options.master}`);
 	if (options.linkFields) command.push(`--link-fields ${options.linkFields}`);
 	if (options.expose)
@@ -447,10 +433,7 @@ program
 	)
 	.option("-g, --global", "Use af.data globals to generate the data object")
 	.option("-t, --types", "Include data object types")
-	.option(
-		"-f, --fields [fields]",
-		"Comma-separated list of fields to include",
-	)
+	.option("-f, --fields [fields]", "Comma-separated list of fields to include")
 	.option(
 		"-p, --permissions <permissions>",
 		"Permission to set on the data object (I = insert, U = update and D = delete; can be combined, for example IUD for all permissions)",

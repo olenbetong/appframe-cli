@@ -85,9 +85,7 @@ export class Server {
 		this.password = password ?? envPassword ?? "";
 		this.client = new Client(this.hostname);
 		this.dsArticles = getArticlesDataObject(this.client);
-		this.dsArticlesPermissions = getArticlesPermissionsDataObject(
-			this.client,
-		);
+		this.dsArticlesPermissions = getArticlesPermissionsDataObject(this.client);
 		this.dsArticlesVersions = getArticlesVersionsDataObject(this.client);
 		this.dsBundles = getBundlesDataObject(this.client);
 		this.dsBundlesProjects = getBundlesProjectsDataObject(this.client);
@@ -103,8 +101,9 @@ export class Server {
 		this.procApply = getApplyProcedure(this.client);
 		this.procCheckoutArticle = getCheckoutArticleProcedure(this.client);
 		this.procCreateArticle = getCreateArticleProcedure(this.client);
-		this.procCreateFirstBundleVersion =
-			getCreateFirstBundleVersionProcedure(this.client);
+		this.procCreateFirstBundleVersion = getCreateFirstBundleVersionProcedure(
+			this.client,
+		);
 		this.procCopyDataSourcesFromDev = getCopyDatasourcesFromDevProcedure(
 			this.client,
 		);
@@ -251,9 +250,7 @@ export class Server {
 	}
 
 	async checkoutArticle(hostname: string, article: string) {
-		this.logServerMessage(
-			`Checking out article (${hostname}/${article})...`,
-		);
+		this.logServerMessage(`Checking out article (${hostname}/${article})...`);
 		await this.procCheckoutArticle.execute({
 			HostName: hostname,
 			ArticleID: article,
@@ -297,9 +294,7 @@ export class Server {
 		});
 
 		if (resourceRecord.length === 1) {
-			this.logServerMessage(
-				`Deleting '${resourceRecord[0].DBObjectID}'...`,
-			);
+			this.logServerMessage(`Deleting '${resourceRecord[0].DBObjectID}'...`);
 			await dsDataResources.destroy({
 				PrimKey: resourceRecord[0].PrimKey,
 			});
@@ -496,10 +491,7 @@ export class Server {
 			if (process.stdout.isTTY) {
 				let namespaces = await dsNamespaces.retrieve({
 					maxRecords: -1,
-					sortOrder: [
-						{ GroupName: SortOrder.Asc },
-						{ Name: SortOrder.Asc },
-					],
+					sortOrder: [{ GroupName: SortOrder.Asc }, { Name: SortOrder.Asc }],
 				});
 
 				let question: PromptObject<"namespace"> = {
@@ -507,9 +499,7 @@ export class Server {
 					name: "namespace",
 					message: "Select namespace",
 					choices: namespaces.map((r) => ({
-						title: r.GroupName
-							? `${r.Name} (${r.GroupName})`
-							: r.Name,
+						title: r.GroupName ? `${r.Name} (${r.GroupName})` : r.Name,
 						value: r.Name,
 					})),
 					onState: (state) => {
@@ -690,9 +680,7 @@ export class Server {
 			Namespace_ID: namespaceId,
 		});
 		if (newBundle && newBundle.ID) {
-			this.logServerMessage(
-				`Created bundle ${name} with ID ${newBundle.ID}.`,
-			);
+			this.logServerMessage(`Created bundle ${name} with ID ${newBundle.ID}.`);
 			this.logServerMessage(`Creating bundle version...`);
 			await this.procCreateFirstBundleVersion.execute({
 				project_id: newBundle.ID,
@@ -753,9 +741,7 @@ export class Server {
 		// version.
 		if (transactions.length > 0 && articleVersions.length > 0) {
 			let transactionVersion = transactions[0].Version;
-			let articleVersion = Number(
-				articleVersions[0].ArticleId.split(".")[1],
-			);
+			let articleVersion = Number(articleVersions[0].ArticleId.split(".")[1]);
 
 			this.logServerMessage(
 				`Last published version: ${Number(articleVersion)}`,
@@ -779,9 +765,7 @@ export class Server {
 					maxRecords: 1,
 					sortOrder: [{ ArticleVersion: SortOrder.Desc }],
 				});
-				articleVersion = Number(
-					articleVersions[0].ArticleId.split(".")[1],
-				);
+				articleVersion = Number(articleVersions[0].ArticleId.split(".")[1]);
 			} while (articleVersion <= transactionVersion);
 		} else {
 			this.logServerMessage(`Publishing app (v${version})...`);
@@ -802,11 +786,7 @@ export class Server {
 	 * @param {string} templateId ID of the template to publish
 	 * @param {string} version Version comments to set as description
 	 */
-	async publishTemplate(
-		hostname: string,
-		templateId: string,
-		version: string,
-	) {
+	async publishTemplate(hostname: string, templateId: string, version: string) {
 		await this.publishWebAsset(hostname, templateId, "Template", version);
 	}
 
@@ -817,11 +797,7 @@ export class Server {
 	 * @param {string} scriptId ID of the site script to publish
 	 * @param {string} version Version comments to set as description
 	 */
-	async publishSiteScript(
-		hostname: string,
-		scriptId: string,
-		version: string,
-	) {
+	async publishSiteScript(hostname: string, scriptId: string, version: string) {
 		await this.publishWebAsset(hostname, scriptId, "Script", version);
 	}
 
@@ -896,9 +872,7 @@ export class Server {
 		content?: string,
 		contentTest?: string,
 	) {
-		this.logServerMessage(
-			`Getting template '${hostname}/${templateId}'...`,
-		);
+		this.logServerMessage(`Getting template '${hostname}/${templateId}'...`);
 		let template = await this.dsTemplates.retrieve({
 			whereClause: `[HostName] = '${hostname}' AND [Name] = '${templateId}'`,
 			maxRecords: 1,
@@ -914,18 +888,14 @@ export class Server {
 		}
 
 		if (template.length === 0) {
-			this.logServerMessage(
-				`Creating template '${hostname}/${templateId}'...`,
-			);
+			this.logServerMessage(`Creating template '${hostname}/${templateId}'...`);
 			await this.dsTemplates.create({
 				HostName: hostname,
 				Name: templateId,
 				...updates,
 			});
 		} else {
-			this.logServerMessage(
-				`Updating template '${hostname}/${templateId}'...`,
-			);
+			this.logServerMessage(`Updating template '${hostname}/${templateId}'...`);
 			await this.dsTemplates.update({
 				PrimKey: template[0].PrimKey,
 				...updates,
@@ -947,9 +917,7 @@ export class Server {
 		content?: string,
 		contentTest?: string,
 	) {
-		this.logServerMessage(
-			`Getting site script '${hostname}/${scriptId}'...`,
-		);
+		this.logServerMessage(`Getting site script '${hostname}/${scriptId}'...`);
 		let siteScripts = await this.dsSiteScripts.retrieve({
 			whereClause: `[HostName] = '${hostname}' AND [Name] = '${scriptId}'`,
 			maxRecords: 1,
@@ -1017,18 +985,14 @@ export class Server {
 		}
 
 		if (siteStyle.length === 0) {
-			this.logServerMessage(
-				`Creating site style '${hostname}/${styleId}'...`,
-			);
+			this.logServerMessage(`Creating site style '${hostname}/${styleId}'...`);
 			await this.dsSiteStyles.create({
 				HostName: hostname,
 				Name: styleId,
 				...updates,
 			});
 		} else {
-			this.logServerMessage(
-				`Updating site style '${hostname}/${styleId}'...`,
-			);
+			this.logServerMessage(`Updating site style '${hostname}/${styleId}'...`);
 			await this.dsSiteStyles.update({
 				PrimKey: siteStyle[0].PrimKey,
 				...updates,

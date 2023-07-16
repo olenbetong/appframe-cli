@@ -63,11 +63,7 @@ const dsArticlesStyles = af.generateApiDataHandler<ArticleStyleRecord>({
 
 const procCheckoutArticle = new af.ProcedureAPI<any, any>({
 	procedureId: "sstp_WebSiteCMS_CheckOutArticle",
-	parameters: [
-		{ name: "HostName" },
-		{ name: "ArticleID" },
-		{ name: "Forced" },
-	],
+	parameters: [{ name: "HostName" }, { name: "ArticleID" }, { name: "Forced" }],
 });
 
 const procRemovePreviousBuild = new af.ProcedureAPI<any, any>({
@@ -139,10 +135,9 @@ function Deployer() {
 					Style: await getFileContents(stylePath, file),
 				};
 
-				let current =
-					await dsArticlesStyles.retrieve<ArticleStyleRecord>({
-						whereClause: `[HostName] = '${articleHost}' AND [ArticleID] = '${articleId}' AND [ID] = '${file}'`,
-					});
+				let current = await dsArticlesStyles.retrieve<ArticleStyleRecord>({
+					whereClause: `[HostName] = '${articleHost}' AND [ArticleID] = '${articleId}' AND [ID] = '${file}'`,
+				});
 				if (current.length > 0) {
 					await dsArticlesStyles.update({
 						PrimKey: current[0].PrimKey,
@@ -160,10 +155,9 @@ function Deployer() {
 			setScriptCount(scripts.length);
 			for (let file of scripts) {
 				let scriptContent = await getFileContents(scriptPath, file);
-				let current =
-					await dsArticlesScripts.retrieve<ArticleScriptRecord>({
-						whereClause: `[HostName] = '${articleHost}' AND [ArticleID] = '${articleId}' AND [ID] = '${file}'`,
-					});
+				let current = await dsArticlesScripts.retrieve<ArticleScriptRecord>({
+					whereClause: `[HostName] = '${articleHost}' AND [ArticleID] = '${articleId}' AND [ID] = '${file}'`,
+				});
 
 				if (current.length > 0) {
 					await dsArticlesScripts.update({
@@ -205,10 +199,7 @@ function Deployer() {
 			for (let { file } of Object.values<any>(manifest)) {
 				if (file && file !== entry.file && file.endsWith(".min.js")) {
 					prefetchSet.add(file);
-				} else if (
-					file?.endsWith(".css") &&
-					!entry?.css?.includes(file)
-				) {
+				} else if (file?.endsWith(".css") && !entry?.css?.includes(file)) {
 					prefetchSet.add(file);
 				}
 			}

@@ -17,8 +17,7 @@ async function copyDatasourcesFromDev(articleWithHost?: string) {
 		try {
 			const pkg = await importJson("./package.json", true);
 			config = {
-				hostname:
-					pkg.appframe.article?.hostname ?? pkg.appframe.hostname,
+				hostname: pkg.appframe.article?.hostname ?? pkg.appframe.hostname,
 				article: pkg.appframe.article?.id ?? pkg.appframe.article,
 			};
 		} catch (error) {

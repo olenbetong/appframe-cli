@@ -37,10 +37,7 @@ export class Command extends BaseCommand {
 			).choices(["dev.obet.no", "stage.obet.no", "test.obet.no"]);
 			this.addOption(serverOption);
 		} else {
-			this.requiredOption(
-				"-s, --server <server>",
-				"server to connect to",
-			);
+			this.requiredOption("-s, --server <server>", "server to connect to");
 		}
 
 		return this;

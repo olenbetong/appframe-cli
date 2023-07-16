@@ -97,9 +97,7 @@ export function expose(name, value) {
 		if (objHasKey(namespace, keyName)) {
 			// If class is already defined, warn or show an alert
 			console.log(
-				chalk.yellow(
-					[name, keyName].join(".") + " is already defined!",
-				),
+				chalk.yellow([name, keyName].join(".") + " is already defined!"),
 			);
 		} else {
 			namespace[keyName] = value;

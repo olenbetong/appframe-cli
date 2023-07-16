@@ -34,11 +34,7 @@ async function publishAssets(options: { server: string; hostname: string }) {
 					continue;
 				}
 
-				await server.publishSiteScript(
-					hostname,
-					scriptName,
-					description,
-				);
+				await server.publishSiteScript(hostname, scriptName, description);
 			}
 		}
 
@@ -72,11 +68,7 @@ async function publishAssets(options: { server: string; hostname: string }) {
 					continue;
 				}
 
-				await server.uploadTemplate(
-					hostname,
-					templateName,
-					description,
-				);
+				await server.uploadTemplate(hostname, templateName, description);
 			}
 		}
 	}
@@ -86,11 +78,7 @@ const appPkg = await importJson("../package.json");
 const program = new Command();
 program
 	.version(appPkg.version)
-	.option(
-		"-s, --server <server>",
-		"Server to publish assets on",
-		"dev.obet.no",
-	)
+	.option("-s, --server <server>", "Server to publish assets on", "dev.obet.no")
 	.option("-h, --hostname <hostname>", "Only deploy assets for this hostname")
 	.action(publishAssets)
 	.parseAsync(process.argv);

@@ -106,8 +106,7 @@ async function publishFromDev(articleWithHost?: string, version?: string) {
 
 			config = {
 				article: pkg.appframe.article?.id ?? pkg.appframe.artcle,
-				hostname:
-					pkg.appframe.article?.hostname ?? pkg.appframe.hostname,
+				hostname: pkg.appframe.article?.hostname ?? pkg.appframe.hostname,
 				version,
 			};
 		} catch (error) {
@@ -146,9 +145,7 @@ async function publishFromDev(articleWithHost?: string, version?: string) {
 	} catch (error) {
 		console.log(chalk.red(`Failed to publish: ${(error as any).message}`));
 		console.log(
-			chalk.red(
-				`Last successful step: ${(error as any).lastSuccessfulStep}`,
-			),
+			chalk.red(`Last successful step: ${(error as any).lastSuccessfulStep}`),
 		);
 		process.exit(1);
 	}

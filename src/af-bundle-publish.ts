@@ -25,9 +25,7 @@ async function runStageOperations(
 
 		let { ID: id, Project_ID, Name, Namespace_ID } = bundle;
 		if (!Namespace_ID) {
-			throw Error(
-				`Bundle '${packageName}' is not assigned to a namespace`,
-			);
+			throw Error(`Bundle '${packageName}' is not assigned to a namespace`);
 		}
 
 		let namespace =
@@ -40,11 +38,7 @@ async function runStageOperations(
 		state.namespace = namespace;
 
 		if (operations.includes("publish")) {
-			await server.publishBundle(
-				Project_ID,
-				id,
-				`${packageName}@${version}`,
-			);
+			await server.publishBundle(Project_ID, id, `${packageName}@${version}`);
 			lastSuccessfulStep = "publish";
 		}
 

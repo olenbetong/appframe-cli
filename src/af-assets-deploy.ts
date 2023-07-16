@@ -105,8 +105,7 @@ async function deployAssets(options: {
 		if (site.templates) {
 			for (let templateName of Object.keys(site.templates)) {
 				let template = site.templates[templateName];
-				let hostname =
-					template.hostname ?? site.hostname ?? appframe.hostname;
+				let hostname = template.hostname ?? site.hostname ?? appframe.hostname;
 				let content;
 				let contentTest;
 
@@ -119,9 +118,7 @@ async function deployAssets(options: {
 					contentTest = content;
 				} else {
 					if (template.test) {
-						contentTest = await getProjectFileContents(
-							template.test,
-						);
+						contentTest = await getProjectFileContents(template.test);
 					}
 					if (template.prod) {
 						content = await getProjectFileContents(template.prod);
@@ -143,11 +140,7 @@ const appPkg = await importJson("../package.json");
 const program = new Command();
 program
 	.version(appPkg.version)
-	.option(
-		"-s, --server <server>",
-		"Server to deploy assets to",
-		"dev.obet.no",
-	)
+	.option("-s, --server <server>", "Server to deploy assets to", "dev.obet.no")
 	.option("-T, --no-test", "Do not deploy assets to test mode")
 	.option("-p, --production", "Deploy assets to production mode", false)
 	.option("-h, --hostname <hostname>", "Only deploy assets for this hostname")

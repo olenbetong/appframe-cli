@@ -11,10 +11,7 @@ program
 	.configureHelp({
 		sortSubcommands: true,
 	})
-	.command(
-		"deploy",
-		"Upload assets according to configuration in package.json",
-	)
+	.command("deploy", "Upload assets according to configuration in package.json")
 	.command(
 		"publish",
 		"Publish assets according to configuration in package.json",

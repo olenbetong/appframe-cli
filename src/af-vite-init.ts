@@ -91,11 +91,7 @@ async function initApp(name: string) {
 	});
 
 	let questions: PromptObject<
-		| "hostname"
-		| "newOrExisting"
-		| "namespace"
-		| "articleTitle"
-		| "articleId"
+		"hostname" | "newOrExisting" | "namespace" | "articleTitle" | "articleId"
 	>[] = [
 		{
 			type: "select",

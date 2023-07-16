@@ -86,10 +86,7 @@ type TemplateDef = {
 
 async function updateTemplateFile(template: TemplateDef) {
 	console.log(`Updating file from template: '${template.title}'...`);
-	await copyFile(
-		getCLIFile(template.source),
-		getProjectFile(template.target),
-	);
+	await copyFile(getCLIFile(template.source), getProjectFile(template.target));
 }
 
 async function* getFiles(dir: string): AsyncGenerator<string> {

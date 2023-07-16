@@ -44,8 +44,7 @@ async function runStageOperations(
 				let result = await prompts({
 					type: "confirm",
 					name: "confirmApply",
-					message:
-						"Are you sure you want to apply these transactions? (y)",
+					message: "Are you sure you want to apply these transactions? (y)",
 					initial: true,
 				});
 
@@ -61,17 +60,13 @@ async function runStageOperations(
 		}
 
 		if (operations.includes("verify-deploy") && isInteractive) {
-			let transactions = await server.getTransactions(
-				"deploy",
-				namespace,
-			);
+			let transactions = await server.getTransactions("deploy", namespace);
 			if (transactions.length > 0) {
 				console.table(transactions);
 				let result = await prompts({
 					type: "confirm",
 					name: "confirmDeploy",
-					message:
-						"Are you sure you want to deploy these transactions? (y)",
+					message: "Are you sure you want to deploy these transactions? (y)",
 					initial: true,
 				});
 

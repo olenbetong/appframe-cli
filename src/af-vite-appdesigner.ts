@@ -27,10 +27,7 @@ async function launchAppdesigner(options: {
 		let articleHost = appframe.article?.hostname ?? appframe.hostname;
 		let articleId = appframe.article?.id ?? appframe.article;
 
-		open(
-			`https://${hostname}/appdesigner?${articleHost}/${articleId}`,
-			args,
-		);
+		open(`https://${hostname}/appdesigner?${articleHost}/${articleId}`, args);
 	} catch (error: any) {
 		console.log(chalk.red(error.message));
 		process.exit(1);

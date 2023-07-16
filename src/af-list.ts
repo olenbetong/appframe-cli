@@ -64,8 +64,7 @@ async function listTransactions(
 		)
 			.map((t: any) => ({ Namespace: t[0], "Transaction count": t[1] }))
 			.sort(
-				(a: any, z: any) =>
-					z["Transaction count"] - a["Transaction count"],
+				(a: any, z: any) => z["Transaction count"] - a["Transaction count"],
 			);
 
 		console.table(byNamespace);

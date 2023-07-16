@@ -12,10 +12,7 @@ try {
 
 	try {
 		let pkg = await importJson("./package.json", true);
-		if (
-			pkg.dependencies?.[cliPkg.name] ||
-			pkg.devDependencies?.[cliPkg.name]
-		) {
+		if (pkg.dependencies?.[cliPkg.name] || pkg.devDependencies?.[cliPkg.name]) {
 			args.pop();
 			console.log(cmd, args.join(" "));
 			await spawnShellCommand(cmd, args);
@@ -27,9 +24,7 @@ try {
 			);
 		}
 	} catch (error: any) {
-		console.log(
-			chalk.blue("No package.json found, skipping local install"),
-		);
+		console.log(chalk.blue("No package.json found, skipping local install"));
 	}
 
 	console.log(chalk.green("Update completed."));

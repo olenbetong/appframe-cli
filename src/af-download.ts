@@ -13,10 +13,7 @@ async function downloadTransactions(
 		await getServerFromOptions(options);
 		let server = new Server(options.server);
 		let result = await server.login();
-		let namespace = await server.getNamespaceArgument(
-			namespaceArg,
-			options,
-		);
+		let namespace = await server.getNamespaceArgument(namespaceArg, options);
 
 		if (result !== true) {
 			throw Error("Login failed!");

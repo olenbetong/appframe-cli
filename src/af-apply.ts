@@ -21,10 +21,7 @@ async function applyTransactions(namespaceArg: string, options: ApplyOptions) {
 		await getServerFromOptions(options);
 		let server = new Server(options.server);
 		let result = await server.login();
-		let namespace = await server.getNamespaceArgument(
-			namespaceArg,
-			options,
-		);
+		let namespace = await server.getNamespaceArgument(namespaceArg, options);
 
 		if (result !== true) {
 			throw Error("Login failed!");
@@ -58,9 +55,7 @@ async function applyTransactions(namespaceArg: string, options: ApplyOptions) {
 			console.table(transactions);
 
 			if (isApproved) {
-				console.log(
-					chalk.blue("All transactions approved by CLI parameters."),
-				);
+				console.log(chalk.blue("All transactions approved by CLI parameters."));
 			} else if (isInteractive) {
 				if (onHold.length > 0) {
 					console.log("");
@@ -75,8 +70,7 @@ async function applyTransactions(namespaceArg: string, options: ApplyOptions) {
 				let result = await prompts({
 					type: "confirm",
 					name: "confirmApply",
-					message:
-						"Are you sure you want to apply these transactions? (n)",
+					message: "Are you sure you want to apply these transactions? (n)",
 					initial: false,
 				});
 

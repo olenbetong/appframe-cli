@@ -13,8 +13,7 @@ async function createApplicationRelease(
 	type: string,
 	options: { preid?: string; apply: boolean },
 ) {
-	let tempfile =
-		crypto.randomBytes(8).readBigUInt64LE(0).toString(24) + ".tmp";
+	let tempfile = crypto.randomBytes(8).readBigUInt64LE(0).toString(24) + ".tmp";
 
 	try {
 		let status = (await execShellCommand("git status --porcelain")).trim();

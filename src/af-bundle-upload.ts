@@ -50,10 +50,7 @@ async function prepareBundle(pkgName: string, options: { bundle: string }) {
 
 			let namespaces = await server.dsNamespaces.retrieve({
 				maxRecords: -1,
-				sortOrder: [
-					{ GroupName: SortOrder.Asc },
-					{ Name: SortOrder.Asc },
-				],
+				sortOrder: [{ GroupName: SortOrder.Asc }, { Name: SortOrder.Asc }],
 			});
 
 			let question: PromptObject<"bundleName" | "namespace">[] = [
@@ -75,9 +72,7 @@ async function prepareBundle(pkgName: string, options: { bundle: string }) {
 					name: "namespace",
 					message: "Select namespace",
 					choices: namespaces.map((r) => ({
-						title: r.GroupName
-							? `${r.Name} (${r.GroupName})`
-							: r.Name,
+						title: r.GroupName ? `${r.Name} (${r.GroupName})` : r.Name,
 						value: r.ID,
 					})),
 					onState: (state) => {
@@ -151,10 +146,7 @@ program
 		"[package]",
 		"Optional package name. If provided packs the npm package with name [package]",
 	)
-	.option(
-		"-b, --bundle <bundleName>",
-		"Override bundle name from package.json",
-	)
+	.option("-b, --bundle <bundleName>", "Override bundle name from package.json")
 	.action(prepareBundle);
 
 await program.parseAsync();
