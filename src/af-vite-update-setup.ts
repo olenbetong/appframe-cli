@@ -1,8 +1,14 @@
 import chalk from "chalk";
-import { access, copyFile, mkdir, readdir, writeFile } from "node:fs/promises";
+import {
+	access,
+	copyFile,
+	mkdir,
+	readdir,
+	writeFile,
+	unlink,
+} from "node:fs/promises";
 import { resolve } from "node:path";
 import prettier from "prettier";
-
 import babel from "@babel/core";
 
 import { BabelTransformImportPlugin } from "./lib/BabelTransformImportPlugin.js";
@@ -20,7 +26,7 @@ function getCLIFile(file: string) {
 async function fileExists(file: string, useCwd = false) {
 	let completeUrl = new URL(
 		file,
-		useCwd ? `file://${process.cwd()}/` : import.meta.url,
+		useCwd ? `file://${process.cwd()}/` : import.meta.url
 	);
 
 	try {
@@ -33,7 +39,7 @@ async function fileExists(file: string, useCwd = false) {
 
 async function removePackageIfExists(
 	packages: string[],
-	dependencies: string[],
+	dependencies: string[]
 ) {
 	for (let pkg of packages) {
 		if (dependencies.includes(pkg)) {
@@ -49,7 +55,7 @@ async function installPackage(
 		isDev?: boolean;
 		updateIfExists?: boolean;
 		dependencies: string[];
-	},
+	}
 ) {
 	let { isDev = false, updateIfExists = false, dependencies } = options;
 	if (typeof packages === "string") {
@@ -87,6 +93,12 @@ type TemplateDef = {
 async function updateTemplateFile(template: TemplateDef) {
 	console.log(`Updating file from template: '${template.title}'...`);
 	await copyFile(getCLIFile(template.source), getProjectFile(template.target));
+}
+
+async function removeFileIfExists(file: string) {
+	if (await fileExists(file)) {
+		unlink(getProjectFile(file));
+	}
 }
 
 async function* getFiles(dir: string): AsyncGenerator<string> {
@@ -141,7 +153,7 @@ async function upgradePackageConfig(pkg: any) {
 	let isVite = await fileExists("./vite.config.mjs", true);
 
 	pkg.scripts.start = isVite
-		? "af vite generate-types && node ./server.mjs"
+		? "af vite generate-types && vite.dev"
 		: "af vite generate-types && react-scripts start";
 	pkg.scripts.build = isVite ? "tsc && vite build" : "react-scripts build";
 	pkg.scripts.deploy = "af vite deploy";
@@ -197,7 +209,7 @@ async function upgradePackageConfig(pkg: any) {
 
 	await writeFile(
 		getProjectFile("./package.json"),
-		JSON.stringify(pkg, null, 2),
+		JSON.stringify(pkg, null, 2)
 	);
 }
 
@@ -277,6 +289,9 @@ async function updateProjectSetup() {
 	await updateTemplateFile(templates["vs-code-settings"]);
 	await updateTemplateFile(templates["eslint-config"]);
 	await updateTemplateFile(templates["prettier-config"]);
+
+	await removeFileIfExists("./server.mjs");
+	await removeFileIfExists("./index.html");
 }
 
 updateProjectSetup().catch((error) => {
