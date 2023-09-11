@@ -193,11 +193,20 @@ function Deployer() {
 				block = blocks[0];
 			}
 
-			let entry = manifest["index.html"];
+			let entry =
+				manifest["index.html"] ??
+				manifest["src/index.tsx"] ??
+				manifest["src/index.ts"] ??
+				manifest["src/index.jsx"] ??
+				manifest["src/index.js"];
 			let prefetchSet = new Set<string>();
 
 			for (let { file } of Object.values<any>(manifest)) {
-				if (file && file !== entry?.file && file.endsWith(".min.js")) {
+				if (
+					file &&
+					manifest[file]?.isEntry !== true &&
+					file.endsWith(".min.js")
+				) {
 					prefetchSet.add(file);
 				} else if (file?.endsWith(".css") && !entry?.css?.includes(file)) {
 					prefetchSet.add(file);
