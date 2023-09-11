@@ -197,7 +197,7 @@ function Deployer() {
 			let prefetchSet = new Set<string>();
 
 			for (let { file } of Object.values<any>(manifest)) {
-				if (file && file !== entry.file && file.endsWith(".min.js")) {
+				if (file && file !== entry?.file && file.endsWith(".min.js")) {
 					prefetchSet.add(file);
 				} else if (file?.endsWith(".css") && !entry?.css?.includes(file)) {
 					prefetchSet.add(file);
