@@ -410,17 +410,36 @@ export class Server {
 	 * @param {number | string} [namespace] ID of the namespace to generate transactions in
 	 */
 	async generate(namespace?: number | string) {
+		let { dsNamespaces } = this;
 		let params: any = {};
-
+		let namespaces: any[];
+		console.log("hei", namespace);
 		if (namespace) {
 			let n = await this.getNamespace(namespace);
+			namespaces = [n];
 			params.Namespace_ID = n.ID;
-			this.logServerMessage(`Generating transactions (${n.Name})...`);
 		} else {
-			this.logServerMessage("Generating transactions...");
+			namespaces = await dsNamespaces.retrieve({
+				maxRecords: -1,
+				whereClause: "[GroupName] IS NULL OR [GroupName] <> 'AF'",
+				sortOrder: [{ Name: SortOrder.Asc }],
+			});
 		}
 
-		await this.procGenerate.execute(params);
+		if (namespaces.length === 0) {
+			this.logServerMessage(chalk.yellow("No namespaces found"));
+			return;
+		}
+
+		for (let namespace of namespaces) {
+			params = {
+				Namespace_ID: namespace.ID,
+			};
+
+			this.logServerMessage(`Generating transactions (${namespace.Name})...`);
+
+			await this.procGenerate.execute(params);
+		}
 	}
 
 	async getArticle(hostname: string, article: string) {
