@@ -413,7 +413,7 @@ export class Server {
 		let { dsNamespaces } = this;
 		let params: any = {};
 		let namespaces: any[];
-		console.log("hei", namespace);
+
 		if (namespace) {
 			let n = await this.getNamespace(namespace);
 			namespaces = [n];
