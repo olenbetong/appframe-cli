@@ -114,20 +114,63 @@ export class Server {
 		this.procPublishWebAsset = getPublishWebAssetProcedure(this.client);
 	}
 
+	private getHostPrefix() {
+		let colorFn = chalk.bgRed;
+		if (this.hostname.startsWith("dev")) {
+			colorFn = chalk.bgGreen;
+		} else if (this.hostname.startsWith("stage")) {
+			colorFn = chalk.bgYellow;
+		}
+
+		let hostname = this.hostname.replace(/(\.obet\.no|\.olenbetong\.no)/g, "");
+
+		return colorFn(`[${hostname}]`);
+	}
+
+	async logAsyncTask<T>(
+		task: Promise<T>,
+		runningMessage: string,
+		completedMessage?: string | ((param: Awaited<T>) => string | undefined),
+	): Promise<T> {
+		if (isInteractive) {
+			let start = performance.now();
+
+			process.stdout.clearLine(0);
+			process.stdout.cursorTo(0);
+			process.stdout.write(`${this.getHostPrefix()} ${runningMessage}`);
+
+			let interval = setInterval(() => {
+				process.stdout.write(".");
+			}, 250);
+
+			try {
+				let result = await task;
+
+				process.stdout.clearLine(0);
+				process.stdout.cursorTo(0);
+				process.stdout.write(
+					`${this.getHostPrefix()} ${
+						(typeof completedMessage === "function"
+							? completedMessage(result)
+							: completedMessage) ?? runningMessage
+					} (${Math.floor(performance.now() - start)}ms)\n`,
+				);
+
+				return result;
+			} catch (error) {
+				process.stdout.write("\n");
+				throw error;
+			} finally {
+				clearInterval(interval);
+			}
+		}
+
+		return await task;
+	}
+
 	logServerMessage(message: string) {
 		if (isInteractive) {
-			let colorFn = chalk.bgRed;
-			if (this.hostname.startsWith("dev")) {
-				colorFn = chalk.bgGreen;
-			} else if (this.hostname.startsWith("stage")) {
-				colorFn = chalk.bgYellow;
-			}
-
-			let hostname = this.hostname.replace(
-				/(\.obet\.no|\.olenbetong\.no)/g,
-				"",
-			);
-			console.log(colorFn(`[${hostname}]`) + ` ${message}`);
+			console.log(`${this.getHostPrefix()} ${message}`);
 		}
 	}
 
@@ -160,16 +203,20 @@ export class Server {
 			throw Error("No password provided.");
 		}
 
-		this.logServerMessage("Logging in...");
-		return await this.client.login(this.username, this.password);
+		let task = this.client.login(this.username, this.password);
+
+		return await this.logAsyncTask(task, "Logging in", "Logged in");
 	}
 
 	async addDataResource(id: string, name?: string) {
-		this.logServerMessage(`Adding data resource (${id})...`);
-		await this.dsDataResources.create({
-			DBObjectID: id,
-			Name: name,
-		});
+		await this.logAsyncTask(
+			this.dsDataResources.create({
+				DBObjectID: id,
+				Name: name,
+			}),
+			`Adding data resource (${id})`,
+			`Data resource added (${id})`,
+		);
 	}
 
 	/**
@@ -179,16 +226,18 @@ export class Server {
 	 */
 	async apply(namespace?: string | number) {
 		let params: any = {};
+		let message: string;
 
 		if (namespace) {
 			let n = await this.getNamespace(namespace);
 			params.Namespaces = String(n.ID);
-			this.logServerMessage(`Applying updates (${n.Name})...`);
+			message = `Applying updates (${n.Name})`;
 		} else {
-			this.logServerMessage("Applying updates...");
+			message = "Applying updates";
 		}
 
-		await this.procApply.execute(params);
+		let task = this.procApply.execute(params);
+		return await this.logAsyncTask(task, message, "Updates applied");
 	}
 
 	/**
@@ -239,23 +288,26 @@ export class Server {
 		articleId: string;
 		roleId: number;
 	}) {
-		this.logServerMessage(
-			`Adding role ${roleId} to article ${articleId}'s permissions...`,
+		await this.logAsyncTask(
+			this.dsArticlesPermissions.create({
+				ArticleID: articleId,
+				RoleID: roleId,
+				HostName: hostname,
+			}),
+			`Adding role ${roleId} to article ${articleId}'s permissions`,
 		);
-		await this.dsArticlesPermissions.create({
-			ArticleID: articleId,
-			RoleID: roleId,
-			HostName: hostname,
-		});
 	}
 
 	async checkoutArticle(hostname: string, article: string) {
-		this.logServerMessage(`Checking out article (${hostname}/${article})...`);
-		await this.procCheckoutArticle.execute({
-			HostName: hostname,
-			ArticleID: article,
-			Forced: true,
-		});
+		await this.logAsyncTask(
+			this.procCheckoutArticle.execute({
+				HostName: hostname,
+				ArticleID: article,
+				Forced: true,
+			}),
+			`Checking out article (${hostname}/${article})`,
+			`Article (${hostname}/${article}) checked out`,
+		);
 	}
 
 	async createArticle({
@@ -273,16 +325,19 @@ export class Server {
 		title: string;
 		template: string;
 	}) {
-		this.logServerMessage(`Creating article ${hostname}/${id}...`);
-		await this.procCreateArticle.execute({
-			HostName: hostname,
-			ArticleID: id,
-			HTMLContent: htmlContent,
-			NamespaceID: namespaceId,
-			Title: title,
-			TemplateID: template ?? null,
-			ParentArticleID: null,
-		});
+		await this.logAsyncTask(
+			this.procCreateArticle.execute({
+				HostName: hostname,
+				ArticleID: id,
+				HTMLContent: htmlContent,
+				NamespaceID: namespaceId,
+				Title: title,
+				TemplateID: template ?? null,
+				ParentArticleID: null,
+			}),
+			`Creating article ${hostname}/${id}`,
+			`Article ${hostname}/${id} created`,
+		);
 	}
 
 	async deleteDataResource(id: string) {
@@ -294,10 +349,13 @@ export class Server {
 		});
 
 		if (resourceRecord.length === 1) {
-			this.logServerMessage(`Deleting '${resourceRecord[0].DBObjectID}'...`);
-			await dsDataResources.destroy({
-				PrimKey: resourceRecord[0].PrimKey,
-			});
+			await this.logAsyncTask(
+				dsDataResources.destroy({
+					PrimKey: resourceRecord[0].PrimKey,
+				}),
+				`Deleting '${resourceRecord[0].DBObjectID}'`,
+				`'${resourceRecord[0].DBObjectID}' deleted`,
+			);
 		} else {
 			this.logServerMessage(
 				chalk.red(
@@ -315,16 +373,17 @@ export class Server {
 	 */
 	async deploy(namespace?: string | number) {
 		let params: any = {};
+		let message: string;
 
 		if (namespace) {
 			let n = await this.getNamespace(namespace);
 			params.Namespace_ID = n.ID;
-			this.logServerMessage(`Deploying (${n.Name})...`);
+			message = `Deploying (${n.Name})`;
 		} else {
-			this.logServerMessage("Deploying...");
+			message = "Deploying";
 		}
 
-		await this.procDeploy.execute(params);
+		await this.logAsyncTask(this.procDeploy.execute(params), message);
 	}
 
 	/**
@@ -359,12 +418,14 @@ export class Server {
 	 */
 	async download(namespace: string) {
 		let url = "/api/ob-deploy/download";
+		let message: string;
+
 		if (namespace) {
 			let n = await this.getNamespace(namespace);
 			url += "/1/" + n.Name;
-			this.logServerMessage(`Downloading updates (${n.Name})...`);
+			message = `Downloading updates (${n.Name})`;
 		} else {
-			this.logServerMessage(`Downloading updates...`);
+			message = `Downloading updates`;
 		}
 
 		let attempt = 1;
@@ -372,9 +433,12 @@ export class Server {
 
 		while (retry) {
 			try {
-				let result = await this.client.afFetch(url, {
-					method: "POST",
-				});
+				let result = await this.logAsyncTask(
+					this.client.afFetch(url, {
+						method: "POST",
+					}),
+					message,
+				);
 
 				if (result.headers.get("Content-Type")?.includes("json")) {
 					let data = await result.json();
@@ -413,7 +477,7 @@ export class Server {
 		let { dsNamespaces } = this;
 		let params: any = {};
 		let namespaces: any[];
-		console.log("hei", namespace);
+
 		if (namespace) {
 			let n = await this.getNamespace(namespace);
 			namespaces = [n];
@@ -436,9 +500,11 @@ export class Server {
 				Namespace_ID: namespace.ID,
 			};
 
-			this.logServerMessage(`Generating transactions (${namespace.Name})...`);
-
-			await this.procGenerate.execute(params);
+			await this.logAsyncTask(
+				this.procGenerate.execute(params),
+				`Generating transactions (${namespace.Name})`,
+				`Transactions generated (${namespace.Name})`,
+			);
 		}
 	}
 
@@ -461,11 +527,13 @@ export class Server {
 	 */
 	async getBundle(bundleName: string) {
 		let { dsBundles } = this;
-		this.logServerMessage(`Getting bundle (${bundleName})...`);
-		let bundle = await dsBundles.retrieve({
-			maxRecords: 1,
-			whereClause: `[Name] = '${bundleName}' AND [Version] = 0`,
-		});
+		let bundle = await this.logAsyncTask(
+			dsBundles.retrieve({
+				maxRecords: 1,
+				whereClause: `[Name] = '${bundleName}' AND [Version] = 0`,
+			}),
+			`Getting bundle (${bundleName})`,
+		);
 
 		return bundle[0];
 	}
@@ -619,18 +687,20 @@ export class Server {
 	 * @param {string} name Name of the data resource
 	 */
 	async getResourceDefinition(name: string) {
-		this.logServerMessage(`Getting resource definition (${name})...`);
-		let response = await this.client.afFetch("/api/data", {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-				Accept: "application/json",
-			},
-			body: JSON.stringify({
-				operation: "resource-definition",
-				resourceName: name,
+		let response = await this.logAsyncTask(
+			this.client.afFetch("/api/data", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+					Accept: "application/json",
+				},
+				body: JSON.stringify({
+					operation: "resource-definition",
+					resourceName: name,
+				}),
 			}),
-		});
+			`Getting resource definition (${name})`,
+		);
 
 		let data = await response.json();
 
@@ -662,19 +732,23 @@ export class Server {
 
 		filter.push("[Type] <> 98");
 
+		let message: string;
+
 		if (namespace) {
 			let n = await this.getNamespace(namespace);
 			filter.push(`[Namespace] = '${n.Name}'`);
-			this.logServerMessage(`Getting transactions (${n.Name})...`);
+			message = `Getting transactions (${n.Name})`;
 		} else {
-			this.logServerMessage(`Getting transactions...`);
+			message = `Getting transactions`;
 		}
 
 		let { dsTransactions } = this;
-		let transactions = await dsTransactions.retrieve({
+		let task = dsTransactions.retrieve({
 			whereClause: filter.filter(Boolean).join(" AND "),
 			maxRecords: -1,
 		});
+
+		let transactions = await this.logAsyncTask(task, message);
 
 		return transactions.map((r) => ({
 			Namespace: r.Namespace,
@@ -693,17 +767,26 @@ export class Server {
 	 * @param {number} namespaceId ID of the namespace to add the bundle to
 	 */
 	async createBundle(name: string, namespaceId: number) {
-		this.logServerMessage(`Creating bundle (${name})...`);
-		let newBundle = await this.dsBundlesProjects.create({
-			Name: name,
-			Namespace_ID: namespaceId,
-		});
+		let newBundle = await this.logAsyncTask(
+			this.dsBundlesProjects.create({
+				Name: name,
+				Namespace_ID: namespaceId,
+			}),
+			`Creating bundle (${name})`,
+			(newBundle) => {
+				if (newBundle && newBundle.ID) {
+					return `Bundle '${name}' created with ID ${newBundle.ID}.`;
+				}
+			},
+		);
+
 		if (newBundle && newBundle.ID) {
-			this.logServerMessage(`Created bundle ${name} with ID ${newBundle.ID}.`);
-			this.logServerMessage(`Creating bundle version...`);
-			await this.procCreateFirstBundleVersion.execute({
-				project_id: newBundle.ID,
-			});
+			await this.logAsyncTask(
+				this.procCreateFirstBundleVersion.execute({
+					project_id: newBundle.ID,
+				}),
+				`Creating bundle version`,
+			);
 		}
 
 		return newBundle;
@@ -721,13 +804,16 @@ export class Server {
 		versionId: number,
 		description: string,
 	) {
-		this.logServerMessage("Publishing bundle...");
-		await this.procPublishBundle.execute({
-			description,
-			issueid: null,
-			project_id: projectId,
-			ver_id: versionId,
-		});
+		await this.logAsyncTask(
+			this.procPublishBundle.execute({
+				description,
+				issueid: null,
+				project_id: projectId,
+				ver_id: versionId,
+			}),
+			"Publishing bundle",
+			"Bundle published",
+		);
 	}
 
 	/**
@@ -770,31 +856,36 @@ export class Server {
 			);
 
 			do {
-				this.logServerMessage(`Publishing app (${version})...`);
-
-				await this.procPublishArticle.execute({
-					FromHostName: hostname,
-					FromArticle: articleId,
-					ToArticle: articleId,
-					Description: version,
-				});
+				await this.logAsyncTask(
+					this.procPublishArticle.execute({
+						FromHostName: hostname,
+						FromArticle: articleId,
+						ToArticle: articleId,
+						Description: version,
+					}),
+					`Publishing app (${version})`,
+					`App published (${version})`,
+				);
 
 				articleVersions = await dsArticles.retrieve({
 					whereClause: `[HostName] = '${hostname}' AND [ArticleDevID] = '${articleId}'`,
 					maxRecords: 1,
 					sortOrder: [{ ArticleVersion: SortOrder.Desc }],
 				});
+
 				articleVersion = Number(articleVersions[0].ArticleId.split(".")[1]);
 			} while (articleVersion <= transactionVersion);
 		} else {
-			this.logServerMessage(`Publishing app (v${version})...`);
-
-			await this.procPublishArticle.execute({
-				FromHostName: hostname,
-				FromArticle: articleId,
-				ToArticle: articleId,
-				Description: "v" + version,
-			});
+			await this.logAsyncTask(
+				this.procPublishArticle.execute({
+					FromHostName: hostname,
+					FromArticle: articleId,
+					ToArticle: articleId,
+					Description: version,
+				}),
+				`Publishing app (${version})`,
+				`App published (${version})`,
+			);
 		}
 	}
 
@@ -845,16 +936,17 @@ export class Server {
 		type: "Template" | "Script" | "Style",
 		description: string,
 	) {
-		this.logServerMessage(
-			`Publishing ${type.toLocaleLowerCase()} '${hostname}/${name}'...`,
+		await this.logAsyncTask(
+			this.procPublishWebAsset.execute({
+				Hostname: hostname,
+				Name: name,
+				Type: type,
+				Description: description,
+				IssueID: null,
+			}),
+			`Publishing ${type.toLocaleLowerCase()} '${hostname}/${name}'`,
+			`Published ${type.toLocaleLowerCase()} '${hostname}/${name}'`,
 		);
-		await this.procPublishWebAsset.execute({
-			Hostname: hostname,
-			Name: name,
-			Type: type,
-			Description: description,
-			IssueID: null,
-		});
 	}
 
 	/**
@@ -865,16 +957,23 @@ export class Server {
 	 * @param {string} file Path to the zip file
 	 */
 	async uploadBundle(projectId: string, versionId: number, file: string) {
-		this.logServerMessage(`Uploading bundle file '${file}'...`);
-		// @ts-ignore
-		let uploader = new FileUploader({
-			route: `/api/bundle-push/${versionId}`,
-			client: this.client,
-		});
+		let run = async () => {
+			// @ts-ignore
+			let uploader = new FileUploader({
+				route: `/api/bundle-push/${versionId}`,
+				client: this.client,
+			});
 
-		let zipFile = await fileFromPath(file);
-		// @ts-ignore
-		await uploader.upload(zipFile, { Project_ID: projectId });
+			let zipFile = await fileFromPath(file);
+			// @ts-ignore
+			await uploader.upload(zipFile, { Project_ID: projectId });
+		};
+
+		await this.logAsyncTask(
+			run(),
+			`Uploading bundle file '${file}'`,
+			`Uploaded bundle file '${file}'`,
+		);
 	}
 
 	/**
@@ -891,11 +990,13 @@ export class Server {
 		content?: string,
 		contentTest?: string,
 	) {
-		this.logServerMessage(`Getting template '${hostname}/${templateId}'...`);
-		let template = await this.dsTemplates.retrieve({
-			whereClause: `[HostName] = '${hostname}' AND [Name] = '${templateId}'`,
-			maxRecords: 1,
-		});
+		let template = await this.logAsyncTask(
+			this.dsTemplates.retrieve({
+				whereClause: `[HostName] = '${hostname}' AND [Name] = '${templateId}'`,
+				maxRecords: 1,
+			}),
+			`Getting template '${hostname}/${templateId}'`,
+		);
 
 		let updates: any = {};
 		if (content !== undefined) {
@@ -907,18 +1008,24 @@ export class Server {
 		}
 
 		if (template.length === 0) {
-			this.logServerMessage(`Creating template '${hostname}/${templateId}'...`);
-			await this.dsTemplates.create({
-				HostName: hostname,
-				Name: templateId,
-				...updates,
-			});
+			await this.logAsyncTask(
+				this.dsTemplates.create({
+					HostName: hostname,
+					Name: templateId,
+					...updates,
+				}),
+				`Creating template '${hostname}/${templateId}'`,
+				`Template '${hostname}/${templateId}' created`,
+			);
 		} else {
-			this.logServerMessage(`Updating template '${hostname}/${templateId}'...`);
-			await this.dsTemplates.update({
-				PrimKey: template[0].PrimKey,
-				...updates,
-			});
+			await this.logAsyncTask(
+				this.dsTemplates.update({
+					PrimKey: template[0].PrimKey,
+					...updates,
+				}),
+				`Updating template '${hostname}/${templateId}'`,
+				`Template '${hostname}/${templateId}' updated`,
+			);
 		}
 	}
 
@@ -952,25 +1059,24 @@ export class Server {
 		}
 
 		if (siteScripts.length === 0) {
-			this.logServerMessage(
-				`Site script '${hostname}/${scriptId}' not found. Creating...`,
+			await this.logAsyncTask(
+				this.dsSiteScripts.create({
+					HostName: hostname,
+					Name: scriptId,
+					...updates,
+				}),
+				`Site script '${hostname}/${scriptId}' not found. Creating..`,
+				`Site script '${hostname}/${scriptId}' created`,
 			);
-			this.logServerMessage(
-				`Creating site script '${hostname}/${scriptId}'...`,
-			);
-			await this.dsSiteScripts.create({
-				HostName: hostname,
-				Name: scriptId,
-				...updates,
-			});
 		} else {
-			this.logServerMessage(
-				`Updating site script '${hostname}/${scriptId}'...`,
+			await this.logAsyncTask(
+				this.dsSiteScripts.update({
+					PrimKey: siteScripts[0].PrimKey,
+					...updates,
+				}),
+				`Updating site script '${hostname}/${scriptId}'`,
+				`Site script '${hostname}/${scriptId}' updated`,
 			);
-			await this.dsSiteScripts.update({
-				PrimKey: siteScripts[0].PrimKey,
-				...updates,
-			});
 		}
 	}
 
@@ -988,11 +1094,13 @@ export class Server {
 		content?: string,
 		contentTest?: string,
 	) {
-		this.logServerMessage(`Getting site style '${hostname}/${styleId}'...`);
-		let siteStyle = await this.dsSiteStyles.retrieve({
-			whereClause: `[HostName] = '${hostname}' AND [Name] = '${styleId}'`,
-			maxRecords: 1,
-		});
+		let siteStyle = await this.logAsyncTask(
+			this.dsSiteStyles.retrieve({
+				whereClause: `[HostName] = '${hostname}' AND [Name] = '${styleId}'`,
+				maxRecords: 1,
+			}),
+			`Getting site style '${hostname}/${styleId}'`,
+		);
 
 		let updates: any = {};
 		if (content !== undefined) {
@@ -1004,18 +1112,24 @@ export class Server {
 		}
 
 		if (siteStyle.length === 0) {
-			this.logServerMessage(`Creating site style '${hostname}/${styleId}'...`);
-			await this.dsSiteStyles.create({
-				HostName: hostname,
-				Name: styleId,
-				...updates,
-			});
+			await this.logAsyncTask(
+				this.dsSiteStyles.create({
+					HostName: hostname,
+					Name: styleId,
+					...updates,
+				}),
+				`Creating site style '${hostname}/${styleId}'`,
+				`Site style '${hostname}/${styleId}' created`,
+			);
 		} else {
-			this.logServerMessage(`Updating site style '${hostname}/${styleId}'...`);
-			await this.dsSiteStyles.update({
-				PrimKey: siteStyle[0].PrimKey,
-				...updates,
-			});
+			await this.logAsyncTask(
+				this.dsSiteStyles.update({
+					PrimKey: siteStyle[0].PrimKey,
+					...updates,
+				}),
+				`Updating site style '${hostname}/${styleId}'`,
+				`Site style '${hostname}/${styleId}' updated`,
+			);
 		}
 	}
 
@@ -1030,13 +1144,14 @@ export class Server {
 	 * @param {string} articleId
 	 */
 	async copyDatasourcesFromDev(hostname: string, articleId: string) {
-		this.logServerMessage(
-			`Copying datasources from dev for '${hostname}/${articleId}'...`,
+		await this.logAsyncTask(
+			this.procCopyDataSourcesFromDev.execute({
+				Hostname: hostname,
+				ArticleId: articleId,
+			}),
+			`Copying data sources from dev for '${hostname}/${articleId}'`,
+			`Data sources for '${hostname}/${articleId}' copied from dev`,
 		);
-		await this.procCopyDataSourcesFromDev.execute({
-			Hostname: hostname,
-			ArticleId: articleId,
-		});
 	}
 
 	fetch(url: string | RequestInit, init?: RequestInit) {

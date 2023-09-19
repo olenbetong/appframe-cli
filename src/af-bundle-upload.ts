@@ -91,7 +91,6 @@ async function prepareBundle(pkgName: string, options: { bundle: string }) {
 			if (result.bundleName) {
 				await server.createBundle(result.bundleName, result.namespace);
 				bundle = await server.getBundle(result.bundleName);
-				console.log(bundle);
 			} else {
 				process.exit(0);
 			}
