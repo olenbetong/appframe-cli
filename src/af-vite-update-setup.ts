@@ -26,7 +26,7 @@ function getCLIFile(file: string) {
 async function fileExists(file: string, useCwd = false) {
 	let completeUrl = new URL(
 		file,
-		useCwd ? `file://${process.cwd()}/` : import.meta.url
+		useCwd ? `file://${process.cwd()}/` : import.meta.url,
 	);
 
 	try {
@@ -39,7 +39,7 @@ async function fileExists(file: string, useCwd = false) {
 
 async function removePackageIfExists(
 	packages: string[],
-	dependencies: string[]
+	dependencies: string[],
 ) {
 	for (let pkg of packages) {
 		if (dependencies.includes(pkg)) {
@@ -55,7 +55,7 @@ async function installPackage(
 		isDev?: boolean;
 		updateIfExists?: boolean;
 		dependencies: string[];
-	}
+	},
 ) {
 	let { isDev = false, updateIfExists = false, dependencies } = options;
 	if (typeof packages === "string") {
@@ -96,7 +96,7 @@ async function updateTemplateFile(template: TemplateDef) {
 }
 
 async function removeFileIfExists(file: string) {
-	if (await fileExists(file)) {
+	if (await fileExists(file, true)) {
 		unlink(getProjectFile(file));
 	}
 }
@@ -153,7 +153,7 @@ async function upgradePackageConfig(pkg: any) {
 	let isVite = await fileExists("./vite.config.mjs", true);
 
 	pkg.scripts.start = isVite
-		? "af vite generate-types && vite.dev"
+		? "af vite generate-types && vite dev"
 		: "af vite generate-types && react-scripts start";
 	pkg.scripts.build = isVite ? "tsc && vite build" : "react-scripts build";
 	pkg.scripts.deploy = "af vite deploy";
@@ -209,7 +209,7 @@ async function upgradePackageConfig(pkg: any) {
 
 	await writeFile(
 		getProjectFile("./package.json"),
-		JSON.stringify(pkg, null, 2)
+		JSON.stringify(pkg, null, 2),
 	);
 }
 
