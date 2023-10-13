@@ -5,7 +5,7 @@
 		"af": "./cli/af.js"
 	},
 	"type": "module",
-	"version": "3.47.4",
+	"version": "3.47.5",
 	"license": "MIT",
 	"scripts": {
 		"build": "tsc",
