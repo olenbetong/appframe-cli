@@ -222,7 +222,7 @@ function Deployer() {
 
 			let html = `
 <script>
-af?.common?.expose?.("af.article.version", "${version}");
+window.af?.common?.expose?.("af.article.version", "${version}");
 </script>
 <script src="${entry.file.replace(
 				"file/article",
