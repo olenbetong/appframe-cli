@@ -8,7 +8,7 @@ are available anymore.
 To add to the current project run this command
 
 ```
-npm install --save-dev @olenbetong/appframe-cli
+pnpm install --save-dev @olenbetong/appframe-cli
 ```
 
 ## Commands

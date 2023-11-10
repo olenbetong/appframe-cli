@@ -39,9 +39,9 @@ export function execShellCommand(
  */
 export function spawnShellCommand(cmd: string, args: string[]): Promise<void> {
 	return new Promise((resolve, reject) => {
-		let cra = spawn(cmd, args, { stdio: "inherit" });
+		let proc = spawn(cmd, args, { stdio: "inherit" });
 
-		cra.on("close", (code) => {
+		proc.on("close", (code) => {
 			if (code === 0) {
 				resolve();
 			} else {
@@ -49,7 +49,7 @@ export function spawnShellCommand(cmd: string, args: string[]): Promise<void> {
 			}
 		});
 
-		cra.on("error", (error) => {
+		proc.on("error", (error) => {
 			console.error(chalk.red(error.message));
 			reject(error);
 		});

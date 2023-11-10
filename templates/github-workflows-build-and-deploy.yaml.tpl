@@ -13,16 +13,19 @@ jobs:
         with:
           node-version: '18.x'
           registry-url: 'https://registry.npmjs.org'
-      - run: npm install
-      - run: npm run build
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
+      - run: pnpm install
+      - run: pnpm run build
         env:
           APPFRAME_LOGIN: ${{ secrets.APPFRAME_LOGIN }}
           APPFRAME_PWD: ${{ secrets.APPFRAME_PWD }}
-      - run: npx af vite deploy
+      - run: pnpm exec af vite deploy
         env:
           APPFRAME_LOGIN: ${{ secrets.APPFRAME_LOGIN }}
           APPFRAME_PWD: ${{ secrets.APPFRAME_PWD }}
-      - run: npx af vite publish
+      - run: pnpm exec af vite publish
         env:
           APPFRAME_LOGIN: ${{ secrets.APPFRAME_LOGIN }}
           APPFRAME_PWD: ${{ secrets.APPFRAME_PWD }}

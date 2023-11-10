@@ -37,7 +37,6 @@ program
 		"Copies datasources for an article from SynergiDev to SynergiStage",
 	)
 	.alias("cd")
-	.command("migrate-from-cra", "Migrates a CRA project to use Vite")
 	.command(
 		"release",
 		"Asks you to write release notes for the current version, and publishes the application. !!NB!! Will apply on production!",

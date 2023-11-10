@@ -28,10 +28,10 @@ async function createApplicationRelease(
 		let { appframe } = appPkg;
 		let { hostname, id } = appframe.article;
 		let server = new Server("dev.obet.no");
-
+		console.log("prompt version");
 		let nextVersion = (
 			await execShellCommand(
-				`npx semver ${appPkg.version} -i ${type} ${
+				`pnpm exec semver ${appPkg.version} -i ${type} ${
 					options.preid ? `--preid ${options.preid}` : ""
 				}`,
 			)
@@ -48,7 +48,7 @@ async function createApplicationRelease(
 		}
 
 		console.log("Running type checks...");
-		await spawnShellCommand("npx", ["tsc"]);
+		await spawnShellCommand("pnpm", ["exec", "tsc"]);
 		await server.login();
 
 		let { Namespace } = await server.getArticle(hostname, id);
@@ -66,7 +66,7 @@ async function createApplicationRelease(
 
 		let version = (
 			await execShellCommand(
-				`npm version ${type} ${
+				`pnpm version ${type} ${
 					options.preid ? `--preid ${options.preid}` : ""
 				}`,
 			)

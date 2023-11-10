@@ -59,11 +59,13 @@ program
 	)
 	.showSuggestionAfterError();
 
+let latestVersionPromise = execShellCommand(
+	"pnpm view @olenbetong/appframe-cli version",
+);
+
 program.action(async () => {
 	program.outputHelp();
-	let latest = await execShellCommand(
-		"npm view @olenbetong/appframe-cli version",
-	);
+	let latest = await latestVersionPromise;
 	latest = latest.trim();
 	if (semverCompare(latest, appPkg.version) > 0) {
 		console.log(

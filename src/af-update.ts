@@ -4,7 +4,7 @@ import { importJson } from "./lib/importJson.js";
 
 try {
 	let cliPkg = await importJson("../package.json");
-	let cmd = process.platform === "win32" ? "npm.cmd" : "npm";
+	let cmd = process.platform === "win32" ? "pnpm.cmd" : "pnpm";
 	let args = ["install", "@olenbetong/appframe-cli@latest", "-g"];
 
 	console.log(cmd, args.join(" "));

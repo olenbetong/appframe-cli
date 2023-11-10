@@ -46,7 +46,7 @@ async function tryGitCommit() {
 }
 
 async function installDependencies() {
-	await execShellCommand(`npm install`);
+	await execShellCommand(`pnpm install`);
 }
 
 async function copyTemplateRepo(name: string) {
@@ -228,16 +228,16 @@ export const ARTICLE_TITLE = "${result.articleTitle}";`,
 	console.log(`Success! Created ${name} at ./${name}`);
 	console.log("Inside that directory, you can run several commands:");
 	console.log();
-	console.log(chalk.cyan(`  npm start`));
+	console.log(chalk.cyan(`  pnpm start`));
 	console.log("    Starts the development server.");
 	console.log();
-	console.log(chalk.cyan(`  npm run build`));
+	console.log(chalk.cyan(`  pnpm run build`));
 	console.log("    Bundles the app into static files for production.");
 	console.log();
 	console.log("We suggest that you begin by typing:");
 	console.log();
 	console.log(chalk.cyan("  cd"), name);
-	console.log(`  ${chalk.cyan(`npm start`)}`);
+	console.log(`  ${chalk.cyan(`pnpm start`)}`);
 	console.log();
 	console.log("Happy hacking!");
 }

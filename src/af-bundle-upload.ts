@@ -26,7 +26,7 @@ async function prepareBundle(pkgName: string, options: { bundle: string }) {
 				version = pkgName.substring(lastAtSign + 1);
 			} else {
 				name = pkgName;
-				version = await execShellCommand(`npm view ${pkgName} version`);
+				version = await execShellCommand(`pnpm view ${pkgName} version`);
 				version = version.trim();
 			}
 		} else {
@@ -108,7 +108,7 @@ async function prepareBundle(pkgName: string, options: { bundle: string }) {
 		console.log("Removing previous...");
 		await execShellCommand(`rm -rf ${rootOutputFolder}`);
 		console.log("Packing...");
-		await execShellCommand(pkgName ? `npm pack ${pkgName}` : "npm pack");
+		await execShellCommand(pkgName ? `pnpm pack ${pkgName}` : "pnpm pack");
 		console.log("Making output directory...");
 		await execShellCommand(`mkdir -p ${name}`);
 		console.log(`Extracting '${tarball}'...`);

@@ -8,10 +8,6 @@ import {
 	unlink,
 } from "node:fs/promises";
 import { resolve } from "node:path";
-import prettier from "prettier";
-import babel from "@babel/core";
-
-import { BabelTransformImportPlugin } from "./lib/BabelTransformImportPlugin.js";
 import { execShellCommand } from "./lib/execShellCommand.js";
 import { importJson } from "./lib/importJson.js";
 
@@ -44,7 +40,7 @@ async function removePackageIfExists(
 	for (let pkg of packages) {
 		if (dependencies.includes(pkg)) {
 			console.log(`Removing '${pkg}'...`);
-			await execShellCommand(`npm rm ${pkg} --force`);
+			await execShellCommand(`pnpm rm ${pkg} --force`);
 		}
 	}
 }
@@ -76,7 +72,7 @@ async function installPackage(
 	}
 
 	if (toInstall.length > 0) {
-		let cmd = `npm i ${isDev ? "-D " : ""}${toInstall
+		let cmd = `pnpm i ${isDev ? "-D " : ""}${toInstall
 			.map((pkg) => `${pkg}@latest`)
 			.join(" ")} --force`;
 
@@ -114,39 +110,6 @@ async function* getFiles(dir: string): AsyncGenerator<string> {
 	}
 }
 
-async function transformLegacyImports() {
-	let srcDir = getProjectFile("./src/");
-	console.log("Transforming import declarations...");
-
-	for await (let file of getFiles(srcDir.pathname)) {
-		let extension = file.substring(file.lastIndexOf("."));
-
-		if ([".tsx", ".ts", ".jsx", ".js"].includes(extension)) {
-			let isModified = false;
-			let result = await babel.transformFileAsync(file, {
-				retainLines: true,
-				configFile: false,
-				babelrc: false,
-				plugins: [
-					["@babel/syntax-typescript", { isTSX: true }],
-					BabelTransformImportPlugin({
-						onChange() {
-							isModified = true;
-						},
-					}),
-				],
-			});
-
-			if (isModified && result?.code) {
-				let code = await prettier.format(result.code, {
-					parser: "typescript",
-				});
-				await writeFile(file, code);
-			}
-		}
-	}
-}
-
 async function upgradePackageConfig(pkg: any) {
 	console.log("Configuring package.json...");
 
@@ -157,6 +120,7 @@ async function upgradePackageConfig(pkg: any) {
 		: "af vite generate-types && react-scripts start";
 	pkg.scripts.build = isVite ? "tsc && vite build" : "react-scripts build";
 	pkg.scripts.deploy = "af vite deploy";
+	pkg.scripts.check = "NPM_CHECK_INSTALLER=pnpm pnpm dlx npm-check -u";
 	pkg.browserslist = {
 		production: [
 			"last 6 chrome versions",
@@ -230,14 +194,6 @@ async function updateProjectSetup() {
 	];
 
 	let packagesToRemove: string[] = [
-		"@olenbetong/data-object",
-		"@olenbetong/react-data-object-connect",
-		"@olenbetong/utils",
-		"@olenbetong/common",
-		"@olenbetong/value-toggle",
-		"@olenbetong/date-navigator",
-		"@olenbetong/color-card",
-		"@olenbetong/ob-react",
 		"@typescript-eslint/eslint-plugin",
 		"@typescript-eslint/parser",
 		"eslint-config-prettier",
@@ -257,15 +213,6 @@ async function updateProjectSetup() {
 		"@olenbetong/eslint-config",
 	];
 
-	if (
-		dependencies.includes("@olenbetong/value-toggle") ||
-		dependencies.includes("@olenbetong/date-navigator") ||
-		dependencies.includes("@olenbetong/color-card") ||
-		dependencies.includes("@olenbetong/ob-react")
-	) {
-		packagesToInstallOrUpdate.push("@olenbetong/synergi-react");
-	}
-
 	await removePackageIfExists(packagesToRemove, dependencies);
 	await installPackage(packagesToInstallOrUpdate, {
 		dependencies,
@@ -277,21 +224,19 @@ async function updateProjectSetup() {
 		dependencies,
 	});
 
-	await transformLegacyImports();
-
 	const { templates } = await import("../templates/templates.js");
 
 	await ensureProjectFolderExists("./.github/workflows");
 	await ensureProjectFolderExists("./.vscode");
 
 	await updateTemplateFile(templates["workflow-build-and-deploy"]);
-	await updateTemplateFile(templates["workflow-publish-and-deploy"]);
 	await updateTemplateFile(templates["vs-code-settings"]);
 	await updateTemplateFile(templates["eslint-config"]);
 	await updateTemplateFile(templates["prettier-config"]);
 
 	await removeFileIfExists("./server.mjs");
 	await removeFileIfExists("./index.html");
+	await removeFileIfExists("./.github/workflows/publish-and-deploy.yaml");
 }
 
 updateProjectSetup().catch((error) => {
