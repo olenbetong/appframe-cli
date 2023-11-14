@@ -28,10 +28,10 @@ async function createApplicationRelease(
 		let { appframe } = appPkg;
 		let { hostname, id } = appframe.article;
 		let server = new Server("dev.obet.no");
-		console.log("prompt version");
+
 		let nextVersion = (
 			await execShellCommand(
-				`pnpm exec semver ${appPkg.version} -i ${type} ${
+				`pnpm dlx semver ${appPkg.version} -i ${type} ${
 					options.preid ? `--preid ${options.preid}` : ""
 				}`,
 			)

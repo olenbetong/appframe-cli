@@ -9,7 +9,7 @@
 	"license": "MIT",
 	"scripts": {
 		"build": "tsc",
-		"prepack": "pnpm npm run build"
+		"prepack": "pnpm run build"
 	},
 	"keywords": [
 		"appframe",
