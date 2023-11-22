@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 import { Text, render, useApp } from "ink";
-import fs from "node:fs/promises";
+import { access, readdir, readFile } from "node:fs/promises";
 import { Fragment, createElement as h, useEffect, useState } from "react";
 
 import * as af from "@olenbetong/appframe-data";
@@ -71,6 +71,20 @@ const procRemovePreviousBuild = new af.ProcedureAPI<any, any>({
 	parameters: [{ name: "HostName" }, { name: "ArticleID" }],
 });
 
+async function fileExists(file: string, useCwd = false) {
+	let completeUrl = new URL(
+		file,
+		useCwd ? `file://${process.cwd()}/` : import.meta.url,
+	);
+
+	try {
+		await access(completeUrl);
+		return true;
+	} catch (error) {
+		return false;
+	}
+}
+
 let scriptPath: string = `file://${process.cwd()}/dist/file/article/script/${
 	appframe.article?.id ?? appframe.article
 }/`;
@@ -78,12 +92,20 @@ let stylePath: string = `file://${process.cwd()}/dist/file/article/style/${
 	appframe.article?.id ?? appframe.article
 }/`;
 let styles: string[] = [];
-let scripts: string[] = await fs.readdir(new URL(scriptPath));
-let manifest = await importJson(`./dist/manifest.json`, true);
+let scripts: string[] = await readdir(new URL(scriptPath));
+
+let manifest: any;
+if (await fileExists("./dist/manifest.json", true)) {
+	manifest = await importJson(`./dist/manifest.json`, true);
+} else if (await fileExists("./dist/.vite/manifest.json", true)) {
+	manifest = await importJson(`./dist/.vite/manifest.json`, true);
+} else {
+	throw Error("Vite manifest not found");
+}
 
 // Not every application generates CSS files. Can safely ignore errors
 try {
-	let files = await fs.readdir(new URL(stylePath));
+	let files = await readdir(new URL(stylePath));
 	styles = files.filter(
 		(file) => file.endsWith(".css") || file.endsWith(".css.map"),
 	);
@@ -94,7 +116,7 @@ try {
 async function getFileContents(path: string, file: string) {
 	let filePath = new URL(file, path);
 
-	return await fs.readFile(filePath, "utf-8");
+	return await readFile(filePath, "utf-8");
 }
 
 function Deployer() {
@@ -193,15 +215,16 @@ function Deployer() {
 				block = blocks[0];
 			}
 
-			let entry =
-				manifest["index.html"] ??
-				manifest["src/index.tsx"] ??
-				manifest["src/index.ts"] ??
-				manifest["src/index.jsx"] ??
-				manifest["src/index.js"];
+			let entry: any;
 			let prefetchSet = new Set<string>();
 
-			for (let { file } of Object.values<any>(manifest)) {
+			for (let value of Object.values<any>(manifest)) {
+				let { file, isEntry } = value;
+
+				if (isEntry) {
+					entry = value;
+				}
+
 				if (
 					file &&
 					manifest[file]?.isEntry !== true &&
