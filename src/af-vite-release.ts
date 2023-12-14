@@ -11,16 +11,39 @@ const cli = await importJson("../package.json");
 
 async function createApplicationRelease(
 	type: string,
-	options: { preid?: string; apply: boolean },
+	options: { preid?: string; apply: boolean; workflow: boolean },
 ) {
 	let tempfile = crypto.randomBytes(8).readBigUInt64LE(0).toString(24) + ".tmp";
 
 	try {
+		// Check if there are uncommited changes in the git repo.
 		let status = (await execShellCommand("git status --porcelain")).trim();
 		if (status) {
 			throw Error(
 				"Working tree has uncommitted changes, please commit or remove the changes before continuing\n" +
 					status,
+			);
+		}
+
+		// Check if we are on the master or main branch. Only relevant if not using a GitHub
+		// workflow, as the GitHub workflow automatically works against the main branch
+		if (options.workflow) {
+			let branch = (
+				await execShellCommand("git rev-parse --abbrev-ref HEAD")
+			).trim();
+			if (!["master", "main"].includes(branch)) {
+				throw Error(
+					`Releases should only be done from the main/master branch. You are on the '${branch}' branch.`,
+				);
+			}
+		}
+
+		// Check if the GitHub CLI is available. Required to create releases, even if we don't
+		// use the GitHub workflow to publish
+		let ghCliPath = (await execShellCommand("command -v gh")).trim();
+		if (!ghCliPath) {
+			throw Error(
+				`This command requires the GitHub CLI to be installed. Please install it before trying again.`,
 			);
 		}
 
@@ -76,6 +99,7 @@ async function createApplicationRelease(
 			"",
 		)}\n\n${releaseNotes}`;
 
+		await spawnShellCommand("git", ["pull"]);
 		await spawnShellCommand("git", ["push", "--follow-tags"]);
 		await spawnShellCommand("gh", [
 			"release",
@@ -86,14 +110,21 @@ async function createApplicationRelease(
 		]);
 		await unlink(tempfile);
 
-		console.log("Waiting a bit to let GitHub initialize the action...");
+		if (options.workflow) {
+			console.log("Starting GitHub workflow...");
+			await execShellCommand("gh workflow run build-and-deploy.yaml");
+			await execShellCommand("sleep 5");
 
-		await execShellCommand("sleep 5");
-		let githubId = await execShellCommand(
-			"gh run list -L 1 --json databaseId --jq '.[].databaseId'",
-		);
+			let githubId = await execShellCommand(
+				"gh run list --workflow build-and-deploy.yaml -L 1 --json databaseId --jq '.[].databaseId'",
+			);
 
-		await spawnShellCommand("gh", ["run", "watch", githubId.trim()]);
+			await spawnShellCommand("gh", ["run", "watch", githubId.trim()]);
+		} else {
+			await spawnShellCommand("pnpm", ["run", "build"]);
+			await spawnShellCommand("pnpm", ["exec", "af", "vite", "deploy"]);
+			await spawnShellCommand("pnpm", ["exec", "af", "vite", "publish"]);
+		}
 
 		let applyParameters = ["apply", "-s", "test.obet.no", Namespace];
 
@@ -120,6 +151,7 @@ program
 		"automatically apply the application on production if there are no other updates in the same namespace",
 		false,
 	)
+	.option("-w, --workflow", "use the GitHub workflow to")
 	.option("--preid <preid>", "Pre-id parameter to send to npm version")
 	.action(createApplicationRelease);
 

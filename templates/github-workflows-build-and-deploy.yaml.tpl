@@ -1,7 +1,5 @@
 name: Build, deploy and publish application to test
 on:
-  release:
-    types: [created]
   workflow_dispatch:
 jobs:
   build:
