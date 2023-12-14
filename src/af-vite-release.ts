@@ -47,11 +47,32 @@ async function createApplicationRelease(
 			);
 		}
 
+		// Check that the user has logged in using the GitHub CLI.
+		try {
+			await spawnShellCommand("gh", ["auth", "status"]);
+		} catch (error) {
+			throw Error("Please log in to GitHub using the gh CLI (gh auth login");
+		}
+
+		// Verify that pnpm is available
+		let pnpmPath = (await execShellCommand("command -v gh")).trim();
+		if (!pnpmPath) {
+			throw Error(
+				`This command use pnpm to build the project. Please install (npm install -g pnpm && pnpm setup) before trying again.`,
+			);
+		}
+
+		// Make sure we include changes done by other users on the main branch
+		await spawnShellCommand("git", ["pull"]);
+
 		let appPkg = await importJson("./package.json", true);
 		let { appframe } = appPkg;
 		let { hostname, id } = appframe.article;
 		let server = new Server("dev.obet.no");
 
+		// In case the user forgot to put the version type (minor, major, prerelease etc.) in the command line,
+		// we ask them to confirm the new version before continuing. Doing this as early as possible, since some
+		// of the following commands can take some time.
 		let nextVersion = (
 			await execShellCommand(
 				`pnpm dlx semver ${appPkg.version} -i ${type} ${
@@ -70,6 +91,9 @@ async function createApplicationRelease(
 			process.exit(0);
 		}
 
+		// If Typescript validation fails, the release will stop. Doing this before the GitHub release, since
+		// it would be harder to reverse changes after that. In addition it sucks to write release notes only
+		// to have to re-write them because the build failed.
 		console.log("Running type checks...");
 		await spawnShellCommand("pnpm", ["exec", "tsc"]);
 		await server.login();
@@ -82,7 +106,8 @@ async function createApplicationRelease(
 
 		let releaseNotes = await readFile(tempfile, { encoding: "utf-8" });
 
-		// Give the user a chance to abort the release by
+		// Give the user a chance to abort the release by not writing any release notes, either
+		// by clearing the file, or exiting without saving.
 		if (releaseNotes.trim() === "" || releaseNotes === tempnotes) {
 			throw Error("Release aborted. No release notes were written.");
 		}
@@ -99,8 +124,9 @@ async function createApplicationRelease(
 			"",
 		)}\n\n${releaseNotes}`;
 
-		await spawnShellCommand("git", ["pull"]);
+		// Push the tag pointing to this release so we can create a release with release notes on GitHub
 		await spawnShellCommand("git", ["push", "--follow-tags"]);
+
 		await spawnShellCommand("gh", [
 			"release",
 			"create",
@@ -108,11 +134,14 @@ async function createApplicationRelease(
 			"-F",
 			tempfile,
 		]);
+
 		await unlink(tempfile);
 
 		if (options.workflow) {
 			console.log("Starting GitHub workflow...");
 			await execShellCommand("gh workflow run build-and-deploy.yaml");
+
+			// It sometimes takes a few seconds before the new workflow run is listed by the CLI
 			await execShellCommand("sleep 5");
 
 			let githubId = await execShellCommand(
@@ -129,6 +158,9 @@ async function createApplicationRelease(
 		let applyParameters = ["apply", "-s", "test.obet.no", Namespace];
 
 		if (options.apply) {
+			// af apply will ask the user to confirm the updates before applying. But if the list of
+			// updates only includes the article, we can pre-approve the updates by passing hostname/articleId
+			// to the -p argument.
 			applyParameters.push("-p", `${hostname}/${id}`);
 		}
 
@@ -136,6 +168,8 @@ async function createApplicationRelease(
 	} catch (error) {
 		console.error(chalk.red((error as Error).message));
 		try {
+			// In case the git push or gh release commands fail, make sure we still delete the temporary
+			// release notes file
 			await unlink(tempfile);
 		} catch (_) {}
 		process.exit(1);

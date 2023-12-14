@@ -32,6 +32,7 @@ export function execShellCommand(
 
 /**
  * Spawns a child process with inherited stdio.
+ * Use this when the command might need interaction from the user.
  *
  * @param {string} cmd Command to execute
  * @param {string[]} args Arguments to pass to the command
