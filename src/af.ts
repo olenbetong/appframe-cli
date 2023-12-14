@@ -49,6 +49,7 @@ program
 		"Commands to use when working with a SynergiWeb application using Vite",
 	)
 	.alias("v")
+	.alias("app")
 	.command(
 		"bundle",
 		"Commands to create, upload and publish af bundles from npm packages",
