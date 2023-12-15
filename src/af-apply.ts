@@ -1,5 +1,6 @@
 import chalk from "chalk";
 import prompts from "prompts";
+import open from "open";
 
 import { Command, ServerOption } from "./lib/Command.js";
 import { Server } from "./lib/Server.js";
@@ -70,7 +71,7 @@ async function applyTransactions(namespaceArg: string, options: ApplyOptions) {
 				let result = await prompts({
 					type: "confirm",
 					name: "confirmApply",
-					message: "Are you sure you want to apply these transactions? (n)",
+					message: "Are you sure you want to apply these transactions? (y/N)",
 					initial: false,
 				});
 
@@ -80,6 +81,23 @@ async function applyTransactions(namespaceArg: string, options: ApplyOptions) {
 			}
 
 			await server.apply(namespace);
+
+			if (options.server.startsWith("test.")) {
+				let result = await prompts({
+					type: "confirm",
+					name: "openChangelog",
+					message:
+						"Would you like to write an entry in the changelog for these updates? (y/N)",
+					initial: false,
+				});
+
+				if (result.openChangelog) {
+					open(
+						"https://test.obet.no/appdesigner?synergi.olenbetong.no/changelog",
+					);
+				}
+			}
+
 			server.logServerMessage("Done.");
 		}
 	} catch (error) {
