@@ -95,10 +95,10 @@ async function generateTypescriptTypes(options: { server: string }) {
 	try {
 		script.runInContext(context);
 
-		let customTypesPath = "./src/customTypes.d.ts";
+		let customTypesPath = "./src/custom.d.ts";
 		let hasCustomTypesFile = await projectFileExists(customTypesPath);
 		if (!hasCustomTypesFile) {
-			customTypesPath = "./src/customTypes.ts";
+			customTypesPath = "./src/custom.ts";
 			hasCustomTypesFile = await projectFileExists(customTypesPath);
 		}
 
@@ -111,14 +111,35 @@ async function generateTypescriptTypes(options: { server: string }) {
 		}
 
 		let types = generateTypes(hasCustomTypesFile, typeOverrides);
+
+		let features = await server.getArticleFeatures(articleHost, articleId);
+		if (features.length) {
+			types += `
+			
+declare module "@olenbetong/appframe-core" {
+	interface AfArticle {
+		features: {
+			${features
+				.map(
+					(feature) => `/**
+ 			 * ${feature.Name}: ${feature.Description}
+			 */
+			${feature.Key}: boolean;`,
+				)
+				.join("\n 			")}
+		};
+	}
+}`;
+		}
+
 		let data = new Uint8Array(Buffer.from(types));
 
 		server.logServerMessage(
-			`Writing generated types to './src/dataObjects.d.ts'...`,
+			`Writing generated types to './src/appframe.d.ts'...`,
 		);
 
 		await fs.writeFile(
-			new URL("./src/dataObjects.d.ts", `file://${process.cwd()}/`),
+			new URL("./src/appframe.d.ts", `file://${process.cwd()}/`),
 			data,
 		);
 

@@ -6,6 +6,7 @@ import {
 	readdir,
 	writeFile,
 	unlink,
+	rename,
 } from "node:fs/promises";
 import { resolve } from "node:path";
 import { execShellCommand } from "./lib/execShellCommand.js";
@@ -93,7 +94,13 @@ async function updateTemplateFile(template: TemplateDef) {
 
 async function removeFileIfExists(file: string) {
 	if (await fileExists(file, true)) {
-		unlink(getProjectFile(file));
+		await unlink(getProjectFile(file));
+	}
+}
+
+async function renameFileIfExists(file: string, newName: string) {
+	if (await fileExists(file, true)) {
+		await rename(getProjectFile(file), getProjectFile(newName));
 	}
 }
 
@@ -237,6 +244,9 @@ async function updateProjectSetup() {
 	await removeFileIfExists("./server.mjs");
 	await removeFileIfExists("./index.html");
 	await removeFileIfExists("./.github/workflows/publish-and-deploy.yaml");
+
+	await renameFileIfExists("./src/dataObjects.d.ts", "./src/appframe.d.ts");
+	await renameFileIfExists("./src/customTypes.d.ts", "./src/custom.d.ts");
 }
 
 updateProjectSetup().catch((error) => {

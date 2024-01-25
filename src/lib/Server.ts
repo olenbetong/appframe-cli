@@ -12,6 +12,7 @@ import {
 } from "@olenbetong/appframe-data";
 
 import {
+	ArticlesFeaturesRecord,
 	getApplyProcedure,
 	getArticlesDataObject,
 	getArticlesPermissionsDataObject,
@@ -35,6 +36,7 @@ import {
 	getCopyDatasourcesFromDevProcedure,
 	DataResourcesParametersRecord,
 	getDataResourcesParametersDataObject,
+	getArticlesFeaturesDataObject,
 } from "../data/index.js";
 
 config({ path: process.cwd() + "/.env" });
@@ -48,6 +50,7 @@ export class Server {
 	private password: string;
 	readonly client: Client;
 	readonly dsArticles: DataHandler<any>;
+	readonly dsArticlesFeatures: DataHandler<ArticlesFeaturesRecord>;
 	readonly dsArticlesPermissions: DataHandler<any>;
 	readonly dsArticlesVersions: DataHandler<any>;
 	readonly dsBundles: DataHandler<any>;
@@ -85,6 +88,7 @@ export class Server {
 		this.password = password ?? envPassword ?? "";
 		this.client = new Client(this.hostname);
 		this.dsArticles = getArticlesDataObject(this.client);
+		this.dsArticlesFeatures = getArticlesFeaturesDataObject(this.client);
 		this.dsArticlesPermissions = getArticlesPermissionsDataObject(this.client);
 		this.dsArticlesVersions = getArticlesVersionsDataObject(this.client);
 		this.dsBundles = getBundlesDataObject(this.client);
@@ -518,6 +522,17 @@ export class Server {
 		});
 
 		return articles[0];
+	}
+
+	async getArticleFeatures(hostname: string, article: string) {
+		let { dsArticlesFeatures } = this;
+		return await this.logAsyncTask(
+			dsArticlesFeatures.retrieve({
+				maxRecords: -1,
+				whereClause: `[HostName] = '${hostname}' AND [ArticleId] = '${article}'`,
+			}),
+			`Getting article features (${hostname}/${article})`,
+		);
 	}
 
 	/**

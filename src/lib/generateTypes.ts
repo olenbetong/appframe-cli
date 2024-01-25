@@ -167,7 +167,7 @@ export function generateTypes(
 		`import { ${types.join(", ")} } from "@olenbetong/appframe-data";${
 			customExists &&
 			(dataObjects.includes("Custom.") || procedures.includes("Custom."))
-				? '\nimport * as Custom from "./customTypes";'
+				? '\nimport * as Custom from "./custom";'
 				: ""
 		}`,
 	];
