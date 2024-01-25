@@ -52,8 +52,8 @@ async function convertToTypescript() {
 	);
 
 	await copyFile(
-		getCLIFile("../templates/customTypes.d.ts.tpl"),
-		getProjectFile("./src/customTypes.d.ts"),
+		getCLIFile("../templates/custom.d.ts.tpl"),
+		getProjectFile("./src/custom.d.ts"),
 	);
 
 	if (await fileExists("./src/theme.js", true)) {
