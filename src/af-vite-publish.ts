@@ -10,11 +10,7 @@ type StageOperation = "download" | "apply" | "deploy" | "generate" | "publish";
 async function runStageOperations(
 	devHost: string,
 	operations: StageOperation[] = ["download"],
-	{
-		hostname,
-		article: articleProp,
-		version,
-	}: { hostname: string; article: string; version?: string },
+	{ hostname, article: articleProp, version }: { hostname: string; article: string; version?: string },
 	state: { article?: any } = {},
 ) {
 	let lastSuccessfulStep = "none";
@@ -24,18 +20,13 @@ async function runStageOperations(
 		lastSuccessfulStep = "login";
 
 		let transactionName = `${hostname}/${articleProp}`;
-		let article =
-			state.article ?? (await server.getArticle(hostname, articleProp));
+		let article = state.article ?? (await server.getArticle(hostname, articleProp));
 		lastSuccessfulStep = "getArticleInformation";
 
 		state.article = article;
 
 		if (operations.includes("publish")) {
-			await server.publishArticle(
-				hostname,
-				articleProp,
-				version ?? "No version description was added :(",
-			);
+			await server.publishArticle(hostname, articleProp, version ?? "No version description was added :(");
 			lastSuccessfulStep = "publish";
 		}
 
@@ -50,21 +41,14 @@ async function runStageOperations(
 		}
 
 		if (operations.includes("apply")) {
-			await server.assertOnlyOneTransaction(
-				"apply",
-				transactionName,
-				article.Namespace,
-			);
+			await server.assertOnlyOneTransaction("apply", transactionName, article.Namespace);
+			await server.checkoutArticle(article.HostName, article.ArticleId);
 			await server.apply(article.Namespace_ID);
 			lastSuccessfulStep = "apply";
 		}
 
 		if (operations.includes("deploy")) {
-			await server.assertOnlyOneTransaction(
-				"deploy",
-				transactionName,
-				article.Namespace,
-			);
+			await server.assertOnlyOneTransaction("deploy", transactionName, article.Namespace);
 			await server.deploy(article.Namespace_ID);
 			lastSuccessfulStep = "deploy";
 		}
@@ -124,29 +108,12 @@ async function publishFromDev(articleWithHost?: string, version?: string) {
 	let crossServerState = {};
 
 	try {
-		await runStageOperations(
-			"dev.obet.no",
-			["publish", "generate", "deploy"],
-			config,
-			crossServerState,
-		);
-		await runStageOperations(
-			"stage.obet.no",
-			["download", "apply", "deploy"],
-			config,
-			crossServerState,
-		);
-		await runStageOperations(
-			"test.obet.no",
-			["download"],
-			config,
-			crossServerState,
-		);
+		await runStageOperations("dev.obet.no", ["publish", "generate", "deploy"], config, crossServerState);
+		await runStageOperations("stage.obet.no", ["download", "apply", "deploy"], config, crossServerState);
+		await runStageOperations("test.obet.no", ["download"], config, crossServerState);
 	} catch (error) {
 		console.log(chalk.red(`Failed to publish: ${(error as any).message}`));
-		console.log(
-			chalk.red(`Last successful step: ${(error as any).lastSuccessfulStep}`),
-		);
+		console.log(chalk.red(`Last successful step: ${(error as any).lastSuccessfulStep}`));
 		process.exit(1);
 	}
 }
@@ -159,10 +126,7 @@ program
 		"[article-with-hostname]",
 		"Select article and hostname to publish (ex. synergi.olenbetong.no/portal). Will look for a CRA config in package.json if undefined",
 	)
-	.argument(
-		"[description]",
-		"Description to set in the version notes. Only used if article-with-hostname is set",
-	)
+	.argument("[description]", "Description to set in the version notes. Only used if article-with-hostname is set")
 	.action(publishFromDev);
 
 await program.parseAsync(process.argv);
