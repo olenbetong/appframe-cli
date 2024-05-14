@@ -131,8 +131,18 @@ export class Server {
 			process.stdout.cursorTo(0);
 			process.stdout.write(`${this.getHostPrefix()} ${runningMessage}`);
 
+			let counter = 0;
+
 			let interval = setInterval(() => {
+				if (counter === 5) {
+					process.stdout.clearLine(0);
+					process.stdout.cursorTo(0);
+					process.stdout.write(`${this.getHostPrefix()} ${runningMessage}`);
+					counter = 0;
+				}
+
 				process.stdout.write(".");
+				counter++;
 			}, 250);
 
 			try {

@@ -6,8 +6,8 @@ settings:
 
 dependencies:
   '@olenbetong/appframe-data':
-    specifier: ^1.0.0
-    version: 1.0.0
+    specifier: ^1.0.1
+    version: 1.0.1
   chalk:
     specifier: ^5.3.0
     version: 5.3.0
@@ -429,11 +429,12 @@ packages:
       mitt: 3.0.1
     dev: false
 
-  /@olenbetong/appframe-data@1.0.0:
-    resolution: {integrity: sha512-3i6sZaMAjqrKORXRYeliiNZUT5ToCax/Z3PhVlfOPmHSLujFj3QuRiWoZyq95aL1f/zR1mRjDIMZ8TAPVM4M1w==}
+  /@olenbetong/appframe-data@1.0.1:
+    resolution: {integrity: sha512-BVzcgq+tEkJJ2LM+H/MsKgnzfxZsF5xBEq2kBWoROnwHiApHGY3seEPVMdnE64ZgxeVIe6UwUn4/q6Kqccn+fw==}
     engines: {node: '>=18.0'}
     dependencies:
       '@olenbetong/appframe-core': 2.11.0
+      fetch-cookie: 2.2.0
       file-cookie-store: 0.2.1
       formdata-node: 6.0.3
       mitt: 3.0.1
@@ -1391,6 +1392,13 @@ packages:
       web-streams-polyfill: 3.3.3
     dev: false
 
+  /fetch-cookie@2.2.0:
+    resolution: {integrity: sha512-h9AgfjURuCgA2+2ISl8GbavpUdR+WGAM2McW/ovn4tVccegp8ZqCKWSBR8uRdM8dDNlx5WdKRWxBYUwteLDCNQ==}
+    dependencies:
+      set-cookie-parser: 2.6.0
+      tough-cookie: 4.1.4
+    dev: false
+
   /file-cookie-store@0.2.1:
     resolution: {integrity: sha512-X6yfHgrRqmQ0fgkMssKnPdYIiPzb/s0ElIOJt8MHWyt1xpKdZs94HF9XVRNZrNHYYR/cico0epKLy2VvSQmJSg==}
     dependencies:
@@ -1845,6 +1853,10 @@ packages:
       sisteransi: 1.0.5
     dev: false
 
+  /psl@1.9.0:
+    resolution: {integrity: sha512-E/ZsdU4HLs/68gYzgGTkMicWTLPdAftJLfJFlLUAAKZGkStNU72sZjT66SnMDVOfOWY/YAoiD7Jxa9iHvngcag==}
+    dev: false
+
   /punycode@1.2.4:
     resolution: {integrity: sha512-h/vscxLPvI2l7k/0dFUKZ5I5TgMCJ/Pl+J6rw77PDuQM6UApf/GaRVkjv/YSm2k+fbp7Yw8dxsoe29DolT7h7w==}
     engines: {'0': node, '1': rhino}
@@ -1857,6 +1869,10 @@ packages:
   /q@1.0.1:
     resolution: {integrity: sha512-18MnBaCeBX9sLRUdtxz/6onlb7wLzFxCylklyO8n27y5JxJYaGLPu4ccyc5zih58SpEzY8QmfwaWqguqXU6Y+A==}
     engines: {node: '>=0.6.0', teleport: '>=0.2.0'}
+    dev: false
+
+  /querystringify@2.2.0:
+    resolution: {integrity: sha512-FIqgj2EUvTa7R50u0rGsyTftzjYmv/a3hO345bZNrqabNqjtgiDMgmo4mkUjd+nzU5oF3dClKqFIPUKybUyqoQ==}
     dev: false
 
   /queue-microtask@1.2.3:
@@ -1878,6 +1894,10 @@ packages:
     engines: {node: '>=0.10.0'}
     dependencies:
       loose-envify: 1.4.0
+    dev: false
+
+  /requires-port@1.0.0:
+    resolution: {integrity: sha512-KigOCHcocU3XODJxsu8i/j8T9tzT4adHiecwORRQ0ZZFcp7ahwXuRU1m+yuO90C5ZUyGeGfocHDI14M3L3yDAQ==}
     dev: false
 
   /resolve-from@4.0.0:
@@ -1939,6 +1959,10 @@ packages:
     resolution: {integrity: sha512-FNAIBWCx9qcRhoHcgcJ0gvU7SN1lYU2ZXuSfl04bSC5OpvDHFyJCjdNHomPXxjQlCBU67YW64PzY7/VIEH7F2w==}
     engines: {node: '>=10'}
     hasBin: true
+    dev: false
+
+  /set-cookie-parser@2.6.0:
+    resolution: {integrity: sha512-RVnVQxTXuerk653XfuliOxBP81Sf0+qfQE73LIYKcyMYHG94AuH0kgrQpRDuTZnSmjpysHmzxJXKNfa6PjFhyQ==}
     dev: false
 
   /shebang-command@2.0.0:
@@ -2043,6 +2067,16 @@ packages:
     deprecated: ReDoS vulnerability parsing Set-Cookie https://nodesecurity.io/advisories/130
     dev: false
 
+  /tough-cookie@4.1.4:
+    resolution: {integrity: sha512-Loo5UUvLD9ScZ6jh8beX1T6sO1w2/MpCRpEP7V280GKMVUQ0Jzar2U3UJPsrdbziLEMMhu3Ujnq//rhiFuIeag==}
+    engines: {node: '>=6'}
+    dependencies:
+      psl: 1.9.0
+      punycode: 2.3.1
+      universalify: 0.2.0
+      url-parse: 1.5.10
+    dev: false
+
   /ts-node@10.9.2(@types/node@20.12.12)(typescript@5.4.5):
     resolution: {integrity: sha512-f0FFpIdcHgn8zcPSbf1dRevwt047YMnaiJM3u2w2RewrB+fob/zePZcrOyQoLMMO7aBIddLcQIEK5dYjkLnGrQ==}
     hasBin: true
@@ -2102,6 +2136,11 @@ packages:
   /undici-types@5.26.5:
     resolution: {integrity: sha512-JlCMO+ehdEIKqlFxk6IfVoAUVmgz7cU7zD/h9XZ0qzeosSHmUJVOzSQvvYSYWXkFXC+IfLKSIffhv0sVZup6pA==}
 
+  /universalify@0.2.0:
+    resolution: {integrity: sha512-CJ1QgKmNg3CwvAv/kOFmtnEN05f0D/cn9QntgNOQlQF9dgvVTHj3t+8JPdjqawCHk7V/KA+fbUqzZ9XWhcqPUg==}
+    engines: {node: '>= 4.0.0'}
+    dev: false
+
   /update-browserslist-db@1.0.15(browserslist@4.23.0):
     resolution: {integrity: sha512-K9HWH62x3/EalU1U6sjSZiylm9C8tgq2mSvshZpqc7QE69RaA2qjhkW2HlNA0tFpEbtyFz7HTqbSdN4MSwUodA==}
     hasBin: true
@@ -2117,6 +2156,13 @@ packages:
     resolution: {integrity: sha512-7rKUyy33Q1yc98pQ1DAmLtwX109F7TIfWlW1Ydo8Wl1ii1SeHieeh0HHfPeL2fMXK6z0s8ecKs9frCuLJvndBg==}
     dependencies:
       punycode: 2.3.1
+
+  /url-parse@1.5.10:
+    resolution: {integrity: sha512-WypcfiRhfeUP9vvF0j6rw0J3hrWrw6iZv3+22h6iRMJ/8z1Tj6XfLP4DsUix5MhMPnXpiHDoKyoZ/bdCkwBCiQ==}
+    dependencies:
+      querystringify: 2.2.0
+      requires-port: 1.0.0
+    dev: false
 
   /uuid@9.0.1:
     resolution: {integrity: sha512-b+1eJOlsR9K8HJpow9Ok3fiWOWSIcIzXodvv0rQjVoOVNpWMpxf1wZNpt4y9h10odCNrqnYp1OBzRktckBe3sA==}
