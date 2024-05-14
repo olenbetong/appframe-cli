@@ -5,10 +5,7 @@ import { Server } from "./lib/Server.js";
 import { getServerFromOptions } from "./lib/getServerFromOptions.js";
 import { importJson } from "./lib/importJson.js";
 
-async function downloadTransactions(
-	namespaceArg: string,
-	options: { server: string },
-) {
+async function downloadTransactions(namespaceArg: string, options: { server: string }) {
 	try {
 		await getServerFromOptions(options);
 		let server = new Server(options.server);
@@ -29,10 +26,6 @@ async function downloadTransactions(
 
 const appPkg = await importJson("../package.json");
 const program = new Command();
-program
-	.version(appPkg.version)
-	.addServerOption()
-	.addNamespaceArgument()
-	.action(downloadTransactions);
+program.version(appPkg.version).addServerOption().addNamespaceArgument().action(downloadTransactions);
 
 await program.parseAsync(process.argv);

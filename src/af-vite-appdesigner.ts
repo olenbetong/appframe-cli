@@ -4,18 +4,13 @@ import open from "open";
 import { Command } from "./lib/Command.js";
 import { importJson } from "./lib/importJson.js";
 
-async function launchAppdesigner(options: {
-	server: string;
-	browser?: string;
-}) {
+async function launchAppdesigner(options: { server: string; browser?: string }) {
 	try {
 		const appPackageJson = await importJson("./package.json", true);
 		const { appframe } = appPackageJson;
 
 		if (!appframe) {
-			throw Error(
-				"No application config was found. (Looking for appframe section in package.json)",
-			);
+			throw Error("No application config was found. (Looking for appframe section in package.json)");
 		}
 		let hostname = options.server ?? appframe?.devHostname ?? "dev.obet.no";
 
@@ -38,10 +33,7 @@ const appPkg = await importJson("../package.json");
 const program = new Command();
 program
 	.version(appPkg.version)
-	.option(
-		"-b, --browser <appname>",
-		"Specify browser to use (chrome, firefox or msedge)",
-	)
+	.option("-b, --browser <appname>", "Specify browser to use (chrome, firefox or msedge)")
 	.addServerOption()
 	.action(launchAppdesigner)
 	.parseAsync(process.argv);

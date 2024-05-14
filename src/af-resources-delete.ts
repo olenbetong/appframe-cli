@@ -16,10 +16,7 @@ const program = new Command();
 program
 	.version(appPkg.version)
 	.addServerOption()
-	.argument(
-		"<id>",
-		"Database object id or name for the data resource to delete",
-	)
+	.argument("<id>", "Database object id or name for the data resource to delete")
 	.action(deleteDataResource);
 
 await program.parseAsync(process.argv);

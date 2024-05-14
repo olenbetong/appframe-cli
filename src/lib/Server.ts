@@ -3,13 +3,7 @@ import { config } from "dotenv";
 import { fileFromPath } from "formdata-node/file-from-path";
 import prompts, { PromptObject } from "prompts";
 
-import {
-	Client,
-	DataHandler,
-	FileUploader,
-	ProcedureBase,
-	SortOrder,
-} from "@olenbetong/appframe-data";
+import { Client, DataHandler, FileUploader, ProcedureBase, SortOrder } from "@olenbetong/appframe-data";
 
 import {
 	ArticlesFeaturesRecord,
@@ -94,9 +88,7 @@ export class Server {
 		this.dsBundles = getBundlesDataObject(this.client);
 		this.dsBundlesProjects = getBundlesProjectsDataObject(this.client);
 		this.dsDataResources = getDataResourcesDataObject(this.client);
-		this.dsDataResourcesParameters = getDataResourcesParametersDataObject(
-			this.client,
-		);
+		this.dsDataResourcesParameters = getDataResourcesParametersDataObject(this.client);
 		this.dsNamespaces = getNamespacesDataObject(this.client);
 		this.dsSiteScripts = getSiteScriptsDataObject(this.client);
 		this.dsSiteStyles = getSiteStylesDataObject(this.client);
@@ -105,12 +97,8 @@ export class Server {
 		this.procApply = getApplyProcedure(this.client);
 		this.procCheckoutArticle = getCheckoutArticleProcedure(this.client);
 		this.procCreateArticle = getCreateArticleProcedure(this.client);
-		this.procCreateFirstBundleVersion = getCreateFirstBundleVersionProcedure(
-			this.client,
-		);
-		this.procCopyDataSourcesFromDev = getCopyDatasourcesFromDevProcedure(
-			this.client,
-		);
+		this.procCreateFirstBundleVersion = getCreateFirstBundleVersionProcedure(this.client);
+		this.procCopyDataSourcesFromDev = getCopyDatasourcesFromDevProcedure(this.client);
 		this.procDeploy = getDeployProcedure(this.client);
 		this.procGenerate = getGenerateProcedure(this.client);
 		this.procPublishArticle = getPublishArticleProcedure(this.client);
@@ -154,9 +142,7 @@ export class Server {
 				process.stdout.cursorTo(0);
 				process.stdout.write(
 					`${this.getHostPrefix()} ${
-						(typeof completedMessage === "function"
-							? completedMessage(result)
-							: completedMessage) ?? runningMessage
+						(typeof completedMessage === "function" ? completedMessage(result) : completedMessage) ?? runningMessage
 					} (${Math.floor(performance.now() - start)}ms)\n`,
 				);
 
@@ -252,11 +238,7 @@ export class Server {
 	 * @param {string} name - Name of the expected transaction.
 	 * @param {string | number} namespace - Limit check to a single namespace
 	 */
-	async assertOnlyOneTransaction(
-		filter: string,
-		name: string,
-		namespace: string | number,
-	) {
+	async assertOnlyOneTransaction(filter: string, name: string, namespace: string | number) {
 		let transactions = await this.getTransactions(filter, namespace);
 
 		if (transactions.length > 1) {
@@ -271,27 +253,15 @@ export class Server {
 							LocalCreatedBy: r.LocalCreatedBy,
 						})),
 					);
-					throw Error(
-						"Found more than 1 transaction. Deploy have to be done manually.",
-					);
+					throw Error("Found more than 1 transaction. Deploy have to be done manually.");
 				}
 			}
 		} else if (transactions.length === 0) {
-			throw Error(
-				"No transactions found. Check if there is a versioning problem with the article.",
-			);
+			throw Error("No transactions found. Check if there is a versioning problem with the article.");
 		}
 	}
 
-	async addArticlePermission({
-		hostname,
-		articleId,
-		roleId,
-	}: {
-		hostname: string;
-		articleId: string;
-		roleId: number;
-	}) {
+	async addArticlePermission({ hostname, articleId, roleId }: { hostname: string; articleId: string; roleId: number }) {
 		await this.logAsyncTask(
 			this.dsArticlesPermissions.create({
 				ArticleID: articleId,
@@ -361,11 +331,7 @@ export class Server {
 				`'${resourceRecord[0].DBObjectID}' deleted`,
 			);
 		} else {
-			this.logServerMessage(
-				chalk.red(
-					`Expected 1 resource to match '${id}'. Found ${resourceRecord.length}`,
-				),
-			);
+			this.logServerMessage(chalk.red(`Expected 1 resource to match '${id}'. Found ${resourceRecord.length}`));
 			process.exit(1);
 		}
 	}
@@ -514,9 +480,7 @@ export class Server {
 
 	async getArticle(hostname: string, article: string) {
 		let { dsArticles } = this;
-		this.logServerMessage(
-			`Getting article information (${hostname}/${article})...`,
-		);
+		this.logServerMessage(`Getting article information (${hostname}/${article})...`);
 		let articles = await dsArticles.retrieve({
 			whereClause: `[HostName] = '${hostname}' AND [ArticleID] = '${article}'`,
 		});
@@ -583,10 +547,7 @@ export class Server {
 	 * @param {any} options Command options, potentially including an `all` property
 	 * @returns {Promise<string>} Namespace name
 	 */
-	async getNamespaceArgument(
-		namespace?: string,
-		options: any = {},
-	): Promise<string> {
+	async getNamespaceArgument(namespace?: string, options: any = {}): Promise<string> {
 		let { dsNamespaces } = this;
 
 		if (!namespace && !options.all) {
@@ -616,11 +577,7 @@ export class Server {
 				let result = await prompts(question);
 				return result.namespace;
 			} else {
-				console.log(
-					chalk.red(
-						"Namespace must be provided if --all is not set in a non-interactive environment",
-					),
-				);
+				console.log(chalk.red("Namespace must be provided if --all is not set in a non-interactive environment"));
 				process.exit(0);
 			}
 		}
@@ -643,12 +600,10 @@ export class Server {
 				type: "autocomplete",
 				name: "resource",
 				message: "Select the resource you want to view",
-				choices: resources.map(
-					(resource: { Name: string; DBObjectID: string }) => ({
-						title: resource.Name,
-						value: resource.DBObjectID,
-					}),
-				),
+				choices: resources.map((resource: { Name: string; DBObjectID: string }) => ({
+					title: resource.Name,
+					value: resource.DBObjectID,
+				})),
 				onState: (state) => {
 					if (state.aborted) {
 						process.nextTick(() => {
@@ -734,10 +689,7 @@ export class Server {
 	 * @param {string | number} [namespace] Name or ID of namespace to limit to
 	 * @returns List of transactions matching filter and namespace
 	 */
-	async getTransactions(
-		filterOrType: string = "apply",
-		namespace?: string | number,
-	) {
+	async getTransactions(filterOrType: string = "apply", namespace?: string | number) {
 		let filter = [filterOrType];
 		if (filterOrType === "apply") {
 			filter = ["[Status] IN (0, 2) AND [IsLocal] = 0"];
@@ -814,11 +766,7 @@ export class Server {
 	 * @param {number} versionId ID for the project version to publish
 	 * @param {string} description Description to set on the new version
 	 */
-	async publishBundle(
-		projectId: number,
-		versionId: number,
-		description: string,
-	) {
+	async publishBundle(projectId: number, versionId: number, description: string) {
 		await this.logAsyncTask(
 			this.procPublishBundle.execute({
 				description,
@@ -863,12 +811,8 @@ export class Server {
 			let transactionVersion = transactions[0].Version;
 			let articleVersion = Number(articleVersions[0].ArticleId.split(".")[1]);
 
-			this.logServerMessage(
-				`Last published version: ${Number(articleVersion)}`,
-			);
-			this.logServerMessage(
-				`Last transaction version: ${Number(transactionVersion)}`,
-			);
+			this.logServerMessage(`Last published version: ${Number(articleVersion)}`);
+			this.logServerMessage(`Last transaction version: ${Number(transactionVersion)}`);
 
 			do {
 				await this.logAsyncTask(
@@ -945,12 +889,7 @@ export class Server {
 	 * @param {"Template" | "Script" | "Style"} type Type of asset to publish
 	 * @param {string} description Description of the update
 	 */
-	async publishWebAsset(
-		hostname: string,
-		name: string,
-		type: "Template" | "Script" | "Style",
-		description: string,
-	) {
+	async publishWebAsset(hostname: string, name: string, type: "Template" | "Script" | "Style", description: string) {
 		await this.logAsyncTask(
 			this.procPublishWebAsset.execute({
 				Hostname: hostname,
@@ -984,11 +923,7 @@ export class Server {
 			await uploader.upload(zipFile, { Project_ID: projectId });
 		};
 
-		await this.logAsyncTask(
-			run(),
-			`Uploading bundle file '${file}'`,
-			`Uploaded bundle file '${file}'`,
-		);
+		await this.logAsyncTask(run(), `Uploading bundle file '${file}'`, `Uploaded bundle file '${file}'`);
 	}
 
 	/**
@@ -999,12 +934,7 @@ export class Server {
 	 * @param {string | undefined} content Content to upload for production use (undefined will not modify existing template)
 	 * @param {string | undefined} contentTest Content to upload for test mode use (undefined will not modify existing template)
 	 */
-	async uploadTemplate(
-		hostname: string,
-		templateId: string,
-		content?: string,
-		contentTest?: string,
-	) {
+	async uploadTemplate(hostname: string, templateId: string, content?: string, contentTest?: string) {
 		let template = await this.logAsyncTask(
 			this.dsTemplates.retrieve({
 				whereClause: `[HostName] = '${hostname}' AND [Name] = '${templateId}'`,
@@ -1052,12 +982,7 @@ export class Server {
 	 * @param {string | undefined} content Content to upload for production use (undefined will not modify existing script)
 	 * @param {string | undefined} contentTest Content to upload for test mode use (undefined will not modify existing script)
 	 */
-	async uploadSiteScript(
-		hostname: string,
-		scriptId: string,
-		content?: string,
-		contentTest?: string,
-	) {
+	async uploadSiteScript(hostname: string, scriptId: string, content?: string, contentTest?: string) {
 		this.logServerMessage(`Getting site script '${hostname}/${scriptId}'...`);
 		let siteScripts = await this.dsSiteScripts.retrieve({
 			whereClause: `[HostName] = '${hostname}' AND [Name] = '${scriptId}'`,
@@ -1103,12 +1028,7 @@ export class Server {
 	 * @param {string | undefined} content Content to upload for production use (undefined will not modify existing stylesheet)
 	 * @param {string | undefined} contentTest Content to upload for test mode use (undefined will not modify existing stylesheet)
 	 */
-	async uploadSiteStyle(
-		hostname: string,
-		styleId: string,
-		content?: string,
-		contentTest?: string,
-	) {
+	async uploadSiteStyle(hostname: string, styleId: string, content?: string, contentTest?: string) {
 		let siteStyle = await this.logAsyncTask(
 			this.dsSiteStyles.retrieve({
 				whereClause: `[HostName] = '${hostname}' AND [Name] = '${styleId}'`,

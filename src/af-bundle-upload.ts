@@ -98,9 +98,7 @@ async function prepareBundle(pkgName: string, options: { bundle: string }) {
 
 		let { ID: id, Project_ID } = bundle;
 		if (id) {
-			server.logServerMessage(
-				`Found bundle with Version/Project ID: ${id}/${Project_ID}`,
-			);
+			server.logServerMessage(`Found bundle with Version/Project ID: ${id}/${Project_ID}`);
 		} else {
 			console.log(chalk.yellow("No bundle found..."));
 		}
@@ -141,10 +139,7 @@ const cliPkg = await importJson("../package.json");
 const program = new Command();
 program
 	.version(cliPkg.version)
-	.argument(
-		"[package]",
-		"Optional package name. If provided packs the npm package with name [package]",
-	)
+	.argument("[package]", "Optional package name. If provided packs the npm package with name [package]")
 	.option("-b, --bundle <bundleName>", "Override bundle name from package.json")
 	.action(prepareBundle);
 

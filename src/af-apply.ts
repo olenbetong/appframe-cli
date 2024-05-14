@@ -38,11 +38,7 @@ async function applyTransactions(namespaceArg: string, options: ApplyOptions) {
 		if (transactions.length === 0) {
 			console.error(chalk.yellow("No transactions available to apply."));
 		} else if (errors.length > 0) {
-			console.error(
-				chalk.red(
-					"There are transactions with errors blocking this namespace:",
-				),
-			);
+			console.error(chalk.red("There are transactions with errors blocking this namespace:"));
 			console.table(errors.map(({ Status, ...tran }) => tran));
 		} else {
 			let isApproved = true;
@@ -86,15 +82,12 @@ async function applyTransactions(namespaceArg: string, options: ApplyOptions) {
 				let result = await prompts({
 					type: "confirm",
 					name: "openChangelog",
-					message:
-						"Would you like to write an entry in the changelog for these updates? (y/N)",
+					message: "Would you like to write an entry in the changelog for these updates? (y/N)",
 					initial: false,
 				});
 
 				if (result.openChangelog) {
-					open(
-						"https://test.obet.no/appdesigner?synergi.olenbetong.no/changelog",
-					);
+					open("https://test.obet.no/appdesigner?synergi.olenbetong.no/changelog");
 				}
 			}
 

@@ -12,9 +12,7 @@ import { readFile } from "node:fs/promises";
 export async function importJson(url: string | URL, useCwd: boolean = false) {
 	let completeUrl = new URL(
 		url,
-		useCwd
-			? `file://${process.cwd()}/`
-			: import.meta.url.replace(/lib\/importJson.js$/, ""),
+		useCwd ? `file://${process.cwd()}/` : import.meta.url.replace(/lib\/importJson.js$/, ""),
 	);
 	return JSON.parse(await readFile(completeUrl, "utf-8"));
 }

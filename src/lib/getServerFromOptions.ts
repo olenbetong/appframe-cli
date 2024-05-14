@@ -1,8 +1,6 @@
 import prompts, { PromptObject } from "prompts";
 
-export async function getServerFromOptions(options: {
-	server?: string | undefined;
-}) {
+export async function getServerFromOptions(options: { server?: string | undefined }) {
 	if (options.server) return;
 
 	let question: PromptObject<"server"> = {

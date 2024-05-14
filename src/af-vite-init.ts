@@ -26,9 +26,7 @@ async function tryGitInit() {
 async function tryGitCommit() {
 	try {
 		await execShellCommand("git add -A");
-		await execShellCommand(
-			'git commit -m "Initialize project using @olenbetong/appframe-cli"',
-		);
+		await execShellCommand('git commit -m "Initialize project using @olenbetong/appframe-cli"');
 		return true;
 	} catch (e) {
 		// We couldn't commit in already initialized git repo,
@@ -50,9 +48,7 @@ async function installDependencies() {
 }
 
 async function copyTemplateRepo(name: string) {
-	console.log(
-		`Copying template repo (olenbetong/vite-template-appframe) into ./${name}...`,
-	);
+	console.log(`Copying template repo (olenbetong/vite-template-appframe) into ./${name}...`);
 	const emitter = degit("olenbetong/vite-template-appframe", {
 		cache: false,
 		verbose: false,
@@ -90,9 +86,7 @@ async function initApp(name: string) {
 		sortOrder: [{ GroupName: SortOrder.Asc }, { Name: SortOrder.Asc }],
 	});
 
-	let questions: PromptObject<
-		"hostname" | "newOrExisting" | "namespace" | "articleTitle" | "articleId"
-	>[] = [
+	let questions: PromptObject<"hostname" | "newOrExisting" | "namespace" | "articleTitle" | "articleId">[] = [
 		{
 			type: "select",
 			name: "hostname",
@@ -204,15 +198,10 @@ async function initApp(name: string) {
 
 	pkg.appframe.proxy = {
 		...pkg.appframe.proxy,
-		hostname: isPartner
-			? `${stageServer}.partner.obet.no`
-			: `${stageServer}.obet.no`,
+		hostname: isPartner ? `${stageServer}.partner.obet.no` : `${stageServer}.obet.no`,
 	};
 
-	await writeFile(
-		getProjectFile(`./package.json`),
-		JSON.stringify(pkg, null, 2),
-	);
+	await writeFile(getProjectFile(`./package.json`), JSON.stringify(pkg, null, 2));
 
 	try {
 		await writeFile(
@@ -246,10 +235,7 @@ const appPkg = await importJson("../package.json");
 const program = new Command();
 program
 	.version(appPkg.version)
-	.argument(
-		"<name>",
-		"Name of the new application. Will also be the folder name)",
-	)
+	.argument("<name>", "Name of the new application. Will also be the folder name)")
 	.action(initApp);
 
 await program.parseAsync(process.argv);

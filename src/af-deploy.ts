@@ -8,10 +8,7 @@ import { importJson } from "./lib/importJson.js";
 
 const isInteractive = process.stdout.isTTY;
 
-async function deployTransactions(
-	namespaceArg: string,
-	options: { server: string },
-) {
+async function deployTransactions(namespaceArg: string, options: { server: string }) {
 	try {
 		await getServerFromOptions(options);
 		let server = new Server(options.server);

@@ -9,10 +9,7 @@ import { DataObject, Procedure } from "@olenbetong/appframe-data";
  * @param {boolean | undefined} isProc Whether the target is a data object field or a procedure parameter (true for procedure parameter)
  * @returns {string} Typescript type matching the data object parameter type
  */
-export function afTypeToTsType(
-	type: string | undefined,
-	isProc: boolean = false,
-) {
+export function afTypeToTsType(type: string | undefined, isProc: boolean = false) {
 	if (type === "uniqueidentifier") {
 		return "string";
 	} else if (type && ["date", "datetime"].includes(type)) {
@@ -27,17 +24,12 @@ export function afTypeToTsType(
  *
  * @param {Record<string, Record<string, string>>} parameterOverrides Overrides for data object field types
  */
-function getDataObjectTypes(
-	parameterOverrides: Record<string, Record<string, string>> = {},
-) {
+function getDataObjectTypes(parameterOverrides: Record<string, Record<string, string>> = {}) {
 	let result = [];
 	let globals = [];
-	let dataObjects = Object.values(
-		(globalThis.af.article.dataObjects ?? {}) as Record<
-			string,
-			DataObject<any>
-		>,
-	).sort((p1, p2) => (p1.getDataSourceId() >= p2.getDataSourceId() ? 1 : -1));
+	let dataObjects = Object.values((globalThis.af.article.dataObjects ?? {}) as Record<string, DataObject<any>>).sort(
+		(p1, p2) => (p1.getDataSourceId() >= p2.getDataSourceId() ? 1 : -1),
+	);
 
 	for (let dataObject of dataObjects) {
 		let id = dataObject.getDataSourceId();
@@ -48,10 +40,8 @@ function getDataObjectTypes(
 		for (let field of dataObject.getFields()) {
 			let type =
 				parameterOverrides[id]?.[field.name] ??
-				afTypeToTsType(field.type ?? "string") +
-					(field.nullable ? " | null" : "");
-			let fieldName =
-				field.name.indexOf("-") > 0 ? `"${field.name}"` : field.name;
+				afTypeToTsType(field.type ?? "string") + (field.nullable ? " | null" : "");
+			let fieldName = field.name.indexOf("-") > 0 ? `"${field.name}"` : field.name;
 
 			result.push(`\t${fieldName}: ${type};`);
 		}
@@ -89,13 +79,8 @@ function getProcedureTypes(
 	let result = [];
 	let globals = [];
 	let procedures = Object.values(
-		(globalThis.af.article.procedures ?? {}) as Record<
-			string,
-			Procedure<unknown, unknown>
-		>,
-	).sort((p1, p2) =>
-		p1.options.procedureId >= p2.options.procedureId ? 1 : -1,
-	);
+		(globalThis.af.article.procedures ?? {}) as Record<string, Procedure<unknown, unknown>>,
+	).sort((p1, p2) => (p1.options.procedureId >= p2.options.procedureId ? 1 : -1));
 
 	for (let procedure of procedures) {
 		let id = procedure.options.procedureId;
@@ -107,29 +92,19 @@ function getProcedureTypes(
 			result.push(`export type ${typeName} = {`);
 
 			for (let param of params) {
-				let type =
-					parameterOverrides[id]?.[param.name] ??
-					afTypeToTsType(param.type, true) + " | null";
+				let type = parameterOverrides[id]?.[param.name] ?? afTypeToTsType(param.type, true) + " | null";
 				let required = parameterOverrides[id]?.__required?.includes(param.name);
 
-				result.push(
-					`\t${param.name}${required || param.required ? "" : "?"}: ${type};`,
-				);
+				result.push(`\t${param.name}${required || param.required ? "" : "?"}: ${type};`);
 			}
 
 			result.push("};");
 			result.push("");
 		} else {
-			result.push(
-				`export type ${typeName} = null | undefined | Record<string, never>;\n`,
-			);
+			result.push(`export type ${typeName} = null | undefined | Record<string, never>;\n`);
 		}
 
-		globals.push(
-			`${id}: Procedure<${typeName}, ${
-				Object.keys(returnTypes).includes(id) ? returnTypes[id] : "any"
-			}>;`,
-		);
+		globals.push(`${id}: Procedure<${typeName}, ${Object.keys(returnTypes).includes(id) ? returnTypes[id] : "any"}>;`);
 	}
 
 	if (globals.length === 0) {
@@ -154,10 +129,7 @@ export function generateTypes(
 	} = {},
 ) {
 	let dataObjects = getDataObjectTypes(overridesConfig["parameterTypes"]);
-	let procedures = getProcedureTypes(
-		overridesConfig["parameterTypes"],
-		overridesConfig["procedureReturnTypes"],
-	);
+	let procedures = getProcedureTypes(overridesConfig["parameterTypes"], overridesConfig["procedureReturnTypes"]);
 
 	let types = [];
 	if (dataObjects.length) types.push("DataObject");
@@ -165,8 +137,7 @@ export function generateTypes(
 
 	let result = [
 		`import { ${types.join(", ")} } from "@olenbetong/appframe-data";${
-			customExists &&
-			(dataObjects.includes("Custom.") || procedures.includes("Custom."))
+			customExists && (dataObjects.includes("Custom.") || procedures.includes("Custom."))
 				? '\nimport * as Custom from "./custom";'
 				: ""
 		}`,

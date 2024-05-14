@@ -1,8 +1,5 @@
 export { default as getArticlesDataObject } from "./dsArticles.js";
-export {
-	default as getArticlesFeaturesDataObject,
-	ArticlesFeaturesRecord,
-} from "./dsArticlesFeatures.js";
+export { default as getArticlesFeaturesDataObject, ArticlesFeaturesRecord } from "./dsArticlesFeatures.js";
 export { default as getArticlesPermissionsDataObject } from "./dsArticlesPermissions.js";
 export { default as getArticlesVersionsDataObject } from "./dsArticlesVersions.js";
 export { default as getBundlesDataObject } from "./dsBundles.js";

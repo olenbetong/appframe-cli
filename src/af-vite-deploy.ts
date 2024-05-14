@@ -72,10 +72,7 @@ const procRemovePreviousBuild = new af.ProcedureAPI<any, any>({
 });
 
 async function fileExists(file: string, useCwd = false) {
-	let completeUrl = new URL(
-		file,
-		useCwd ? `file://${process.cwd()}/` : import.meta.url,
-	);
+	let completeUrl = new URL(file, useCwd ? `file://${process.cwd()}/` : import.meta.url);
 
 	try {
 		await access(completeUrl);
@@ -88,9 +85,7 @@ async function fileExists(file: string, useCwd = false) {
 let scriptPath: string = `file://${process.cwd()}/dist/file/article/script/${
 	appframe.article?.id ?? appframe.article
 }/`;
-let stylePath: string = `file://${process.cwd()}/dist/file/article/style/${
-	appframe.article?.id ?? appframe.article
-}/`;
+let stylePath: string = `file://${process.cwd()}/dist/file/article/style/${appframe.article?.id ?? appframe.article}/`;
 let styles: string[] = [];
 let scripts: string[] = await readdir(new URL(scriptPath));
 
@@ -106,9 +101,7 @@ if (await fileExists("./dist/manifest.json", true)) {
 // Not every application generates CSS files. Can safely ignore errors
 try {
 	let files = await readdir(new URL(stylePath));
-	styles = files.filter(
-		(file) => file.endsWith(".css") || file.endsWith(".css.map"),
-	);
+	styles = files.filter((file) => file.endsWith(".css") || file.endsWith(".css.map"));
 } catch (error) {
 	console.error(chalk.red((error as any).message));
 }
@@ -225,11 +218,7 @@ function Deployer() {
 					entry = value;
 				}
 
-				if (
-					file &&
-					manifest[file]?.isEntry !== true &&
-					file.endsWith(".min.js")
-				) {
+				if (file && manifest[file]?.isEntry !== true && file.endsWith(".min.js")) {
 					prefetchSet.add(file);
 				} else if (file?.endsWith(".css") && !entry?.css?.includes(file)) {
 					prefetchSet.add(file);
@@ -247,18 +236,12 @@ function Deployer() {
 <script>
 window.af?.common?.expose?.("af.article.version", "${version}");
 </script>
-<script src="${entry.file.replace(
-				"file/article",
-				`/file/article`,
-			)}" type="module"></script>`;
+<script src="${entry.file.replace("file/article", `/file/article`)}" type="module"></script>`;
 
 			if (entry.imports) {
 				for (let name of entry.imports) {
 					let chunk = manifest[name];
-					html += `\n<link rel="modulepreload" href="${chunk.file.replace(
-						"file/article",
-						`/file/article`,
-					)}">`;
+					html += `\n<link rel="modulepreload" href="${chunk.file.replace("file/article", `/file/article`)}">`;
 
 					if (prefetchSet.has(chunk.file)) {
 						prefetchSet.delete(chunk.file);
@@ -289,13 +272,7 @@ window.af?.common?.expose?.("af.article.version", "${version}");
 	return h(
 		Fragment,
 		{},
-		h(
-			Text,
-			{},
-			hasCheckedOut
-				? "  ✅ Checked out article"
-				: "  ⬛ Checking out article...",
-		),
+		h(Text, {}, hasCheckedOut ? "  ✅ Checked out article" : "  ⬛ Checking out article..."),
 		h(
 			Text,
 			{},

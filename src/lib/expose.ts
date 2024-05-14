@@ -31,8 +31,7 @@ function requireNamespace(root, namespace) {
 			let current = root;
 
 			for (let i = 0; i < namespace.length; i++) {
-				current = current[namespace[i]] =
-					current[namespace[i]] || new Namespace();
+				current = current[namespace[i]] = current[namespace[i]] || new Namespace();
 			}
 
 			return current;
@@ -46,9 +45,7 @@ function requireNamespace(root, namespace) {
 
 export function expose(name, value) {
 	if (arguments.length !== 2) {
-		throw new Error(
-			"Incorrect number of arguments passed to the expose function!",
-		);
+		throw new Error("Incorrect number of arguments passed to the expose function!");
 	}
 
 	if (Array.isArray(value)) {
@@ -78,27 +75,17 @@ export function expose(name, value) {
 				namespace = requireNamespace(globalThis, pathParts);
 			} else {
 				keyName = pathParts[pathParts.length - 1];
-				namespace = requireNamespace(
-					globalThis,
-					pathParts.slice(0, pathParts.length - 1),
-				);
+				namespace = requireNamespace(globalThis, pathParts.slice(0, pathParts.length - 1));
 			}
-		} else if (
-			keyName &&
-			(typeof name === "object" || typeof name === "function")
-		) {
+		} else if (keyName && (typeof name === "object" || typeof name === "function")) {
 			namespace = name;
 		} else {
-			throw new TypeError(
-				"Invalid typeof parameter 'name', or unable to parse pValue!",
-			);
+			throw new TypeError("Invalid typeof parameter 'name', or unable to parse pValue!");
 		}
 
 		if (objHasKey(namespace, keyName)) {
 			// If class is already defined, warn or show an alert
-			console.log(
-				chalk.yellow([name, keyName].join(".") + " is already defined!"),
-			);
+			console.log(chalk.yellow([name, keyName].join(".") + " is already defined!"));
 		} else {
 			namespace[keyName] = value;
 		}

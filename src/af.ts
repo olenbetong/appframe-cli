@@ -15,10 +15,7 @@ program
 	.configureHelp({
 		sortSubcommands: true,
 	})
-	.command(
-		"update",
-		"Installs latest version of @olenbetong/appframe-cli globally.",
-	)
+	.command("update", "Installs latest version of @olenbetong/appframe-cli globally.")
 	.command("launch", "Opens the updater web application")
 	.command(
 		"namespace-to-prod [namespace]",
@@ -26,43 +23,23 @@ program
 	)
 	.alias("ntp")
 	.command("generate [namespace]", "Generates transactions, and lists them")
-	.command(
-		"list [namespace]",
-		"Lists transactions that will be applied or deployed",
-	)
+	.command("list [namespace]", "Lists transactions that will be applied or deployed")
 	.command(
 		"apply [namespace]",
 		"Applies all updates on production server. Will list transactions first, and, if in a TTY environment, prompt the user before applying.",
 	)
 	.command("deploy [namespace]", "Deploy transactions")
-	.command(
-		"check-updates",
-		"List how many updates are available to download in each namespace",
-	)
+	.command("check-updates", "List how many updates are available to download in each namespace")
 	.command("download [namespace]", "Download transactions")
-	.command(
-		"resources [command]",
-		"Tools to work with data resources used by the Data API",
-	)
-	.command(
-		"vite",
-		"Commands to use when working with a SynergiWeb application using Vite",
-	)
+	.command("resources [command]", "Tools to work with data resources used by the Data API")
+	.command("vite", "Commands to use when working with a SynergiWeb application using Vite")
 	.alias("v")
 	.alias("app")
-	.command(
-		"bundle",
-		"Commands to create, upload and publish af bundles from npm packages",
-	)
-	.command(
-		"assets",
-		"Tools to upload and publish website assets (site scripts/styles/templates)",
-	)
+	.command("bundle", "Commands to create, upload and publish af bundles from npm packages")
+	.command("assets", "Tools to upload and publish website assets (site scripts/styles/templates)")
 	.showSuggestionAfterError();
 
-let latestVersionPromise = execShellCommand(
-	"pnpm view @olenbetong/appframe-cli version",
-);
+let latestVersionPromise = execShellCommand("pnpm view @olenbetong/appframe-cli version");
 
 program.action(async () => {
 	program.outputHelp();

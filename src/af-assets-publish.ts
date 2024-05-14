@@ -27,8 +27,7 @@ async function publishAssets(options: { server: string; hostname: string }) {
 		if (site.scripts) {
 			for (let scriptName of Object.keys(site.scripts)) {
 				let script = site.scripts[scriptName];
-				let hostname =
-					script.hostname ?? site.hostname ?? pkg.appframe.hostname;
+				let hostname = script.hostname ?? site.hostname ?? pkg.appframe.hostname;
 
 				if (options.hostname && options.hostname !== hostname) {
 					continue;
@@ -41,11 +40,7 @@ async function publishAssets(options: { server: string; hostname: string }) {
 		if (site.styles) {
 			for (let styleName of Object.keys(site.styles)) {
 				let style = site.styles[styleName];
-				let hostname =
-					style.hostname ??
-					site.hostname ??
-					pkg.appframe.deploy?.hostname ??
-					pkg.appframe.hostname;
+				let hostname = style.hostname ?? site.hostname ?? pkg.appframe.deploy?.hostname ?? pkg.appframe.hostname;
 
 				if (options.hostname && options.hostname !== hostname) {
 					continue;
@@ -58,11 +53,7 @@ async function publishAssets(options: { server: string; hostname: string }) {
 		if (site.templates) {
 			for (let templateName of Object.keys(site.templates)) {
 				let template = site.templates[templateName];
-				let hostname =
-					template.hostname ??
-					site.hostname ??
-					pkg.appframe.deploy?.hostname ??
-					pkg.appframe.hostname;
+				let hostname = template.hostname ?? site.hostname ?? pkg.appframe.deploy?.hostname ?? pkg.appframe.hostname;
 
 				if (options.hostname && options.hostname !== hostname) {
 					continue;

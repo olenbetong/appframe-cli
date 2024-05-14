@@ -9,10 +9,7 @@ import prompts from "prompts";
 
 const cli = await importJson("../package.json");
 
-async function createApplicationRelease(
-	type: string,
-	options: { preid?: string; apply: boolean; workflow: boolean },
-) {
+async function createApplicationRelease(type: string, options: { preid?: string; apply: boolean; workflow: boolean }) {
 	let tempfile = crypto.randomBytes(8).readBigUInt64LE(0).toString(24) + ".tmp";
 
 	try {
@@ -20,21 +17,16 @@ async function createApplicationRelease(
 		let status = (await execShellCommand("git status --porcelain")).trim();
 		if (status) {
 			throw Error(
-				"Working tree has uncommitted changes, please commit or remove the changes before continuing\n" +
-					status,
+				"Working tree has uncommitted changes, please commit or remove the changes before continuing\n" + status,
 			);
 		}
 
 		// Check if we are on the master or main branch. Only relevant if not using a GitHub
 		// workflow, as the GitHub workflow automatically works against the main branch
 		if (options.workflow) {
-			let branch = (
-				await execShellCommand("git rev-parse --abbrev-ref HEAD")
-			).trim();
+			let branch = (await execShellCommand("git rev-parse --abbrev-ref HEAD")).trim();
 			if (!["master", "main"].includes(branch)) {
-				throw Error(
-					`Releases should only be done from the main/master branch. You are on the '${branch}' branch.`,
-				);
+				throw Error(`Releases should only be done from the main/master branch. You are on the '${branch}' branch.`);
 			}
 		}
 
@@ -42,9 +34,7 @@ async function createApplicationRelease(
 		// use the GitHub workflow to publish
 		let ghCliPath = (await execShellCommand("command -v gh")).trim();
 		if (!ghCliPath) {
-			throw Error(
-				`This command requires the GitHub CLI to be installed. Please install it before trying again.`,
-			);
+			throw Error(`This command requires the GitHub CLI to be installed. Please install it before trying again.`);
 		}
 
 		// Check that the user has logged in using the GitHub CLI.
@@ -75,9 +65,7 @@ async function createApplicationRelease(
 		// of the following commands can take some time.
 		let nextVersion = (
 			await execShellCommand(
-				`pnpm dlx semver ${appPkg.version} -i ${type} ${
-					options.preid ? `--preid ${options.preid}` : ""
-				}`,
+				`pnpm dlx semver ${appPkg.version} -i ${type} ${options.preid ? `--preid ${options.preid}` : ""}`,
 			)
 		).trim();
 		let result = await prompts({
@@ -113,27 +101,14 @@ async function createApplicationRelease(
 		}
 
 		let version = (
-			await execShellCommand(
-				`pnpm version ${type} ${
-					options.preid ? `--preid ${options.preid}` : ""
-				}`,
-			)
+			await execShellCommand(`pnpm version ${type} ${options.preid ? `--preid ${options.preid}` : ""}`)
 		).trim();
-		releaseNotes = `## ${appPkg.name}@${version.replace(
-			"v",
-			"",
-		)}\n\n${releaseNotes}`;
+		releaseNotes = `## ${appPkg.name}@${version.replace("v", "")}\n\n${releaseNotes}`;
 
 		// Push the tag pointing to this release so we can create a release with release notes on GitHub
 		await spawnShellCommand("git", ["push", "--follow-tags"]);
 
-		await spawnShellCommand("gh", [
-			"release",
-			"create",
-			version.trim(),
-			"-F",
-			tempfile,
-		]);
+		await spawnShellCommand("gh", ["release", "create", version.trim(), "-F", tempfile]);
 
 		await unlink(tempfile);
 

@@ -18,8 +18,7 @@ async function runStageOperations(
 		lastSuccessfulStep = "login";
 
 		let bundle = state.bundle ?? (await server.getBundle(packageName));
-		if (!bundle || !bundle.ID)
-			throw Error(`Bundle with name '${packageName}' not found.`);
+		if (!bundle || !bundle.ID) throw Error(`Bundle with name '${packageName}' not found.`);
 
 		state.bundle = bundle;
 
@@ -28,8 +27,7 @@ async function runStageOperations(
 			throw Error(`Bundle '${packageName}' is not assigned to a namespace`);
 		}
 
-		let namespace =
-			state.namespace ?? (await server.getNamespace(Namespace_ID));
+		let namespace = state.namespace ?? (await server.getNamespace(Namespace_ID));
 		server.logServerMessage(
 			`Found bundle '${Name}' with Namespace/Project/Version: ${namespace.Name}/${id}/${Project_ID}`,
 		);
@@ -53,21 +51,13 @@ async function runStageOperations(
 		}
 
 		if (operations.includes("apply")) {
-			await server.assertOnlyOneTransaction(
-				"apply",
-				packageName,
-				namespace.Name,
-			);
+			await server.assertOnlyOneTransaction("apply", packageName, namespace.Name);
 			await server.apply(namespace.ID);
 			lastSuccessfulStep = "apply";
 		}
 
 		if (operations.includes("deploy")) {
-			await server.assertOnlyOneTransaction(
-				"deploy",
-				packageName,
-				namespace.Name,
-			);
+			await server.assertOnlyOneTransaction("deploy", packageName, namespace.Name);
 			await server.deploy(namespace.ID);
 			lastSuccessfulStep = "deploy";
 		}
@@ -92,32 +82,13 @@ async function publishFromDev(packageName?: string) {
 
 		let crossServerState = {};
 
-		await runStageOperations(
-			name,
-			version,
-			"dev.obet.no",
-			["publish", "generate", "deploy"],
-			crossServerState,
-		);
-		await runStageOperations(
-			name,
-			version,
-			"stage.obet.no",
-			["download", "apply", "deploy"],
-			crossServerState,
-		);
-		await runStageOperations(
-			name,
-			version,
-			"test.obet.no",
-			["download"],
-			crossServerState,
-		);
+		await runStageOperations(name, version, "dev.obet.no", ["publish", "generate", "deploy"], crossServerState);
+		await runStageOperations(name, version, "stage.obet.no", ["download", "apply", "deploy"], crossServerState);
+		await runStageOperations(name, version, "test.obet.no", ["download"], crossServerState);
 	} catch (error: any) {
 		console.log(
 			chalk.red(error.message),
-			error.lastSuccessfulStep &&
-				`(Last step completed: ${error.lastSuccessfulStep})`,
+			error.lastSuccessfulStep && `(Last step completed: ${error.lastSuccessfulStep})`,
 		);
 		process.exit(1);
 	}
@@ -127,10 +98,7 @@ const cliPkg = await importJson("../package.json");
 let program = new Command();
 program
 	.version(cliPkg.version)
-	.argument(
-		"[package]",
-		"Specify name of the package to publish, otherwise the name in package.json is used",
-	)
+	.argument("[package]", "Specify name of the package to publish, otherwise the name in package.json is used")
 	.action(publishFromDev);
 
 await program.parseAsync();

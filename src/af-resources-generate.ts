@@ -14,10 +14,7 @@ const appPkg = await importJson("../package.json");
  * @param {"ts" | "ts-proc" | "field"} dateStyle
  * @returns
  */
-function afTypeToTsType(
-	type: string | undefined,
-	dateStyle: "ts" | "ts-proc" | "field" | boolean = false,
-) {
+function afTypeToTsType(type: string | undefined, dateStyle: "ts" | "ts-proc" | "field" | boolean = false) {
 	switch (type) {
 		case "bigint":
 			return "bigint";
@@ -46,11 +43,7 @@ function afTypeToTsType(
 	}
 }
 
-function getProcedureDefinition(
-	name: string,
-	procDefinition: any,
-	options: CLIOptions,
-) {
+function getProcedureDefinition(name: string, procDefinition: any, options: CLIOptions) {
 	let parameters = [];
 	let typeOverrides: Record<string, string> = {};
 
@@ -132,16 +125,9 @@ function getProcedureDefinition(
 	return output.join("\n");
 }
 
-function getDataObjectDefinition(
-	name: string,
-	viewDefinition: any,
-	options: CLIOptions,
-) {
+function getDataObjectDefinition(name: string, viewDefinition: any, options: CLIOptions) {
 	let fields = [];
-	let includeFields =
-		typeof options.fields === "string"
-			? options.fields?.split(",").filter((f) => !!f) ?? []
-			: [];
+	let includeFields = typeof options.fields === "string" ? options.fields?.split(",").filter((f) => !!f) ?? [] : [];
 
 	let aggregates: Record<string, string> = {};
 	if (options.aggregates) {
@@ -275,9 +261,7 @@ ${fieldTypes}}>`;
 		...field,
 		type: afTypeToTsType(field.type, "field"),
 	}));
-	dsOptions.push(
-		`fields: ${JSON.stringify(fieldsOption, null, 2).split("\n").join("\n\t")}`,
-	);
+	dsOptions.push(`fields: ${JSON.stringify(fieldsOption, null, 2).split("\n").join("\n\t")}`);
 
 	let parametersOption: string[] = [`maxRecords: ${options.maxRecords}`];
 
@@ -310,9 +294,7 @@ ${fieldTypes}}>`;
 	}
 
 	if (options.groupBy) {
-		parametersOption.push(
-			`groupBy: ${JSON.stringify(options.groupBy.split(","))}`,
-		);
+		parametersOption.push(`groupBy: ${JSON.stringify(options.groupBy.split(","))}`);
 	}
 
 	if (options.where) {
@@ -342,17 +324,12 @@ ${fieldTypes}}>`;
 	return output;
 }
 
-async function getResourceDefinition(
-	resourceName: string,
-	options: CLIOptions,
-) {
+async function getResourceDefinition(resourceName: string, options: CLIOptions) {
 	let server = new Server("dev.obet.no");
 	await server.login();
 	let resource = await server.getResourceArgument(resourceName);
 	let definition = await server.getResourceDefinition(resource);
-	definition.Parameters = definition.Parameters.filter(
-		(p: any) => !["CUT", "CDL"].includes(p.Name),
-	);
+	definition.Parameters = definition.Parameters.filter((p: any) => !["CUT", "CDL"].includes(p.Name));
 
 	if (options.fields === true) {
 		let response = await prompts([
@@ -373,18 +350,12 @@ async function getResourceDefinition(
 	if (options.unique) command.push(`--unique ${options.unique}`);
 	if (options.global) command.push("--global");
 	if (options.types) command.push("--types");
-	if (options.maxRecords && definition.ObjectType !== "P")
-		command.push(`--max-records ${options.maxRecords}`);
+	if (options.maxRecords && definition.ObjectType !== "P") command.push(`--max-records ${options.maxRecords}`);
 	if (options.sortOrder) command.push(`--sort-order ${options.sortOrder}`);
 	if (options.permissions) command.push(`--permissions ${options.permissions}`);
 	if (options.master) command.push(`--master ${options.master}`);
 	if (options.linkFields) command.push(`--link-fields ${options.linkFields}`);
-	if (options.expose)
-		command.push(
-			`--expose${
-				typeof options.expose === "string" ? ` ${options.expose}` : ""
-			}`,
-		);
+	if (options.expose) command.push(`--expose${typeof options.expose === "string" ? ` ${options.expose}` : ""}`);
 	if (options.dynamic) command.push(`--dynamic`);
 	if (options.overrides) command.push(`--overrides "${options.overrides}"`);
 	if (options.distinct) command.push("--distinct");
@@ -426,11 +397,7 @@ const program = new Command();
 program
 	.version(appPkg.version)
 	.addResourceArgument()
-	.option(
-		"-i, --id <id>",
-		"ID to use as name for the data object",
-		"dsDataObject",
-	)
+	.option("-i, --id <id>", "ID to use as name for the data object", "dsDataObject")
 	.option("-g, --global", "Use af.data globals to generate the data object")
 	.option("-t, --types", "Include data object types")
 	.option("-f, --fields [fields]", "Comma-separated list of fields to include")
@@ -439,10 +406,7 @@ program
 		"Permission to set on the data object (I = insert, U = update and D = delete; can be combined, for example IUD for all permissions)",
 	)
 	.option("-m, --max-records <maxRecords>", "Max records to fetch", "50")
-	.option(
-		"-b, --master <masterDataObject>",
-		"Name of data object to set as master data object",
-	)
+	.option("-b, --master <masterDataObject>", "Name of data object to set as master data object")
 	.option(
 		"-l, --link-fields <linkFields>",
 		"Comma separated list of fields to bind to master data object. Either name of field that is in both data objects, or <field>:<field in master data object> (e.g. MainGroup_ID:ID)",
@@ -456,10 +420,7 @@ program
 		"-e, --expose [id]",
 		"Expose the data object on global af.article.dataObjects. If id is not given, the data object ID is used",
 	)
-	.option(
-		"-u, --unique <id>",
-		"Unique table name to use when performing updates/delete",
-	)
+	.option("-u, --unique <id>", "Unique table name to use when performing updates/delete")
 	.option(
 		"-o, --overrides <typeOverrides>",
 		"Comma separated list of field/parameter type overrides with format <field>:<type>. E.g. BuildSites:[string][]",
@@ -470,9 +431,6 @@ program
 		"Comma separated list of aggregate binding for non-grouped fields, e.g. Quantity:SUM,Created:MAX",
 	)
 	.option("--distinct", "Data object should fetch distinct data")
-	.option(
-		"--where <whereClause>",
-		"Initial where clause to set on the data object",
-	)
+	.option("--where <whereClause>", "Initial where clause to set on the data object")
 	.action(getResourceDefinition);
 await program.parseAsync(process.argv);

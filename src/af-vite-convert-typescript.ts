@@ -12,10 +12,7 @@ function getCLIFile(file: string) {
 }
 
 async function fileExists(file: string, useCwd = false) {
-	let completeUrl = new URL(
-		file,
-		useCwd ? `file://${process.cwd()}/` : import.meta.url,
-	);
+	let completeUrl = new URL(file, useCwd ? `file://${process.cwd()}/` : import.meta.url);
 
 	try {
 		await access(completeUrl);
@@ -28,47 +25,28 @@ async function fileExists(file: string, useCwd = false) {
 async function convertToTypescript() {
 	console.log("Installing Typescript and types...");
 
-	await execShellCommand(
-		"npm i -D typescript @types/node @types/react @types/react-dom",
-	);
+	await execShellCommand("npm i -D typescript @types/node @types/react @types/react-dom");
 
 	console.log("Replacing jsconfig with tsconfig...");
 	if (await fileExists("./jsconfig.json", true)) {
 		await rm(getProjectFile("./jsconfig.json"));
 	}
-	await copyFile(
-		getCLIFile("../templates/tsconfig.json.tpl"),
-		getProjectFile("./tsconfig.json"),
-	);
-	await copyFile(
-		getCLIFile("../templates/types.json.tpl"),
-		getProjectFile("./types.json"),
-	);
+	await copyFile(getCLIFile("../templates/tsconfig.json.tpl"), getProjectFile("./tsconfig.json"));
+	await copyFile(getCLIFile("../templates/types.json.tpl"), getProjectFile("./types.json"));
 
 	console.log("Adding global definition files...");
-	await copyFile(
-		getCLIFile("../templates/global.d.ts.tpl"),
-		getProjectFile("./src/global.d.ts"),
-	);
+	await copyFile(getCLIFile("../templates/global.d.ts.tpl"), getProjectFile("./src/global.d.ts"));
 
-	await copyFile(
-		getCLIFile("../templates/custom.d.ts.tpl"),
-		getProjectFile("./src/custom.d.ts"),
-	);
+	await copyFile(getCLIFile("../templates/custom.d.ts.tpl"), getProjectFile("./src/custom.d.ts"));
 
 	if (await fileExists("./src/theme.js", true)) {
 		await rm(getProjectFile("./src/theme.js"));
 	}
 
-	await copyFile(
-		getCLIFile("../templates/theme.ts.tpl"),
-		getProjectFile("./src/theme.ts"),
-	);
+	await copyFile(getCLIFile("../templates/theme.ts.tpl"), getProjectFile("./src/theme.ts"));
 
 	console.log("Renaming files...");
-	await execShellCommand(
-		"find ./src -name \"*.js\" -exec rename 's/.js$/.tsx/' '{}' +",
-	);
+	await execShellCommand("find ./src -name \"*.js\" -exec rename 's/.js$/.tsx/' '{}' +");
 }
 
 convertToTypescript().catch((error) => {

@@ -7,19 +7,9 @@ import { importJson } from "./lib/importJson.js";
 
 const isInteractive = process.stdout.isTTY;
 
-type StageStep =
-	| "download"
-	| "generate"
-	| "verify-apply"
-	| "apply"
-	| "verify-deploy"
-	| "deploy";
+type StageStep = "download" | "generate" | "verify-apply" | "apply" | "verify-deploy" | "deploy";
 
-async function runStageOperations(
-	namespace: string,
-	hostname: string,
-	operations: StageStep[] = ["download"],
-) {
+async function runStageOperations(namespace: string, hostname: string, operations: StageStep[] = ["download"]) {
 	let lastSuccessfulStep = "none";
 	try {
 		let server = new Server(hostname);
@@ -92,21 +82,14 @@ async function getNamespace(namespaceArg: string) {
 	return await server.getNamespaceArgument(namespaceArg);
 }
 
-async function publishFromDev(
-	namespaceArg: string,
-	options: { server: string; skipGenerate?: boolean },
-) {
+async function publishFromDev(namespaceArg: string, options: { server: string; skipGenerate?: boolean }) {
 	let namespace = await getNamespace(namespaceArg);
 	let devSteps: StageStep[] = options.skipGenerate
 		? ["verify-deploy", "deploy"]
 		: ["generate", "verify-deploy", "deploy"];
 
 	await runStageOperations(namespace, "dev.obet.no", devSteps);
-	await runStageOperations(namespace, "stage.obet.no", [
-		"download",
-		"apply",
-		"deploy",
-	]);
+	await runStageOperations(namespace, "stage.obet.no", ["download", "apply", "deploy"]);
 	await runStageOperations(namespace, "test.obet.no", ["download"]);
 
 	console.log("");
@@ -114,18 +97,11 @@ async function publishFromDev(
 	console.log(`Run ${chalk.blue(`af apply ${namespace}`)} to apply updates.`);
 }
 
-async function run(
-	namespace: string,
-	options: { server: string; skipGenerate?: boolean },
-) {
+async function run(namespace: string, options: { server: string; skipGenerate?: boolean }) {
 	try {
 		await publishFromDev(namespace, options);
 	} catch (error: any) {
-		console.error(
-			error.message,
-			error.lastSuccessfulStep &&
-				`(Last step completed: ${error.lastSuccessfulStep})`,
-		);
+		console.error(error.message, error.lastSuccessfulStep && `(Last step completed: ${error.lastSuccessfulStep})`);
 		process.exit(1);
 	}
 }

@@ -10,12 +10,7 @@ async function getProjectFileContents(file: string) {
 	return await readFile(filePath, "utf-8");
 }
 
-async function deployAssets(options: {
-	server: string;
-	hostname: string;
-	production: boolean;
-	test: boolean;
-}) {
+async function deployAssets(options: { server: string; hostname: string; production: boolean; test: boolean }) {
 	const { appframe } = await importJson("./package.json", true);
 	const server = new Server(options.server);
 	const result = await server.login();
@@ -33,11 +28,7 @@ async function deployAssets(options: {
 		if (site.scripts) {
 			for (let scriptName of Object.keys(site.scripts)) {
 				let script = site.scripts[scriptName];
-				let hostname =
-					script.hostname ??
-					site.hostname ??
-					appframe.deploy?.hostname ??
-					appframe.hostname;
+				let hostname = script.hostname ?? site.hostname ?? appframe.deploy?.hostname ?? appframe.hostname;
 				let content;
 				let contentTest;
 
@@ -69,11 +60,7 @@ async function deployAssets(options: {
 		if (site.styles) {
 			for (let styleName of Object.keys(site.styles)) {
 				let style = site.styles[styleName];
-				let hostname =
-					style.hostname ??
-					site.hostname ??
-					appframe.deploy?.hostname ??
-					appframe.hostname;
+				let hostname = style.hostname ?? site.hostname ?? appframe.deploy?.hostname ?? appframe.hostname;
 				let content;
 				let contentTest;
 

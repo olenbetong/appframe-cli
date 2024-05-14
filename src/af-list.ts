@@ -63,9 +63,7 @@ async function listTransactions(
 			(t: any) => t.Namespace,
 		)
 			.map((t: any) => ({ Namespace: t[0], "Transaction count": t[1] }))
-			.sort(
-				(a: any, z: any) => z["Transaction count"] - a["Transaction count"],
-			);
+			.sort((a: any, z: any) => z["Transaction count"] - a["Transaction count"]);
 
 		console.table(byNamespace);
 	} else {
@@ -73,10 +71,7 @@ async function listTransactions(
 	}
 }
 
-let typeOption = new Option(
-	"-t, --type <type>",
-	"Type of transactions to list",
-);
+let typeOption = new Option("-t, --type <type>", "Type of transactions to list");
 
 if (!isInteractive) {
 	typeOption.default("apply");

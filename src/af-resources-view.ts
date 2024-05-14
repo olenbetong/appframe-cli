@@ -6,10 +6,7 @@ import { importJson } from "./lib/importJson.js";
 const isInteractive = process.stdin.isTTY;
 const appPkg = await importJson("../package.json");
 
-async function viewResourceDefinition(
-	resource: string,
-	options: { server: string },
-) {
+async function viewResourceDefinition(resource: string, options: { server: string }) {
 	await getServerFromOptions(options);
 	let server = new Server(options.server);
 	await server.login();
@@ -22,10 +19,7 @@ const program = new Command();
 program
 	.version(appPkg.version)
 	.addServerOption()
-	.argument(
-		isInteractive ? "[resource]" : "<resource>",
-		"Name of the resource to show definition",
-	)
+	.argument(isInteractive ? "[resource]" : "<resource>", "Name of the resource to show definition")
 	.action(viewResourceDefinition);
 
 await program.parseAsync(process.argv);

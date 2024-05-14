@@ -9,10 +9,7 @@ import { exec, spawn } from "node:child_process";
  * @param {boolean} pipeOutput Set to true to pipe output to stdout and stderr
  * @returns
  */
-export function execShellCommand(
-	cmd: string,
-	pipeOutput: boolean = false,
-): Promise<string> {
+export function execShellCommand(cmd: string, pipeOutput: boolean = false): Promise<string> {
 	return new Promise((resolve, reject) => {
 		let childProcess = exec(cmd, (error, stdout, stderr) => {
 			if (error) {

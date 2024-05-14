@@ -3,12 +3,7 @@ import chalk from "chalk";
 import vm from "node:vm";
 import fs from "node:fs/promises";
 
-import {
-	DataObject,
-	Procedure,
-	Client,
-	setDefaultClient,
-} from "@olenbetong/appframe-data";
+import { DataObject, Procedure, Client, setDefaultClient } from "@olenbetong/appframe-data";
 
 import { Command } from "./lib/Command.js";
 import { Server } from "./lib/Server.js";
@@ -68,8 +63,7 @@ async function projectFileExists(file: string) {
 }
 
 async function generateTypescriptTypes(options: { server: string }) {
-	let articleHost =
-		appPkg.appframe.article?.hostname ?? appPkg.appframe.hostname;
+	let articleHost = appPkg.appframe.article?.hostname ?? appPkg.appframe.hostname;
 	let articleId = appPkg.appframe.article?.id ?? appPkg.appframe.article;
 	let articleUrl = `${articleHost}/${articleId}`;
 
@@ -81,13 +75,9 @@ async function generateTypescriptTypes(options: { server: string }) {
 			"dev.obet.no",
 	);
 	await server.login();
-	server.logServerMessage(
-		chalk.blueBright(`Generating data object types for '${articleUrl}'...`),
-	);
+	server.logServerMessage(chalk.blueBright(`Generating data object types for '${articleUrl}'...`));
 
-	let result = await server.fetch(
-		`/file/article/static-script/${articleId}.js`,
-	);
+	let result = await server.fetch(`/file/article/static-script/${articleId}.js`);
 	let scriptText = await result.text();
 
 	let context = vm.createContext(globalThis);
@@ -134,14 +124,9 @@ declare module "@olenbetong/appframe-core" {
 
 		let data = new Uint8Array(Buffer.from(types));
 
-		server.logServerMessage(
-			`Writing generated types to './src/appframe.d.ts'...`,
-		);
+		server.logServerMessage(`Writing generated types to './src/appframe.d.ts'...`);
 
-		await fs.writeFile(
-			new URL("./src/appframe.d.ts", `file://${process.cwd()}/`),
-			data,
-		);
+		await fs.writeFile(new URL("./src/appframe.d.ts", `file://${process.cwd()}/`), data);
 
 		server.logServerMessage("Done.");
 	} catch (error) {
@@ -150,9 +135,6 @@ declare module "@olenbetong/appframe-core" {
 }
 
 const program = new Command();
-program
-	.version(cliPkg.version)
-	.addServerOption(true)
-	.action(generateTypescriptTypes);
+program.version(cliPkg.version).addServerOption(true).action(generateTypescriptTypes);
 
 await program.parseAsync(process.argv);

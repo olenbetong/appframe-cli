@@ -1,8 +1,4 @@
-import {
-	Client,
-	generateApiDataHandler,
-	SortOrder,
-} from "@olenbetong/appframe-data";
+import { Client, generateApiDataHandler, SortOrder } from "@olenbetong/appframe-data";
 
 export default (client: Client) =>
 	generateApiDataHandler({

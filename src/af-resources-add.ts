@@ -5,10 +5,7 @@ import { importJson } from "./lib/importJson.js";
 
 const appPkg = await importJson("../package.json");
 
-async function addDataResource(
-	id: string,
-	options: { server: string; name?: string },
-) {
+async function addDataResource(id: string, options: { server: string; name?: string }) {
 	await getServerFromOptions(options);
 	let server = new Server(options.server);
 	await server.login();

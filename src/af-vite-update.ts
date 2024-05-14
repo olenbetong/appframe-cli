@@ -44,18 +44,12 @@ async function updateTemplate(template: any) {
 
 	for (let template of templateList) {
 		console.log(`Updating file (${template})...`);
-		await copyFile(
-			getCLIFile(templates[template].source),
-			getProjectFile(templates[template].target),
-		);
+		await copyFile(getCLIFile(templates[template].source), getProjectFile(templates[template].target));
 	}
 }
 
 const appPkg = await importJson("../package.json");
 const program = new Command();
-program
-	.version(appPkg.version)
-	.argument("[template]", "The template file you want to update")
-	.action(updateTemplate);
+program.version(appPkg.version).argument("[template]", "The template file you want to update").action(updateTemplate);
 
 await program.parseAsync(process.argv);

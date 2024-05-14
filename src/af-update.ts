@@ -17,11 +17,7 @@ try {
 			console.log(cmd, args.join(" "));
 			await spawnShellCommand(cmd, args);
 		} else {
-			console.log(
-				chalk.blue(
-					"CLI not found in local package.json. Skipping local install.",
-				),
-			);
+			console.log(chalk.blue("CLI not found in local package.json. Skipping local install."));
 		}
 	} catch (error: any) {
 		console.log(chalk.blue("No package.json found, skipping local install"));

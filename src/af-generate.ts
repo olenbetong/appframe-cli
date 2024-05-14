@@ -23,10 +23,6 @@ const program = new Command();
 program
 	.version(appPkg.version)
 	.addNamespaceArgument()
-	.option(
-		"-s, --server <server>",
-		"server on which to generate updates",
-		"dev.obet.no",
-	)
+	.option("-s, --server <server>", "server on which to generate updates", "dev.obet.no")
 	.action(generate)
 	.parseAsync(process.argv);
