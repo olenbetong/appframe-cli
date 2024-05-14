@@ -137,7 +137,7 @@ export class Server {
 				if (counter === 5) {
 					process.stdout.clearLine(0);
 					process.stdout.cursorTo(0);
-					process.stdout.write(`${this.getHostPrefix()} ${runningMessage}`);
+					process.stdout.write(`${this.getHostPrefix()} ${runningMessage} (${Math.floor(performance.now() - start)}ms)`);
 					counter = 0;
 				}
 
