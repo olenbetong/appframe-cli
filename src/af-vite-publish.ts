@@ -5,7 +5,7 @@ import chalk from "chalk";
 import prompts, { PromptObject } from "prompts";
 import { execShellCommand } from "./lib/execShellCommand.js";
 
-type StageOperation = "download" | "apply" | "deploy" | "generate" | "publish";
+type StageOperation = "download" | "apply" | "checkout" | "deploy" | "generate" | "publish";
 
 async function runStageOperations(
 	devHost: string,
@@ -40,8 +40,12 @@ async function runStageOperations(
 			lastSuccessfulStep = "generate";
 		}
 
-		if (operations.includes("apply")) {
+		if (operations.includes("checkout")) {
 			await server.assertOnlyOneTransaction("apply", transactionName, article.Namespace);
+			lastSuccessfulStep = "checkout";
+		}
+
+		if (operations.includes("apply")) {
 			await server.checkoutArticle(article.HostName, article.ArticleId);
 			await server.apply(article.Namespace_ID);
 			lastSuccessfulStep = "apply";
@@ -109,8 +113,8 @@ async function publishFromDev(articleWithHost?: string, version?: string) {
 
 	try {
 		await runStageOperations("dev.obet.no", ["publish", "generate", "deploy"], config, crossServerState);
-		await runStageOperations("stage.obet.no", ["download", "apply", "deploy"], config, crossServerState);
-		await runStageOperations("test.obet.no", ["download"], config, crossServerState);
+		await runStageOperations("stage.obet.no", ["download", "checkout", "apply", "deploy"], config, crossServerState);
+		await runStageOperations("test.obet.no", ["download", "checkout"], config, crossServerState);
 	} catch (error) {
 		console.log(chalk.red(`Failed to publish: ${(error as any).message}`));
 		console.log(chalk.red(`Last successful step: ${(error as any).lastSuccessfulStep}`));
