@@ -41,12 +41,12 @@ async function runStageOperations(
 		}
 
 		if (operations.includes("checkout")) {
-			await server.assertOnlyOneTransaction("apply", transactionName, article.Namespace);
+			await server.checkoutArticle(article.HostName, article.ArticleId);
 			lastSuccessfulStep = "checkout";
 		}
 
 		if (operations.includes("apply")) {
-			await server.checkoutArticle(article.HostName, article.ArticleId);
+			await server.assertOnlyOneTransaction("apply", transactionName, article.Namespace);
 			await server.apply(article.Namespace_ID);
 			lastSuccessfulStep = "apply";
 		}
