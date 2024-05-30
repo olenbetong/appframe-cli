@@ -201,8 +201,8 @@ function getDataObjectDefinition(name: string, viewDefinition: any, options: CLI
 			fieldTypes += `  ${field.name}: ${type};\n`;
 		}
 
-		types = `export type ${typeName} = Readonly<{
-${fieldTypes}}>`;
+		types = `export type ${typeName} = {
+${fieldTypes}}`;
 	}
 
 	if (options.global) {
