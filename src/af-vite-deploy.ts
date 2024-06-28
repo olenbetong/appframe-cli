@@ -195,18 +195,22 @@ function Deployer() {
 
 			let blockHandler = dsArticlesBlocks;
 			let blocks = await blockHandler.retrieve<ArticleBlockRecord>({
-				whereClause: `[HostName] = '${articleHost}' AND [ArticleID] = '${articleId}' AND [ID] = 'ViteScripts'`,
+				whereClause: `[HostName] = '${articleHost}' AND [ArticleID] = '${articleId}' AND [ID] IN ('ViteScripts', 'ViteHead')`,
 			});
-			let block: ArticleBlockRecord;
-			if (blocks.length === 0) {
-				block = (await blockHandler.create({
-					HostName: articleHost,
-					ArticleId: articleId,
-					ID: "ViteScripts",
-				})) as ArticleBlockRecord;
-			} else {
-				block = blocks[0];
-			}
+			const createOrGetBlock = async (id: string) => {
+				let block = blocks.find((b) => b.ID === id);
+				if (!block) {
+					return (await blockHandler.create({
+						HostName: articleHost,
+						ArticleId: articleId,
+						ID: id,
+					})) as ArticleBlockRecord;
+				}
+				return block;
+			};
+
+			let scriptsBlock = await createOrGetBlock("ViteScripts");
+			let headBlock = await createOrGetBlock("ViteHead");
 
 			let entry: any;
 			let prefetchSet = new Set<string>();
@@ -232,16 +236,20 @@ function Deployer() {
 				version = appPackageJson.version;
 			}
 
-			let html = `
+			let headHtml = "";
+			let scriptsHtml = `
 <script>
 window.af?.common?.expose?.("af.article.version", "${version}");
+navigator.serviceWorker?.ready?.then((registration) => {
+registration.active?.postMessage({ action: "vitePrefetch", assets: ${JSON.stringify([...prefetchSet.values()].map((a) => `/${a}`))} });
+});
 </script>
 <script src="${entry.file.replace("file/article", `/file/article`)}" type="module"></script>`;
 
 			if (entry.imports) {
 				for (let name of entry.imports) {
 					let chunk = manifest[name];
-					html += `\n<link rel="modulepreload" href="${chunk.file.replace("file/article", `/file/article`)}">`;
+					headHtml += `\n<link rel="modulepreload" href="${chunk.file.replace("file/article", `/file/article`)}">`;
 
 					if (prefetchSet.has(chunk.file)) {
 						prefetchSet.delete(chunk.file);
@@ -249,16 +257,14 @@ window.af?.common?.expose?.("af.article.version", "${version}");
 				}
 			}
 
-			for (let file of prefetchSet.values()) {
-				html += `\n<link rel="prefetch" href="${file.replace(
-					"file/article",
-					"/file/article",
-				)}" as="${file.endsWith("css") ? "style" : "script"}">`;
-			}
+			await blockHandler.update({
+				PrimKey: scriptsBlock.PrimKey,
+				HtmlContent: scriptsHtml,
+			});
 
 			await blockHandler.update({
-				PrimKey: block.PrimKey,
-				HtmlContent: html,
+				PrimKey: headBlock.PrimKey,
+				HtmlContent: headHtml,
 			});
 
 			setBlockDone(true);
