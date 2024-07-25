@@ -137,7 +137,9 @@ export class Server {
 				if (counter === 5) {
 					process.stdout.clearLine(0);
 					process.stdout.cursorTo(0);
-					process.stdout.write(`${this.getHostPrefix()} ${runningMessage} (${Math.floor(performance.now() - start)}ms)`);
+					process.stdout.write(
+						`${this.getHostPrefix()} ${runningMessage} (${Math.floor(performance.now() - start)}ms)`,
+					);
 					counter = 0;
 				}
 
@@ -924,12 +926,12 @@ export class Server {
 		let run = async () => {
 			// @ts-ignore
 			let uploader = new FileUploader({
-				route: `/api/bundle-push/${versionId}`,
+				route: `/api/ob/bundle-push/${versionId}`,
 				client: this.client,
 			});
 
 			let zipFile = await fileFromPath(file);
-			// @ts-ignore
+
 			await uploader.upload(zipFile, { Project_ID: projectId });
 		};
 
