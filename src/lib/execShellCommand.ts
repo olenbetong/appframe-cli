@@ -37,7 +37,7 @@ export function execShellCommand(cmd: string, pipeOutput: boolean = false): Prom
  */
 export function spawnShellCommand(cmd: string, args: string[]): Promise<void> {
 	return new Promise((resolve, reject) => {
-		let proc = spawn(cmd, args, { stdio: "inherit" });
+		let proc = spawn(cmd, args, { stdio: "inherit", shell: true });
 
 		proc.on("close", (code) => {
 			if (code === 0) {
