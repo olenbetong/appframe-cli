@@ -1,3 +1,4 @@
+export { default as getArticlesBlocksDataObject, ArticlesBlockRecord } from "./dsArticlesBlocks.js";
 export { default as getArticlesDataObject } from "./dsArticles.js";
 export { default as getArticlesFeaturesDataObject, ArticlesFeaturesRecord } from "./dsArticlesFeatures.js";
 export { default as getArticlesPermissionsDataObject } from "./dsArticlesPermissions.js";

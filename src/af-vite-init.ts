@@ -184,6 +184,25 @@ async function initApp(name: string) {
 		});
 	}
 
+	let blocks = await server.getArticleBlocks(result.hostname, result.articleId);
+	let hasViteScripts = blocks.some((b) => b.ID === "ViteScripts");
+	let hasViteHead = blocks.some((b) => b.ID === "ViteHead");
+
+	if (!hasViteScripts) {
+		await server.createArticleBlock(result.hostname, result.articleId, "ViteScripts", "");
+	}
+
+	if (!hasViteHead) {
+		await server.createArticleBlock(
+			result.hostname,
+			result.articleId,
+			"ViteHead",
+			`@{
+	// If the article needs to put something in the head tag of the template, add it here. Otherwise, the block is safe to delete
+}`,
+		);
+	}
+
 	let pkg = await importJson(`./package.json`, true);
 	pkg.name = result.articleId ?? "new-application";
 	pkg.version = "0.0.1";

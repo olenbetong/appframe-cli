@@ -31,6 +31,8 @@ import {
 	DataResourcesParametersRecord,
 	getDataResourcesParametersDataObject,
 	getArticlesFeaturesDataObject,
+	ArticlesBlockRecord,
+	getArticlesBlocksDataObject,
 } from "../data/index.js";
 
 config({ path: process.cwd() + "/.env" });
@@ -44,6 +46,7 @@ export class Server {
 	private password: string;
 	readonly client: Client;
 	readonly dsArticles: DataHandler<any>;
+	readonly dsArticlesBlocks: DataHandler<ArticlesBlockRecord>;
 	readonly dsArticlesFeatures: DataHandler<ArticlesFeaturesRecord>;
 	readonly dsArticlesPermissions: DataHandler<any>;
 	readonly dsArticlesVersions: DataHandler<any>;
@@ -82,6 +85,7 @@ export class Server {
 		this.password = password ?? envPassword ?? "";
 		this.client = new Client(this.hostname);
 		this.dsArticles = getArticlesDataObject(this.client);
+		this.dsArticlesBlocks = getArticlesBlocksDataObject(this.client);
 		this.dsArticlesFeatures = getArticlesFeaturesDataObject(this.client);
 		this.dsArticlesPermissions = getArticlesPermissionsDataObject(this.client);
 		this.dsArticlesVersions = getArticlesVersionsDataObject(this.client);
@@ -511,6 +515,17 @@ export class Server {
 		);
 	}
 
+	async getArticleBlocks(hostname: string, article: string) {
+		let { dsArticlesBlocks } = this;
+		return await this.logAsyncTask(
+			dsArticlesBlocks.retrieve({
+				maxRecords: -1,
+				whereClause: `[HostName] = '${hostname}' AND [ArticleId] = '${article}'`,
+			}),
+			`Getting article blocks (${hostname}/${article})`,
+		);
+	}
+
 	/**
 	 * Gets the bundle version for the given bundle with version 0
 	 *
@@ -737,6 +752,23 @@ export class Server {
 			Status: r.Status,
 			LastError: r.LastError,
 		}));
+	}
+
+	/**
+	 * Creates an HTML block in an article
+	 */
+	async createArticleBlock(hostname: string, articleId: string, blockId: string, htmlContent: string) {
+		let { dsArticlesBlocks } = this;
+		await this.logAsyncTask(
+			dsArticlesBlocks.create({
+				HostName: hostname,
+				ArticleId: articleId,
+				ID: blockId,
+				HtmlContent: htmlContent,
+			}),
+			`Creating article block (${hostname}/${articleId}: ${blockId})`,
+			`Article block created (${hostname}/${articleId}: ${blockId})`,
+		);
 	}
 
 	/**
