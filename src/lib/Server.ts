@@ -964,6 +964,7 @@ export class Server {
 
 			let zipFile = await fileFromPath(file);
 
+			// @ts-ignore
 			await uploader.upload(zipFile, { Project_ID: projectId });
 		};
 
