@@ -7,7 +7,9 @@ export async function check() {
 	let pkg = await importJson("./package.json", true);
 	let packages = Object.keys(pkg.devDependencies ?? {}).concat(Object.keys(pkg.dependencies ?? {}));
 
-	return packages.find((p) => p === "react-router-typesafe" || p === "@types/react-helmet" || p === "react-helmet");
+	return Boolean(
+		packages.find((p) => p === "react-router-typesafe" || p === "@types/react-helmet" || p === "react-helmet"),
+	);
 }
 
 export async function execute() {

@@ -22,6 +22,5 @@ export async function getTemplate(templateName: string) {
 export async function updateTemplateFile(templateName: string) {
 	let template = await getTemplate(templateName);
 	console.log(`Updating file from template: '${template.title}'...`);
-	console.log(template);
 	await copyFile(getCLIFile(template.source), getProjectFile(template.target));
 }

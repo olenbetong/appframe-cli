@@ -2,6 +2,7 @@ import * as packageFile from "./packageFile.js";
 import * as eslint from "./eslint.js";
 import * as renameTypeFiles from "./renameTypeFiles.js";
 import * as obsoleteFiles from "./obsoleteFiles.js";
+import * as obsoletePackages from "./obsoletePackages.js";
 import * as prettier from "./prettier.js";
 import * as configFiles from "./configFiles.js";
 
@@ -17,6 +18,7 @@ export const changePackages: ChangePackage[] = [
 	eslint,
 	renameTypeFiles,
 	obsoleteFiles,
+	obsoletePackages,
 	prettier,
 	configFiles,
 ];
