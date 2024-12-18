@@ -6,6 +6,7 @@ import * as reactRouter_v7 from "./reactRouter_v7.js";
 import * as prettier from "./prettier.js";
 import * as configFiles from "./configFiles.js";
 import * as reactHelmet from "./reactHelmet.js";
+import * as expressDependency from "./expressDependency.js";
 
 export type ChangePackage = {
 	/**
@@ -30,6 +31,7 @@ export type ChangePackage = {
 export const changePackages: ChangePackage[] = [
 	packageFile,
 	eslint,
+	expressDependency,
 	renameTypeFiles,
 	obsoleteFiles,
 	reactHelmet,
