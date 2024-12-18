@@ -1,11 +1,9 @@
 import { importJson as reactRouter_v7 } from "../lib/importJson.js";
 import { removePackageIfExists } from "../lib/removePackageIfExists.js";
-import jscodeshift from "jscodeshift";
-import { readFile, writeFile } from "node:fs/promises";
-import { getProjectFile } from "../lib/getProjectFile.js";
-import { getFiles } from "../lib/getFiles.js";
 import { satisfies } from "compare-versions";
 import { installPackage } from "../lib/installPackage.js";
+import type { Codemod } from "../lib/applyCodemod.js";
+import { applyCodemodToAllSourceFiles } from "../lib/applyCodemod.js";
 
 export const name = "Remove react-router-typesafe";
 export const cliVersion = "3.53.0";
@@ -21,10 +19,28 @@ export async function check() {
 	);
 }
 
-function shouldProcessFile(file: string) {
-	let extension = file.split(".").pop();
-	return ["ts", "tsx", "js", "jsx"].includes(extension ?? "") && !file.endsWith(".d.ts");
-}
+const codemod: Codemod = (j, root) => {
+	let importDeclaration = root.find(j.ImportDeclaration, { source: { value: "react-router-typesafe" } });
+
+	if (importDeclaration.length) {
+		let deferSpecifier = importDeclaration.find(j.ImportSpecifier, { imported: { name: "defer" } });
+
+		if (deferSpecifier.length) {
+			let deferName = deferSpecifier.get().getValueProperty("local").name;
+			deferSpecifier.remove();
+
+			root.find(j.CallExpression, { callee: { name: deferName } }).replaceWith((path) => path.node.arguments);
+		}
+
+		importDeclaration
+			.find(j.Literal, { value: "react-router-typesafe" })
+			.replaceWith((path) => j.literal("react-router"));
+
+		return true;
+	}
+
+	return false;
+};
 
 export async function execute() {
 	let pkg = await reactRouter_v7("./package.json", true);
@@ -38,33 +54,5 @@ export async function execute() {
 		updateIfExists: true,
 	});
 
-	let sourceFolder = getProjectFile("./src/");
-	let j = jscodeshift.withParser("tsx");
-
-	for await (let file of getFiles(sourceFolder.pathname)) {
-		if (shouldProcessFile(file)) {
-			console.debug(`Processing file: ${file}`);
-			let source = await readFile(file, "utf-8");
-			let root = j(source);
-
-			let importDeclaration = root.find(j.ImportDeclaration, { source: { value: "react-router-typesafe" } });
-
-			if (importDeclaration.length) {
-				let deferSpecifier = importDeclaration.find(j.ImportSpecifier, { imported: { name: "defer" } });
-
-				if (deferSpecifier.length) {
-					let deferName = deferSpecifier.get().getValueProperty("local").name;
-					deferSpecifier.remove();
-
-					root.find(j.CallExpression, { callee: { name: "defer" } }).replaceWith((path) => path.node.arguments);
-				}
-
-				importDeclaration
-					.find(j.Literal, { value: "react-router-typesafe" })
-					.replaceWith((path) => j.literal("react-router"));
-
-				await writeFile(file, root.toSource());
-			}
-		}
-	}
+	await applyCodemodToAllSourceFiles(codemod, name);
 }
