@@ -45,7 +45,7 @@ async function createApplicationRelease(type: string, options: { preid?: string;
 		}
 
 		// Verify that pnpm is available
-		let pnpmPath = (await execShellCommand("command -v gh")).trim();
+		let pnpmPath = (await execShellCommand("command -v pnpm")).trim();
 		if (!pnpmPath) {
 			throw Error(
 				`This command use pnpm to build the project. Please install (npm install -g pnpm && pnpm setup) before trying again.`,
