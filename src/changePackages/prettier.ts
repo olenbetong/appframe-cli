@@ -5,6 +5,7 @@ import { importJson } from "../lib/importJson.js";
 import { installPackage } from "../lib/installPackage.js";
 
 export const name = "Prettier configuration";
+export const cliVersion = "3.53.0";
 
 export async function check() {
 	let pkg = await importJson("./package.json", true);

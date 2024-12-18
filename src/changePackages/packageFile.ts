@@ -1,20 +1,15 @@
 import { writeFile } from "node:fs/promises";
 import { importJson } from "../lib/importJson.js";
-import { compareVersions } from "compare-versions";
-
-const APPFRAME_PACKAGE_VERSION = "1.0.0";
 
 function getProjectFile(file: string) {
 	return new URL(file, `file://${process.cwd()}/`);
 }
 
 export const name = "Update package.json";
+export const cliVersion = "3.53.2";
 
 export async function check() {
-	let pkg = await importJson("./package.json", true);
-	let afPackageVersion = pkg.appframe?.packageVersion ?? "0.0.0";
-
-	return compareVersions(APPFRAME_PACKAGE_VERSION, afPackageVersion) > 0;
+	return true;
 }
 
 export async function execute() {
@@ -57,8 +52,7 @@ export async function execute() {
 		routes: pkg.appframe.proxyRoutes ?? [],
 	};
 
-	pkg.appframe.packageVersion = APPFRAME_PACKAGE_VERSION;
-
+	delete pkg.appframe.packageVersion;
 	delete pkg.appframe.devHostname;
 	delete pkg.appframe.disableExternals;
 	delete pkg.appframe.hostname;
