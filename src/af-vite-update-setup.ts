@@ -71,6 +71,7 @@ async function updateProjectSetup() {
 	pkg.appframe.appliedChangePackageVersion = version;
 
 	await writeFile(getProjectFile("./package.json"), JSON.stringify(pkg, null, 2));
+	await execShellCommand("pnpm exec prettier ./package.json --write", true);
 
 	if (await checkIfUncommittedChangesExist()) {
 		console.log(chalk.gray("Formatting source files with prettier..."));

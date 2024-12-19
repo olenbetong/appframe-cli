@@ -9,6 +9,7 @@ import { Command } from "./lib/Command.js";
 import { Server } from "./lib/Server.js";
 import { generateTypes } from "./lib/generateTypes.js";
 import { importJson } from "./lib/importJson.js";
+import { execShellCommand } from "./lib/execShellCommand.js";
 
 const appPkg = await importJson("./package.json", true);
 const cliPkg = await importJson("../package.json");
@@ -127,6 +128,7 @@ declare module "@olenbetong/appframe-core" {
 		server.logServerMessage(`Writing generated types to './src/appframe.d.ts'...`);
 
 		await fs.writeFile(new URL("./src/appframe.d.ts", `file://${process.cwd()}/`), data);
+		await execShellCommand("pnpm exec prettier ./src/appframe.d.ts --write", true);
 
 		server.logServerMessage("Done.");
 	} catch (error) {
