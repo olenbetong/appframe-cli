@@ -20,13 +20,34 @@ async function updateProjectSetup() {
 		);
 	}
 
+	let { version } = await importJson("../package.json");
+	let latest = (await execShellCommand("pnpm view @olenbetong/appframe-cli version")).trim();
+
+	if (compare(version, latest, "<")) {
+		console.log(
+			chalk.yellow(
+				`\nYou are running \`@olenbetong/appframe-cli\` v${version}, which is behind the latest release (${latest}).\n`,
+			),
+		);
+
+		let result = await prompts({
+			type: "confirm",
+			name: "confirmContinue",
+			message: "Would you like to apply the updates anyway? (y/N)",
+			initial: false,
+		});
+
+		if (!result.confirmContinue) {
+			return;
+		}
+	}
+
 	console.log("Make sure project is up to date (git pull)...");
 	await execShellCommand("git pull", true);
 	console.log("Install project dependencies (pnpm install)...");
 	await execShellCommand("pnpm install", true);
 
 	let pkg = await importJson("./package.json", true);
-	let { version } = await importJson("../package.json");
 	let appliedChangePackageVersion = pkg.appframe?.appliedChangePackageVersion ?? "0.0.0";
 	let appliedChangePackages: ChangePackage[] = [];
 
