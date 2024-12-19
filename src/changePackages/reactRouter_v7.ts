@@ -20,26 +20,30 @@ export async function check() {
 }
 
 const codemod: Codemod = (j, root) => {
-	let importDeclaration = root.find(j.ImportDeclaration, { source: { value: "react-router-typesafe" } });
+	let modified = false;
 
-	if (importDeclaration.length) {
-		let deferSpecifier = importDeclaration.find(j.ImportSpecifier, { imported: { name: "defer" } });
+	["react-router-typesafe", "react-router"].forEach((library) => {
+		let importDeclaration = root.find(j.ImportDeclaration, { source: { value: library } });
 
-		if (deferSpecifier.length) {
-			let deferName = deferSpecifier.get().getValueProperty("local").name;
-			deferSpecifier.remove();
+		if (importDeclaration.length) {
+			let deferSpecifier = importDeclaration.find(j.ImportSpecifier, { imported: { name: "defer" } });
 
-			root.find(j.CallExpression, { callee: { name: deferName } }).replaceWith((path) => path.node.arguments);
+			if (deferSpecifier.length) {
+				let deferName = deferSpecifier.get().getValueProperty("local").name;
+				deferSpecifier.remove();
+
+				root.find(j.CallExpression, { callee: { name: deferName } }).replaceWith((path) => path.node.arguments);
+			}
+
+			importDeclaration
+				.find(j.Literal, { value: "react-router-typesafe" })
+				.replaceWith((path) => j.literal("react-router"));
+
+			modified = true;
 		}
+	});
 
-		importDeclaration
-			.find(j.Literal, { value: "react-router-typesafe" })
-			.replaceWith((path) => j.literal("react-router"));
-
-		return true;
-	}
-
-	return false;
+	return modified;
 };
 
 export async function execute() {
