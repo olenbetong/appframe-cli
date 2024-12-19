@@ -5,7 +5,7 @@ import * as obsoleteFiles from "./obsoleteFiles.js";
 import * as reactRouter_v7 from "./reactRouter_v7.js";
 import * as prettier from "./prettier.js";
 import * as configFiles from "./configFiles.js";
-import * as reactHelmet from "./reactHelmet.js";
+import * as react_v19 from "./react_v19.js";
 import * as expressDependency from "./expressDependency.js";
 
 export type ChangePackage = {
@@ -34,7 +34,7 @@ export const changePackages: ChangePackage[] = [
 	expressDependency,
 	renameTypeFiles,
 	obsoleteFiles,
-	reactHelmet,
+	react_v19,
 	reactRouter_v7,
 	prettier,
 	configFiles,

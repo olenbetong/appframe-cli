@@ -2,6 +2,8 @@ import { importJson } from "../lib/importJson.js";
 import { removePackageIfExists } from "../lib/removePackageIfExists.js";
 import type { Codemod } from "../lib/applyCodemod.js";
 import { applyCodemodToAllSourceFiles } from "../lib/applyCodemod.js";
+import { satisfies } from "compare-versions";
+import { installPackage } from "../lib/installPackage.js";
 
 export const name = "Remove react-helmet";
 export const cliVersion = "3.53.0";
@@ -9,9 +11,11 @@ export const cliVersion = "3.53.0";
 export async function check() {
 	let pkg = await importJson("./package.json", true);
 	let packages = Object.keys(pkg.devDependencies ?? {}).concat(Object.keys(pkg.dependencies ?? {}));
+	let reactVersion = pkg.dependencies?.react;
 
-	return Boolean(
-		packages.find((p) => p === "react-router-typesafe" || p === "@types/react-helmet" || p === "react-helmet"),
+	return (
+		!satisfies(reactVersion, ">=19.0.0") ||
+		Boolean(packages.find((p) => p === "react-router-typesafe" || p === "@types/react-helmet" || p === "react-helmet"))
 	);
 }
 
@@ -26,21 +30,23 @@ const codemod: Codemod = (j, root) => {
 			if (localName) {
 				// Find any JSX elements that use the local name, and replace it with its children
 				root
-					.find(j.JSXElement, {
-						openingElement: { name: { type: "JSXIdentifier", name: localName } },
-					})
+					.find(j.JSXElement, { openingElement: { name: { type: "JSXIdentifier", name: localName } } })
 					.replaceWith((path) => {
 						let children = path.node.children;
 
-						if (!children?.length) {
-							return j.jsxExpressionContainer(j.literal(null));
+						if (!children || !children.length) {
+							return j.JSXElement.check(path.parent.node) ? null : j.literal(null);
 						}
+
+						children = children.filter((child) => !j.JSXText.check(child));
 
 						if (children.length === 1) {
 							return children[0];
 						}
 
-						return j.jsxFragment(j.jsxOpeningFragment(), j.jsxClosingFragment(), children);
+						return j.JSXElement.check(path.parent.node)
+							? children
+							: j.jsxFragment(j.jsxOpeningFragment(), j.jsxClosingFragment(), children);
 					});
 			}
 		}
@@ -60,5 +66,11 @@ export async function execute() {
 	let packagesToRemove: string[] = ["@types/react-helmet", "react-helmet"];
 
 	await removePackageIfExists(packagesToRemove, dependencies);
+
+	await installPackage(["react", "react-dom"], {
+		dependencies,
+		updateIfExists: true,
+	});
+
 	await applyCodemodToAllSourceFiles(codemod, name);
 }
