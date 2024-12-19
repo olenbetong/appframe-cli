@@ -53,10 +53,6 @@ const codemod: Codemod = (j, root) => {
 
 	return false;
 };
-function shouldProcessFile(file: string) {
-	let extension = file.split(".").pop();
-	return ["ts", "tsx", "js", "jsx"].includes(extension ?? "") && !file.endsWith(".d.ts");
-}
 
 export async function execute() {
 	let pkg = await importJson("./package.json", true);
