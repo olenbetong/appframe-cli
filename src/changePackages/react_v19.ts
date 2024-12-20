@@ -72,5 +72,10 @@ export async function execute() {
 		updateIfExists: true,
 	});
 
+	await installPackage(["@types/react", "@types/react-dom"], {
+		dependencies,
+		updateIfExists: true,
+	});
+
 	await applyCodemodToAllSourceFiles(codemod, name);
 }
