@@ -18,12 +18,12 @@ export async function applyCodemodToAllSourceFiles(codemod: Codemod, name: strin
 	for await (let file of getFiles(sourceFolder.pathname)) {
 		if (shouldProcessFile(file)) {
 			let relativeFile = file.replace(sourceFolder.pathname, "");
-			console.debug(chalk.dim(`Applying codemod '${name}' to '${relativeFile}'...`));
 
 			let source = await readFile(file, "utf-8");
 			let root = j(source);
 			if (codemod(j, root)) {
 				await writeFile(file, root.toSource());
+				console.debug(chalk.dim(`Codemod '${name}' applied to '${relativeFile}'`));
 			}
 		}
 	}

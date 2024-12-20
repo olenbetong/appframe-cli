@@ -7,6 +7,7 @@ import * as prettier from "./prettier.js";
 import * as configFiles from "./configFiles.js";
 import * as react_v19 from "./react_v19.js";
 import * as expressDependency from "./expressDependency.js";
+import * as unnecessaryFragments from "./unnecessaryFragments.js";
 
 export type ChangePackage = {
 	/**
@@ -38,4 +39,5 @@ export const changePackages: ChangePackage[] = [
 	reactRouter_v7,
 	prettier,
 	configFiles,
+	unnecessaryFragments,
 ];
