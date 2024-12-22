@@ -10,7 +10,7 @@
 	"scripts": {
 		"build": "tsc",
 		"prepack": "pnpm run build",
-		"check": "NPM_CHECK_INSTALLER=pnpm pnpm dlx npm-check -u"
+		"check": "pnpm dlx npm-check-updates -i -p pnpm --pre 1 --format group"
 	},
 	"keywords": [
 		"appframe",
@@ -18,35 +18,35 @@
 		"appframe web"
 	],
 	"devDependencies": {
-		"@babel/eslint-parser": "^7.25.1",
+		"@babel/eslint-parser": "^7.25.9",
 		"@types/d3": "^7.4.3",
 		"@types/degit": "^2.8.6",
 		"@types/prompts": "^2.4.9",
-		"@types/react": "^18.3.8",
+		"@types/react": "^19.0.2",
 		"@types/semver": "^7.5.8",
 		"eslint-config-prettier": "^9.1.0",
 		"eslint-plugin-prettier": "^5.2.1"
 	},
 	"dependencies": {
-		"@olenbetong/appframe-data": "^1.0.10",
+		"@olenbetong/appframe-data": "^1.0.11",
 		"@types/jscodeshift": "^0.12.0",
-		"chalk": "^5.3.0",
+		"chalk": "^5.4.1",
 		"commander": "^12.1.0",
 		"compare-versions": "^6.1.1",
 		"d3": "^7.9.0",
 		"degit": "^2.8.4",
-		"dotenv": "^16.4.5",
+		"dotenv": "^16.4.7",
 		"eslint": "^8.57.0",
 		"formdata-node": "^6.0.3",
-		"ink": "^5.0.1",
+		"ink": "^5.1.0",
 		"jscodeshift": "^17.1.1",
 		"open": "^10.1.0",
-		"prettier": "^3.3.3",
+		"prettier": "^3.4.2",
 		"prompts": "^2.4.2",
-		"react": "^18.3.1",
+		"react": "^19.0.0",
 		"semver": "^7.6.3",
 		"ts-node": "^10.9.2",
-		"typescript": "^5.6.2"
+		"typescript": "^5.7.2"
 	},
 	"repository": "https://github.com/olenbetong/appframe-cli.git"
 }

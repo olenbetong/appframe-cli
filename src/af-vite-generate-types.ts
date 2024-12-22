@@ -128,7 +128,7 @@ declare module "@olenbetong/appframe-core" {
 		server.logServerMessage(`Writing generated types to './src/appframe.d.ts'...`);
 
 		await fs.writeFile(new URL("./src/appframe.d.ts", `file://${process.cwd()}/`), data);
-		await execShellCommand("pnpm exec prettier ./src/appframe.d.ts --write", true);
+		await execShellCommand("pnpm exec prettier ./src/appframe.d.ts --write");
 
 		server.logServerMessage("Done.");
 	} catch (error) {
