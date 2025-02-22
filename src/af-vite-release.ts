@@ -141,7 +141,14 @@ async function createApplicationRelease(type: string, options: { preid?: string;
 
 		await spawnShellCommand("af", applyParameters);
 	} catch (error) {
-		console.error(chalk.red((error as Error).message));
+		if (typeof error === "string") {
+			console.error(chalk.red(error));
+		} else if (error && typeof error === "object" && "message" in error) {
+			console.error(chalk.red(error.message));
+		} else {
+			console.error(chalk.red("An unknown error occurred."));
+		}
+
 		try {
 			// In case the git push or gh release commands fail, make sure we still delete the temporary
 			// release notes file
