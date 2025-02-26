@@ -101,14 +101,22 @@ async function createApplicationRelease(type: string, options: { preid?: string;
 		}
 
 		let version = (
-			await execShellCommand(`pnpm version ${type} ${options.preid ? `--preid ${options.preid}` : ""}`)
+			await execShellCommand(
+				`pnpm version ${type} --no-git-tag-version ${options.preid ? `--preid ${options.preid}` : ""}`,
+			)
 		).trim();
-		releaseNotes = `## ${appPkg.name}@${version.replace("v", "")}\n\n${releaseNotes}`;
+
+		let releaseTag = `${appPkg.name}@${version.replace("v", "")}`;
+		releaseNotes = `## ${releaseTag}\n\n${releaseNotes}`;
+
+		await execShellCommand("git add package.json");
+		await execShellCommand(`git commit -m "af vite release: ${releaseTag}"`);
+		await execShellCommand(`git tag ${releaseTag}`);
 
 		// Push the tag pointing to this release so we can create a release with release notes on GitHub
 		await spawnShellCommand("git", ["push", "--follow-tags"]);
 
-		await spawnShellCommand("gh", ["release", "create", version.trim(), "-F", tempfile]);
+		await spawnShellCommand("gh", ["release", "create", `${releaseTag}`, "-F", tempfile]);
 
 		await unlink(tempfile);
 
