@@ -40,7 +40,7 @@ importers:
         version: 6.0.3
       ink:
         specifier: ^5.1.0
-        version: 5.1.0(@types/react@19.0.10)(react@19.0.0)
+        version: 5.1.0(@types/react@18.3.18)(react@18.3.1)
       jscodeshift:
         specifier: ^17.1.2
         version: 17.1.2
@@ -54,8 +54,8 @@ importers:
         specifier: ^2.4.2
         version: 2.4.2
       react:
-        specifier: ^19.0.0
-        version: 19.0.0
+        specifier: ^18.3.1
+        version: 18.3.1
       semver:
         specifier: ^7.7.1
         version: 7.7.1
@@ -79,8 +79,8 @@ importers:
         specifier: ^2.4.9
         version: 2.4.9
       '@types/react':
-        specifier: ^19.0.10
-        version: 19.0.10
+        specifier: ^18.3.18
+        version: 18.3.18
       '@types/semver':
         specifier: ^7.5.8
         version: 7.5.8
@@ -485,8 +485,11 @@ packages:
   '@types/prompts@2.4.9':
     resolution: {integrity: sha512-qTxFi6Buiu8+50/+3DGIWLHM6QuWsEKugJnnP6iv2Mc4ncxE4A/OJkjuVOA+5X0X1S/nq5VJRa8Lu+nwcvbrKA==}
 
-  '@types/react@19.0.10':
-    resolution: {integrity: sha512-JuRQ9KXLEjaUNjTWpzuR231Z2WpIwczOkBEIvbHNCzQefFIT0L8IqE6NV6ULLyC1SI/i234JnDoMkfg+RjQj2g==}
+  '@types/prop-types@15.7.14':
+    resolution: {integrity: sha512-gNMvNH49DJ7OJYv+KAKn0Xp45p8PLl6zo2YnvDIbTd4J6MER2BmWN49TG7n9LvkyihINxeKW8+3bfS2yDC9dzQ==}
+
+  '@types/react@18.3.18':
+    resolution: {integrity: sha512-t4yC+vtgnkYjNSKlFx1jkAhH8LgTo2N/7Qvi83kdEaUtMDiwpbLAktKDaAMlRcJ5eSxZkH74eEGt1ky31d7kfQ==}
 
   '@types/semver@7.5.8':
     resolution: {integrity: sha512-I8EUhyrgfLrcTkzV3TSsGyl1tSuPrEDzr0yd5m90UgNxQkyDXULk3b6MlQqTCpZpNtWe1K0hzclnZkTcLBe2UQ==}
@@ -1361,8 +1364,8 @@ packages:
     peerDependencies:
       react: ^18.3.1
 
-  react@19.0.0:
-    resolution: {integrity: sha512-V8AVnmPIICiWpGfm6GLzCR/W5FXLchHop40W4nXBmdlEceh16rCN8O8LNWm5bh5XUX91fh7KpA+W0TgMKmgTpQ==}
+  react@18.3.1:
+    resolution: {integrity: sha512-wS+hAgJShR0KhEvPJArfuPVN1+Hz1t0Y6n5jLrGQbkb4urgPE/0Rve+1kMB1v/oWgHgm4WIcV+i7F2pTVj+2iQ==}
     engines: {node: '>=0.10.0'}
 
   recast@0.20.5:
@@ -2138,8 +2141,11 @@ snapshots:
       '@types/node': 20.12.12
       kleur: 3.0.3
 
-  '@types/react@19.0.10':
+  '@types/prop-types@15.7.14': {}
+
+  '@types/react@18.3.18':
     dependencies:
+      '@types/prop-types': 15.7.14
       csstype: 3.1.3
 
   '@types/semver@7.5.8': {}
@@ -2693,7 +2699,7 @@ snapshots:
 
   inherits@2.0.4: {}
 
-  ink@5.1.0(@types/react@19.0.10)(react@19.0.0):
+  ink@5.1.0(@types/react@18.3.18)(react@18.3.1):
     dependencies:
       '@alcalzone/ansi-tokenize': 0.1.3
       ansi-escapes: 7.0.0
@@ -2708,8 +2714,8 @@ snapshots:
       indent-string: 5.0.0
       is-in-ci: 1.0.0
       patch-console: 2.0.0
-      react: 19.0.0
-      react-reconciler: 0.29.2(react@19.0.0)
+      react: 18.3.1
+      react-reconciler: 0.29.2(react@18.3.1)
       scheduler: 0.23.2
       signal-exit: 3.0.7
       slice-ansi: 7.1.0
@@ -2721,7 +2727,7 @@ snapshots:
       ws: 8.18.0
       yoga-wasm-web: 0.3.3
     optionalDependencies:
-      '@types/react': 19.0.10
+      '@types/react': 18.3.18
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -2968,13 +2974,15 @@ snapshots:
 
   queue-microtask@1.2.3: {}
 
-  react-reconciler@0.29.2(react@19.0.0):
+  react-reconciler@0.29.2(react@18.3.1):
     dependencies:
       loose-envify: 1.4.0
-      react: 19.0.0
+      react: 18.3.1
       scheduler: 0.23.2
 
-  react@19.0.0: {}
+  react@18.3.1:
+    dependencies:
+      loose-envify: 1.4.0
 
   recast@0.20.5:
     dependencies:
