@@ -111,10 +111,10 @@ async function createApplicationRelease(type: string, options: { preid?: string;
 
 		await execShellCommand("git add package.json");
 		await execShellCommand(`git commit -m "af vite release: ${releaseTag}"`);
-		await execShellCommand(`git tag ${releaseTag}`);
+		await execShellCommand(`git tag -a ${releaseTag} -m "${releaseTag}"`);
 
 		// Push the tag pointing to this release so we can create a release with release notes on GitHub
-		await spawnShellCommand("git", ["push", "--follow-tags"]);
+		await execShellCommand("git push --follow-tags");
 
 		await spawnShellCommand("gh", ["release", "create", `${releaseTag}`, "-F", tempfile]);
 
