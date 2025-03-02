@@ -13,32 +13,12 @@ function getProjectFile(file: string) {
 	return new URL(file, `file://${process.cwd()}/`);
 }
 
-async function tryGitInit() {
-	try {
-		await execShellCommand("git init");
-		return true;
-	} catch (e: any) {
-		console.warn("Git repo not initialized:", e.message);
-		return false;
-	}
-}
-
-async function tryGitCommit() {
+async function tryGitCommit(name: string) {
 	try {
 		await execShellCommand("git add -A");
-		await execShellCommand('git commit -m "Initialize project using @olenbetong/appframe-cli"');
+		await execShellCommand(`git commit -m "Initialize new application '${name}' using @olenbetong/appframe-cli"`);
 		return true;
 	} catch (e) {
-		// We couldn't commit in already initialized git repo,
-		// maybe the commit author config is not set.
-		console.warn("Git commit not created", e);
-		console.warn("Removing .git directory...");
-		try {
-			// unlinkSync() doesn't work on directories.
-			await rmdir(getProjectFile("./.git"));
-		} catch (removeErr) {
-			// Ignore.
-		}
 		return false;
 	}
 }
@@ -67,15 +47,11 @@ async function initApp(name: string) {
 	process.chdir("./" + name);
 
 	let initializedGit = false;
-	if (await tryGitInit()) {
-		initializedGit = true;
-		console.log("Initialized a git repository.");
-	}
 
 	await installDependencies();
 
 	// Create git commit if git repo was initialized
-	if (initializedGit && (await tryGitCommit())) {
+	if (initializedGit && (await tryGitCommit(name))) {
 		console.log("Created git commit.");
 	}
 
