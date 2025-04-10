@@ -1,5 +1,5 @@
 import chalk from "chalk";
-import { ChangePackage, changePackages } from "./changePackages/index.js";
+import { type ChangePackage, changePackages } from "./changePackages/index.js";
 import { execShellCommand } from "./lib/execShellCommand.js";
 import { importJson } from "./lib/importJson.js";
 import { compare } from "compare-versions";
@@ -16,7 +16,7 @@ async function updateProjectSetup() {
 	let unstagedChanges = await checkIfUncommittedChangesExist();
 	if (unstagedChanges) {
 		throw Error(
-			"Working tree has uncommitted changes, please commit or remove the changes before continuing\n" + unstagedChanges,
+			`Working tree has uncommitted changes, please commit or remove the changes before continuing\n${unstagedChanges}`,
 		);
 	}
 
@@ -71,11 +71,11 @@ async function updateProjectSetup() {
 	pkg.appframe.appliedChangePackageVersion = version;
 
 	await writeFile(getProjectFile("./package.json"), JSON.stringify(pkg, null, 2));
-	await execShellCommand("pnpm exec prettier ./package.json --write", true);
+	await execShellCommand("pnpm biome format ./package.json --write", true);
 
 	if (await checkIfUncommittedChangesExist()) {
-		console.log(chalk.gray("Formatting source files with prettier..."));
-		await execShellCommand("pnpm exec prettier ./src --write", true);
+		console.log(chalk.gray("Formatting source files with biome..."));
+		await execShellCommand("pnpm biome format ./src --write", true);
 
 		console.log(chalk.gray("Creating a commit for the updated project setup..."));
 		await execShellCommand("git add -A", true);

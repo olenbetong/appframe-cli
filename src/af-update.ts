@@ -25,5 +25,5 @@ try {
 
 	console.log(chalk.green("Update completed."));
 } catch (error: any) {
-	console.error(chalk.red("Update failed: " + error.message));
+	console.error(chalk.red(`Update failed: ${error.message}`));
 }

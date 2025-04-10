@@ -2,7 +2,7 @@ import chalk from "chalk";
 import prompts from "prompts";
 import open from "open";
 
-import { Command, ServerOption } from "./lib/Command.js";
+import { Command, type ServerOption } from "./lib/Command.js";
 import { Server } from "./lib/Server.js";
 import { getServerFromOptions } from "./lib/getServerFromOptions.js";
 import { importJson } from "./lib/importJson.js";

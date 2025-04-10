@@ -1,13 +1,12 @@
 import * as packageFile from "./packageFile.js";
-import * as eslint from "./eslint.js";
 import * as renameTypeFiles from "./renameTypeFiles.js";
 import * as obsoleteFiles from "./obsoleteFiles.js";
 import * as reactRouter_v7 from "./reactRouter_v7.js";
-import * as prettier from "./prettier.js";
 import * as configFiles from "./configFiles.js";
 import * as react_v19 from "./react_v19.js";
 import * as expressDependency from "./expressDependency.js";
 import * as unnecessaryFragments from "./unnecessaryFragments.js";
+import * as biome from "./migrateFromEslintAndPrettierToBiome.js";
 
 export type ChangePackage = {
 	/**
@@ -31,13 +30,12 @@ export type ChangePackage = {
 
 export const changePackages: ChangePackage[] = [
 	packageFile,
-	eslint,
 	expressDependency,
 	renameTypeFiles,
 	obsoleteFiles,
 	react_v19,
 	reactRouter_v7,
-	prettier,
+	biome,
 	configFiles,
 	unnecessaryFragments,
 ];

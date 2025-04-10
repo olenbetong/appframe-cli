@@ -3,7 +3,7 @@ import { copyFile } from "node:fs/promises";
 import { importJson } from "./lib/importJson.js";
 
 import { Command } from "commander";
-import prompts, { PromptObject } from "prompts";
+import prompts, { type PromptObject } from "prompts";
 function getProjectFile(file: string) {
 	return new URL(file, `file://${process.cwd()}/`);
 }

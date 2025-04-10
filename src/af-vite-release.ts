@@ -10,14 +10,14 @@ import prompts from "prompts";
 const cli = await importJson("../package.json");
 
 async function createApplicationRelease(type: string, options: { preid?: string; apply: boolean; workflow: boolean }) {
-	let tempfile = crypto.randomBytes(8).readBigUInt64LE(0).toString(24) + ".tmp";
+	let tempfile = `${crypto.randomBytes(8).readBigUInt64LE(0).toString(24)}.tmp`;
 
 	try {
 		// Check if there are uncommited changes in the git repo.
 		let status = (await execShellCommand("git status --porcelain")).trim();
 		if (status) {
 			throw Error(
-				"Working tree has uncommitted changes, please commit or remove the changes before continuing\n" + status,
+				`Working tree has uncommitted changes, please commit or remove the changes before continuing\n${status}`,
 			);
 		}
 

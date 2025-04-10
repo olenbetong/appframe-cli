@@ -8,21 +8,6 @@
 
 /** @type {Record<string, TemplateDef>} */
 export const templates = {
-	"theme-mui-5": {
-		title: "Theme for MUI 5",
-		source: "/templates/theme.ts.tpl",
-		target: "./src/theme.ts",
-	},
-	"html-synergi": {
-		title: "index.html for SynergiWeb applications",
-		source: "/templates/synergiweb.html.tpl",
-		target: "./index.html",
-	},
-	"html-partner": {
-		title: "index.html for Partner applications",
-		source: "/templates/partnerweb.html.tpl",
-		target: "./index.html",
-	},
 	"types-config": {
 		title: "types.json to customize data object/procedure types",
 		source: "/templates/types.json.tpl",
@@ -33,11 +18,6 @@ export const templates = {
 		source: "/templates/global.d.ts.tpl",
 		target: "./src/global.d.ts",
 	},
-	"eslint-config": {
-		title: "eslint - Config",
-		source: "/templates/eslint.config.mjs.tpl",
-		target: "./eslint.config.mjs",
-	},
 	"vite-server": {
 		title: "Vite - Config",
 		source: "/templates/vite.config.mjs.tpl",
@@ -47,11 +27,6 @@ export const templates = {
 		title: "Vite - Dev server",
 		source: "/templates/server.mjs.tpl",
 		target: "./server.mjs",
-	},
-	"prettier-config": {
-		title: "Prettier Config",
-		source: "/templates/prettierrc.tpl",
-		target: "./.prettierrc",
 	},
 	"workflow-build-and-deploy": {
 		title: "Github Workflow - Build and deploy",

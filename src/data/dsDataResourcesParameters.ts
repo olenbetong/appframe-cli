@@ -1,4 +1,4 @@
-import { Client, generateApiDataHandler, generateApiDataObject } from "@olenbetong/appframe-data";
+import { type Client, generateApiDataHandler, generateApiDataObject } from "@olenbetong/appframe-data";
 
 export type DataResourcesParametersRecord = {
 	DBObjectID: string;

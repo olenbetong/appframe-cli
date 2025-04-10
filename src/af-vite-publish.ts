@@ -2,14 +2,14 @@ import { Server } from "./lib/Server.js";
 import { importJson } from "./lib/importJson.js";
 import { Command } from "commander";
 import chalk from "chalk";
-import prompts, { PromptObject } from "prompts";
+import prompts, { type PromptObject } from "prompts";
 import { execShellCommand } from "./lib/execShellCommand.js";
 
 type StageOperation = "download" | "apply" | "checkout" | "deploy" | "generate" | "publish";
 
 async function runStageOperations(
 	devHost: string,
-	operations: StageOperation[] = ["download"],
+	operations: StageOperation[],
 	{ hostname, article: articleProp, version }: { hostname: string; article: string; version?: string },
 	state: { article?: any } = {},
 ) {

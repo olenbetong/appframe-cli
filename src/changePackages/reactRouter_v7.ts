@@ -6,7 +6,7 @@ import type { Codemod } from "../lib/applyCodemod.js";
 import { applyCodemodToAllSourceFiles } from "../lib/applyCodemod.js";
 
 export const name = "Remove react-router-typesafe";
-export const cliVersion = "3.53.0";
+export const cliVersion = "3.57.0";
 
 export async function check() {
 	let pkg = await reactRouter_v7("./package.json", true);
@@ -22,7 +22,8 @@ export async function check() {
 const codemod: Codemod = (j, root) => {
 	let modified = false;
 
-	["react-router-typesafe", "react-router"].forEach((library) => {
+	let importSources = ["react-router-typesafe", "react-router", "react-router-dom"];
+	for (let library of importSources) {
 		let importDeclaration = root.find(j.ImportDeclaration, { source: { value: library } });
 
 		if (importDeclaration.length) {
@@ -39,9 +40,11 @@ const codemod: Codemod = (j, root) => {
 				.find(j.Literal, { value: "react-router-typesafe" })
 				.replaceWith((path) => j.literal("react-router"));
 
+			importDeclaration.find(j.Literal, { value: "react-router-dom" }).replaceWith((path) => j.literal("react-router"));
+
 			modified = true;
 		}
-	});
+	}
 
 	return modified;
 };
@@ -49,11 +52,11 @@ const codemod: Codemod = (j, root) => {
 export async function execute() {
 	let pkg = await reactRouter_v7("./package.json", true);
 	let dependencies = Object.keys(pkg.devDependencies ?? {}).concat(Object.keys(pkg.dependencies ?? {}));
-	let packagesToRemove: string[] = ["react-router-typesafe"];
+	let packagesToRemove: string[] = ["react-router-typesafe", "react-router-dom"];
 
 	await removePackageIfExists(packagesToRemove, dependencies);
 
-	await installPackage(["react-router", "react-router-dom"], {
+	await installPackage(["react-router"], {
 		dependencies,
 		updateIfExists: true,
 	});

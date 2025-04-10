@@ -9,7 +9,7 @@ import { readFile } from "node:fs/promises";
  * @param {boolean} useCwd Set to true to import the path relative to the current working directory
  * @returns JSON content
  */
-export async function importJson(url: string | URL, useCwd: boolean = false) {
+export async function importJson(url: string | URL, useCwd = false) {
 	let completeUrl = new URL(
 		url,
 		useCwd ? `file://${process.cwd()}/` : import.meta.url.replace(/lib\/importJson.js$/, ""),

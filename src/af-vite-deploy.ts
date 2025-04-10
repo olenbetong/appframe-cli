@@ -82,10 +82,8 @@ async function fileExists(file: string, useCwd = false) {
 	}
 }
 
-let scriptPath: string = `file://${process.cwd()}/dist/file/article/script/${
-	appframe.article?.id ?? appframe.article
-}/`;
-let stylePath: string = `file://${process.cwd()}/dist/file/article/style/${appframe.article?.id ?? appframe.article}/`;
+let scriptPath = `file://${process.cwd()}/dist/file/article/script/${appframe.article?.id ?? appframe.article}/`;
+let stylePath = `file://${process.cwd()}/dist/file/article/style/${appframe.article?.id ?? appframe.article}/`;
 let styles: string[] = [];
 let scripts: string[] = await readdir(new URL(scriptPath));
 

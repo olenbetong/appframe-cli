@@ -1,12 +1,12 @@
 import chalk from "chalk";
 import { config } from "dotenv";
 import { fileFromPath } from "formdata-node/file-from-path";
-import prompts, { PromptObject } from "prompts";
+import prompts, { type PromptObject } from "prompts";
 
-import { Client, DataHandler, FileUploader, ProcedureBase, SortOrder } from "@olenbetong/appframe-data";
+import { Client, type DataHandler, FileUploader, type ProcedureBase, SortOrder } from "@olenbetong/appframe-data";
 
 import {
-	ArticlesFeaturesRecord,
+	type ArticlesFeaturesRecord,
 	getApplyProcedure,
 	getArticlesDataObject,
 	getArticlesPermissionsDataObject,
@@ -28,14 +28,14 @@ import {
 	getTemplatesDataObject,
 	getTransactionsDataObject,
 	getCopyDatasourcesFromDevProcedure,
-	DataResourcesParametersRecord,
+	type DataResourcesParametersRecord,
 	getDataResourcesParametersDataObject,
 	getArticlesFeaturesDataObject,
-	ArticlesBlockRecord,
+	type ArticlesBlockRecord,
 	getArticlesBlocksDataObject,
 } from "../data/index.js";
 
-config({ path: process.cwd() + "/.env" });
+config({ path: `${process.cwd()}/.env` });
 let { APPFRAME_LOGIN: envUsername, APPFRAME_PWD: envPassword } = process.env;
 
 const isInteractive = process.stdout.isTTY;
@@ -408,7 +408,7 @@ export class Server {
 
 		if (namespace) {
 			let n = await this.getNamespace(namespace);
-			url += "/1/" + n.Name;
+			url += `/1/${n.Name}`;
 			message = `Downloading updates (${n.Name})`;
 		} else {
 			message = `Downloading updates`;
@@ -551,7 +551,7 @@ export class Server {
 	 */
 	async getNamespace(namespace: string | number) {
 		let { dsNamespaces } = this;
-		let filter: string = "";
+		let filter = "";
 		if (typeof namespace === "string") {
 			filter = `[Name] = '${namespace}'`;
 		} else if (typeof namespace === "number") {
@@ -716,7 +716,7 @@ export class Server {
 	 * @param {string | number} [namespace] Name or ID of namespace to limit to
 	 * @returns List of transactions matching filter and namespace
 	 */
-	async getTransactions(filterOrType: string = "apply", namespace?: string | number) {
+	async getTransactions(filterOrType = "apply", namespace?: string | number) {
 		let filter = [filterOrType];
 		if (filterOrType === "apply") {
 			filter = ["[Status] IN (0, 2) AND [IsLocal] = 0"];
@@ -785,13 +785,13 @@ export class Server {
 			}),
 			`Creating bundle (${name})`,
 			(newBundle) => {
-				if (newBundle && newBundle.ID) {
+				if (newBundle?.ID) {
 					return `Bundle '${name}' created with ID ${newBundle.ID}.`;
 				}
 			},
 		);
 
-		if (newBundle && newBundle.ID) {
+		if (newBundle?.ID) {
 			await this.logAsyncTask(
 				this.procCreateFirstBundleVersion.execute({
 					project_id: newBundle.ID,

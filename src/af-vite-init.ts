@@ -1,6 +1,6 @@
 import chalk from "chalk";
 import { Command } from "commander";
-import prompts, { PromptObject } from "prompts";
+import prompts, { type PromptObject } from "prompts";
 
 import { Server } from "./lib/Server.js";
 import { importJson } from "./lib/importJson.js";
@@ -44,7 +44,7 @@ async function copyTemplateRepo(name: string) {
 
 async function initApp(name: string) {
 	await copyTemplateRepo(name);
-	process.chdir("./" + name);
+	process.chdir(`./${name}`);
 
 	let initializedGit = false;
 

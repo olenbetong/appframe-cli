@@ -1,6 +1,6 @@
 import chalk from "chalk";
 import { Option } from "commander";
-import prompts, { PromptObject } from "prompts";
+import prompts, { type PromptObject } from "prompts";
 
 import { Command } from "./lib/Command.js";
 import { Server } from "./lib/Server.js";

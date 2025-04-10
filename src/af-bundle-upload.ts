@@ -5,10 +5,10 @@ import { config } from "dotenv";
 import { Server } from "./lib/Server.js";
 import { execShellCommand } from "./lib/execShellCommand.js";
 import { importJson } from "./lib/importJson.js";
-import prompts, { PromptObject } from "prompts";
+import prompts, { type PromptObject } from "prompts";
 import { SortOrder } from "@olenbetong/appframe-data";
 
-config({ path: process.cwd() + "/.env" });
+config({ path: `${process.cwd()}/.env` });
 
 /**
  * @param {string} pkgName
@@ -127,7 +127,7 @@ async function prepareBundle(pkgName: string, options: { bundle: string }) {
 			console.log("Launching explorer...");
 			try {
 				await execShellCommand("explorer.exe .");
-			} catch (error) {} // eslint-disable-line
+			} catch (error) {}
 		}
 	} catch (error: any) {
 		console.log(chalk.red(error.message));

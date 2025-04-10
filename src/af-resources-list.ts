@@ -14,7 +14,7 @@ async function listResources(search: string | null | undefined, options: { serve
 	let resources = await server.getResources();
 
 	for (let resource of resources) {
-		let name = `${chalk.blue(resource.ObjectType) + ":"} ${resource.Name}`;
+		let name = `${`${chalk.blue(resource.ObjectType)}:`} ${resource.Name}`;
 		if (resource.Name !== resource.DBObjectID) {
 			name += ` (${resource.DBObjectID})`;
 		}

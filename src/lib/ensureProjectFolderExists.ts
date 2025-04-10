@@ -1,4 +1,4 @@
-import { mkdir } from "fs/promises";
+import { mkdir } from "node:fs/promises";
 import { fileExists } from "./fileExists.js";
 import { getProjectFile } from "./getProjectFile.js";
 

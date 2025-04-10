@@ -1,6 +1,6 @@
 import prompts from "prompts";
 
-import { FieldDefinition } from "@olenbetong/appframe-data";
+import type { FieldDefinition } from "@olenbetong/appframe-data";
 
 import { Command } from "./lib/Command.js";
 import { Server } from "./lib/Server.js";
@@ -127,7 +127,7 @@ function getProcedureDefinition(name: string, procDefinition: any, options: CLIO
 
 function getDataObjectDefinition(name: string, viewDefinition: any, options: CLIOptions) {
 	let fields = [];
-	let includeFields = typeof options.fields === "string" ? options.fields?.split(",").filter((f) => !!f) ?? [] : [];
+	let includeFields = typeof options.fields === "string" ? (options.fields?.split(",").filter((f) => !!f) ?? []) : [];
 
 	let aggregates: Record<string, string> = {};
 	if (options.aggregates) {
@@ -227,7 +227,7 @@ ${fieldTypes}}`;
 	}
 
 	if (options.types) {
-		output += types + "\n\n";
+		output += `${types}\n\n`;
 	}
 
 	let linkFields = "";

@@ -1,4 +1,4 @@
-import prompts, { PromptObject } from "prompts";
+import prompts, { type PromptObject } from "prompts";
 
 export async function getServerFromOptions(options: { server?: string | undefined }) {
 	if (options.server) return;

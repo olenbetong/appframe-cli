@@ -1,6 +1,6 @@
 /* global globalThis */
 
-import { DataObject, Procedure } from "@olenbetong/appframe-data";
+import type { DataObject, Procedure } from "@olenbetong/appframe-data";
 
 /**
  * Converts a database object parameter type to a typescript type
@@ -9,7 +9,7 @@ import { DataObject, Procedure } from "@olenbetong/appframe-data";
  * @param {boolean | undefined} isProc Whether the target is a data object field or a procedure parameter (true for procedure parameter)
  * @returns {string} Typescript type matching the data object parameter type
  */
-export function afTypeToTsType(type: string | undefined, isProc: boolean = false) {
+export function afTypeToTsType(type: string | undefined, isProc = false) {
 	if (type === "uniqueidentifier") {
 		return "string";
 	} else if (type && ["date", "datetime"].includes(type)) {
@@ -34,7 +34,7 @@ function getDataObjectTypes(parameterOverrides: Record<string, Record<string, st
 	for (let dataObject of dataObjects) {
 		let id = dataObject.getDataSourceId();
 		let typeName = id.startsWith("ds") ? id.substring(2) : id;
-		typeName = typeName + "Record";
+		typeName = `${typeName}Record`;
 		result.push(`export type ${typeName} = {`);
 
 		for (let field of dataObject.getFields()) {
@@ -57,9 +57,9 @@ function getDataObjectTypes(parameterOverrides: Record<string, Record<string, st
 	}
 
 	result.push("declare global {");
-	result.push(globals.map((g) => "\tvar " + g).join("\n"));
+	result.push(globals.map((g) => `\tvar ${g}`).join("\n"));
 	result.push("\tinterface Window {");
-	result.push(globals.map((g) => "\t\t" + g).join("\n"));
+	result.push(globals.map((g) => `\t\t${g}`).join("\n"));
 	result.push("\t}");
 	result.push("}");
 
@@ -86,13 +86,13 @@ function getProcedureTypes(
 		let id = procedure.options.procedureId;
 		let params = procedure.getParameters();
 		let typeName = id.startsWith("proc") ? id.substring(4) : id;
-		typeName = typeName + "Params";
+		typeName = `${typeName}Params`;
 
 		if (params.length > 0) {
 			result.push(`export type ${typeName} = {`);
 
 			for (let param of params) {
-				let type = parameterOverrides[id]?.[param.name] ?? afTypeToTsType(param.type, true) + " | null";
+				let type = parameterOverrides[id]?.[param.name] ?? `${afTypeToTsType(param.type, true)} | null`;
 				let required = parameterOverrides[id]?.__required?.includes(param.name);
 
 				result.push(`\t${param.name}${required || param.required ? "" : "?"}: ${type};`);
@@ -112,9 +112,9 @@ function getProcedureTypes(
 	}
 
 	result.push("declare global {");
-	result.push(globals.map((g) => "\tvar " + g).join("\n"));
+	result.push(globals.map((g) => `\tvar ${g}`).join("\n"));
 	result.push("\tinterface Window {");
-	result.push(globals.map((g) => "\t\t" + g).join("\n"));
+	result.push(globals.map((g) => `\t\t${g}`).join("\n"));
 	result.push("\t}");
 	result.push("}");
 
@@ -136,7 +136,7 @@ export function generateTypes(
 	if (procedures.length) types.push("Procedure");
 
 	let result = [
-		`import { ${types.join(", ")} } from "@olenbetong/appframe-data";${
+		`import type { ${types.join(", ")} } from "@olenbetong/appframe-data";${
 			customExists && (dataObjects.includes("Custom.") || procedures.includes("Custom."))
 				? '\nimport * as Custom from "./custom";'
 				: ""

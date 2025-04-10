@@ -1,4 +1,4 @@
-import { Client, generateApiDataHandler } from "@olenbetong/appframe-data";
+import { type Client, generateApiDataHandler } from "@olenbetong/appframe-data";
 
 export type ArticlesBlockRecord = Readonly<{
 	PrimKey: string;

@@ -6,7 +6,7 @@ function objHasKey(obj, key) {
 const funcRegex =
 	/^function(?:\s+([a-zA-Z$_][a-zA-Z0-9$_]*))?\s*\(((?:(?:\s*[a-zA-Z$_][a-zA-Z0-9$_]*)(?:\s*,\s*[a-zA-Z$_][a-zA-Z0-9$_]*)*)?)\s*\)\s*\{((?:.|\n|\r)*)\}$/;
 function parseFunc(func) {
-	var match = func.toString().match(funcRegex);
+	const match = func.toString().match(funcRegex);
 
 	if (match === null) {
 		throw new TypeError("Unable to parse function!");
@@ -85,7 +85,7 @@ export function expose(name, value) {
 
 		if (objHasKey(namespace, keyName)) {
 			// If class is already defined, warn or show an alert
-			console.log(chalk.yellow([name, keyName].join(".") + " is already defined!"));
+			console.log(chalk.yellow(`${[name, keyName].join(".")} is already defined!`));
 		} else {
 			namespace[keyName] = value;
 		}

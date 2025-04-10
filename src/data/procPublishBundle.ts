@@ -1,4 +1,4 @@
-import { Client, ProcedureAPI } from "@olenbetong/appframe-data";
+import { type Client, ProcedureAPI } from "@olenbetong/appframe-data";
 
 export type PublishBundleParams = {
 	project_id?: string;

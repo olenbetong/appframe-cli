@@ -1,4 +1,4 @@
-import { rename } from "fs/promises";
+import { rename } from "node:fs/promises";
 import { fileExists } from "./fileExists.js";
 import { getProjectFile } from "./getProjectFile.js";
 

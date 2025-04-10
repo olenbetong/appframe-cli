@@ -44,7 +44,7 @@ export async function execute() {
 	};
 
 	pkg.appframe.build = pkg.appframe.build ?? {
-		externals: pkg.appframe.disableExternals ? false : true,
+		externals: !pkg.appframe.disableExternals,
 	};
 
 	pkg.appframe.proxy = pkg.appframe.proxy ?? {
@@ -52,14 +52,14 @@ export async function execute() {
 		routes: pkg.appframe.proxyRoutes ?? [],
 	};
 
-	delete pkg.appframe.packageVersion;
-	delete pkg.appframe.devHostname;
-	delete pkg.appframe.disableExternals;
-	delete pkg.appframe.hostname;
-	delete pkg.appframe.proxyHostname;
-	delete pkg.appframe.proxyRoutes;
-	delete pkg.appframe.usePreact;
-	delete pkg.eslint;
+	pkg.appframe.packageVersion = undefined;
+	pkg.appframe.devHostname = undefined;
+	pkg.appframe.disableExternals = undefined;
+	pkg.appframe.hostname = undefined;
+	pkg.appframe.proxyHostname = undefined;
+	pkg.appframe.proxyRoutes = undefined;
+	pkg.appframe.usePreact = undefined;
+	pkg.eslint = undefined;
 
 	await writeFile(getProjectFile("./package.json"), JSON.stringify(pkg, null, 2));
 }
