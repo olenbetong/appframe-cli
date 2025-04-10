@@ -15,7 +15,8 @@ export async function check() {
 
 	return (
 		reactRouterVersion &&
-		(!satisfies(reactRouterVersion, ">=7.0.0") || Boolean(packages.find((p) => p === "react-router-typesafe")))
+		(!satisfies(reactRouterVersion, ">=7.0.0") ||
+			Boolean(packages.find((p) => ["react-router-typesafe", "react-router-dom"].includes(p))))
 	);
 }
 

@@ -13,20 +13,10 @@ export const templates = {
 		source: "/templates/types.json.tpl",
 		target: "./types.json",
 	},
-	"global-types": {
-		title: "Global Appframe Types",
-		source: "/templates/global.d.ts.tpl",
-		target: "./src/global.d.ts",
-	},
-	"vite-server": {
+	"vite-config": {
 		title: "Vite - Config",
 		source: "/templates/vite.config.mjs.tpl",
 		target: "./vite.config.mjs",
-	},
-	"vite-config": {
-		title: "Vite - Dev server",
-		source: "/templates/server.mjs.tpl",
-		target: "./server.mjs",
 	},
 	"workflow-build-and-deploy": {
 		title: "Github Workflow - Build and deploy",
@@ -37,5 +27,10 @@ export const templates = {
 		title: "VS Code workspace config",
 		source: "/templates/vscode-settings.json.tpl",
 		target: "./.vscode/settings.json",
+	},
+	"ts-config": {
+		title: "Typescript configuration",
+		source: "/templates/tsconfig.json.tpl",
+		target: "./tsconfig.json",
 	},
 };
