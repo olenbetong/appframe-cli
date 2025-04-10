@@ -16,8 +16,8 @@ config({ path: `${process.cwd()}/.env` });
  */
 async function prepareBundle(pkgName: string, options: { bundle: string }) {
 	try {
-		let name;
-		let version;
+		let name: string;
+		let version: string;
 
 		if (pkgName) {
 			let lastAtSign = pkgName.lastIndexOf("@");
