@@ -43,12 +43,12 @@ export async function execute() {
 		],
 		dependencies,
 	);
-	installPackage(["@biomejs/biome"], {
+	removeFileIfExists([".eslintrc", ".eslintrc.json", ".prettierrc"]);
+	await installPackage(["@biomejs/biome"], {
 		isDev: true,
 		updateIfExists: false,
 		dependencies,
 	});
-	removeFileIfExists([".eslintrc", ".eslintrc.json", ".prettierrc"]);
 
 	await spawnShellCommand("pnpm", ["approve-builds"]);
 	await execShellCommand("pnpm biome lint ./src --fix --unsafe");
