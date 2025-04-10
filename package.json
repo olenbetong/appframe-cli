@@ -5,14 +5,18 @@
 		"af": "./cli/af.js"
 	},
 	"type": "module",
-	"version": "3.56.4",
+	"version": "3.57.0",
 	"license": "MIT",
 	"scripts": {
 		"build": "tsc",
 		"prepack": "pnpm run build",
 		"check": "pnpm dlx npm-check-updates -i -p pnpm --pre 1 --format group"
 	},
-	"keywords": ["appframe", "cli", "appframe web"],
+	"keywords": [
+		"appframe",
+		"cli",
+		"appframe web"
+	],
 	"devDependencies": {
 		"@types/d3": "^7.4.3",
 		"@types/degit": "^2.8.6",
