@@ -26,6 +26,7 @@
 	},
 	"dependencies": {
 		"@biomejs/biome": "^1.9.4",
+		"@olenbetong/appframe-cli": "link:",
 		"@olenbetong/appframe-data": "^1.0.11",
 		"@types/jscodeshift": "^0.12.0",
 		"chalk": "^5.4.1",

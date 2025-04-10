@@ -51,6 +51,6 @@ export async function execute() {
 	});
 
 	await spawnShellCommand("pnpm", ["approve-builds"]);
-	await execShellCommand("pnpm biome lint ./src --fix --unsafe");
+	await execShellCommand("pnpm biome lint ./src --fix --unsafe || true");
 	await updateTemplateFile("vs-code-settings");
 }

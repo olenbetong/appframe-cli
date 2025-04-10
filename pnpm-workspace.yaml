@@ -1,2 +1,5 @@
 onlyBuiltDependencies:
   - '@biomejs/biome'
+
+overrides:
+  '@olenbetong/appframe-cli': 'link:'
