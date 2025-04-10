@@ -30,7 +30,7 @@ export async function execute() {
 	let pkg = await importJson("./package.json", true);
 	let dependencies = Object.keys(pkg.devDependencies ?? {}).concat(Object.keys(pkg.dependencies ?? {}));
 
-	removePackageIfExists(
+	await removePackageIfExists(
 		[
 			"eslint",
 			"prettier",
@@ -43,7 +43,7 @@ export async function execute() {
 		],
 		dependencies,
 	);
-	removeFileIfExists([".eslintrc", ".eslintrc.json", ".prettierrc"]);
+	await removeFileIfExists([".eslintrc", ".eslintrc.json", ".prettierrc"]);
 	await installPackage(["@biomejs/biome"], {
 		isDev: true,
 		updateIfExists: false,
