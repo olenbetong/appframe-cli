@@ -48,10 +48,11 @@ function getProcedureDefinition(name: string, procDefinition: any, options: CLIO
 	let typeOverrides: Record<string, string> = {};
 
 	if (options.overrides) {
-		options.overrides.split(",").forEach((override) => {
+		let overrides = options.overrides.split(",");
+		for (let override of overrides) {
 			let [param, type] = override.split(":");
 			typeOverrides[param] = type;
-		});
+		}
 	}
 
 	for (let parameter of procDefinition.Parameters) {
@@ -84,25 +85,29 @@ function getProcedureDefinition(name: string, procDefinition: any, options: CLIO
 	}
 
 	if (options.types) {
-		let typeOutput = [`export type ${paramTypeName} = {`];
-		for (let parameter of procDefinition.Parameters) {
-			let type = typeOverrides[parameter.ParamName];
-			let name = parameter.ParamName;
+		if (procDefinition.Parameters.length > 0) {
+			let typeOutput = [`export type ${paramTypeName} = {`];
+			for (let parameter of procDefinition.Parameters) {
+				let type = typeOverrides[parameter.ParamName];
+				let name = parameter.ParamName;
 
-			if (!type) {
-				type = afTypeToTsType(parameter.TypeName, "ts-proc");
+				if (!type) {
+					type = afTypeToTsType(parameter.TypeName, "ts-proc");
+				}
+
+				if (parameter.has_default_value || parameter.is_nullable) {
+					type += " | null";
+					name += "?";
+				}
+
+				typeOutput.push(`\t${name}: ${type}`);
 			}
-
-			if (parameter.has_default_value || parameter.is_nullable) {
-				type += " | null";
-				name += "?";
-			}
-
-			typeOutput.push(`\t${name}: ${type}`);
+			typeOutput.push("};");
+			output.push(typeOutput.join("\n"));
+			output.push("");
+		} else {
+			output.push(`export type ${paramTypeName} = null | undefined | Record<string, unknown>;\n`);
 		}
-		typeOutput.push("};");
-		output.push(typeOutput.join("\n"));
-		output.push("");
 	}
 
 	output.push(`export const ${procName} = new ${
@@ -173,10 +178,11 @@ function getDataObjectDefinition(name: string, viewDefinition: any, options: CLI
 	let typeOverrides: Record<string, string> = {};
 
 	if (options.overrides) {
-		options.overrides.split(",").forEach((override) => {
+		let overrides = options.overrides.split(",");
+		for (let override of overrides) {
 			let [param, type] = override.split(":");
 			typeOverrides[param] = type;
-		});
+		}
 	}
 
 	// By convention data object name starts with ds, but their type
